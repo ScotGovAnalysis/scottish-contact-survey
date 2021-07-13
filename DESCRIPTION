@@ -11,3 +11,8 @@ Maintainer: Alice Byers <alice.byers@gov.scot>
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.1.0
+Imports: 
+    magrittr,
+    dplyr,
+    lubridate
