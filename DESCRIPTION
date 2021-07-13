@@ -1,13 +1,13 @@
 Package: comix
-Title: What the Package Does (One Line, Title Case)
+Title: Reproducible Analytical Pipeline of CoMix Scotland Analysis
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Alice",
+           family = "Byers",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "alice.byers@gov.scot")
+Description: Processes and analyses responses to the Scottish Governent CoMix Scottish Contact Survey. Results are used to produce the weekly Research Findings publication.
+Maintainer: Alice Byers <alice.byers@gov.scot>
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
