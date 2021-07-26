@@ -58,4 +58,25 @@ write_rds(
 )
 
 
+### 3 - Anonymise response data ----
+
+anon_resp <-
+  resp %>%
+  mutate_at(
+    vars(matches("new_hm[1-4]_name")),
+    ~ if_else(!is.na(.x), "new-hm", NA_character_)) %>%
+  mutate_at(
+    vars(matches("c[1-30]")),
+    ~ if_else(!is.na(.x), "contact", NA_character_)) %>%
+  mutate_at(
+    vars(matches("hm[1-11]_name")),
+    ~ if_else(!is.na(.x), "hm", NA_character_))
+
+write_rds(
+  anon_resp,
+  here("data", "anon-data", paste0(wave, panel, "_response-data-anon.rds")),
+  compress = "gz"
+)
+
+
 ### END OF SCRIPT ###
