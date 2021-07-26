@@ -13,16 +13,20 @@
 # process is run.
 #########################################################################
 
-### 0 - Manual Variable(s) - TO UPDATE ----
+### 0 - Manual Variables - TO UPDATE ----
 
-wave  <- 26
+wave  <- 25
 panel <- "A"
 
 
 ### 1 - Load packages ----
 
 library(dplyr)
+library(readr)
 library(here)
+library(openxlsx)
+library(stringr)
+library(magrittr)
 
 
 ### END OF SCRIPT ###
