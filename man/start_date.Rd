@@ -2,22 +2,25 @@
 % Please edit documentation in R/start_date.R
 \name{start_date}
 \alias{start_date}
-\title{Calculate first active day of CoMix survey.}
+\title{Date of the first day CoMix survey was open}
 \usage{
-start_date(wave, cohort = c("A", "B"))
+start_date(wave, panel = c("A", "B"))
 }
 \arguments{
-\item{wave}{The number of survey wave in numeric format.}
+\item{wave}{A numeric value denoting the survey wave number.}
 
-\item{cohort}{The survey cohort; either A or B.}
+\item{panel}{A character value denoting the survey panel. Valid
+options are 'A' and 'B'.}
 }
 \value{
-Returns a date corresponding to the day the survey opened.
+The date of the first day the survey was open.
 }
 \description{
-Calculate first active day of CoMix survey.
+\code{start_date()} takes the wave number and panel of
+a CoMix survey and returns the date of the first day the survey was open.
 }
 \examples{
 # First date of Comix survey 24A
 start_date(24, "A")
+
 }
