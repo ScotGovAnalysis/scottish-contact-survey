@@ -1,3 +1,6 @@
 ^comix\.Rproj$
 ^\.Rproj\.user$
-^LICENSE\.md$
+^LICENSE\.md
+^code$
+^data$
+^lookups$
