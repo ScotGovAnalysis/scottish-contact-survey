@@ -34,6 +34,15 @@ names(resp) <- names$new_names
 
 # Add CP Number
 
+cp_number_lookup <-
+  here("data", "registration-data", "registration-data.rds") %>%
+  read_rds() %>%
+  select(cp_number, email)
+
+resp %<>%
+  left_join(cp_number_lookup, by = "email") %>%
+  select(cp_number, everything())
+
 
 # Save clean response data as rds
 write_rds(
@@ -49,7 +58,7 @@ write_rds(
 hh_changes <-
   resp %>%
   filter(str_starts(hm_changes, "No")) %>%
-  select(email, hm_remove:new_hm4_student)
+  select(cp_number, hm_remove:new_hm4_student)
 
 write_rds(
   hh_changes,
