@@ -15,7 +15,7 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-wave  <- 25
+wave  <- 26
 panel <- "A"
 
 
