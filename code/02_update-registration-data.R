@@ -17,4 +17,15 @@
 source(here::here("code", "00_setup.R"))
 
 
+### 1 - Get data ----
+
+reg <-
+  here("data", "registraion-data", "registraion-data.rds") %>%
+  read_rds()
+
+hh_changes <-
+  here("data", "household-changes", paste0(wave, panel, "_hh-changes.rds")) %>%
+  read_rds()
+
+
 ### END OF SCRIPT ###
