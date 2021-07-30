@@ -30,13 +30,17 @@ anon_response_data <- function(data){
     # Anonymise new household members
     dplyr::mutate(
       new_hm1_name =
-        dplyr::if_else(!is.na(.data$new_hm1_name), "New HM1", .data$new_hm1_name),
+        dplyr::if_else(!is.na(.data$new_hm1_name), "New HM1",
+                       .data$new_hm1_name),
       new_hm2_name =
-        dplyr::if_else(!is.na(.data$new_hm2_name), "New HM2", .data$new_hm2_name),
+        dplyr::if_else(!is.na(.data$new_hm2_name), "New HM2",
+                       .data$new_hm2_name),
       new_hm3_name =
-        dplyr::if_else(!is.na(.data$new_hm3_name), "New HM3", .data$new_hm3_name),
+        dplyr::if_else(!is.na(.data$new_hm3_name), "New HM3",
+                       .data$new_hm3_name),
       new_hm4_name =
-        dplyr::if_else(!is.na(.data$new_hm4_name), "New HM4", .data$new_hm4_name)
+        dplyr::if_else(!is.na(.data$new_hm4_name), "New HM4",
+                       .data$new_hm4_name)
     ) %>%
 
     # Anonymise contacts
@@ -84,8 +88,10 @@ anon_response_data <- function(data){
       hm7_name = dplyr::if_else(!is.na(.data$hm7_name), "HM7", .data$hm7_name),
       hm8_name = dplyr::if_else(!is.na(.data$hm8_name), "HM8", .data$hm8_name),
       hm9_name = dplyr::if_else(!is.na(.data$hm9_name), "HM9", .data$hm9_name),
-      hm10_name = dplyr::if_else(!is.na(.data$hm10_name), "HM10", .data$hm10_name),
-      hm11_name = dplyr::if_else(!is.na(.data$hm11_name), "HM11", .data$hm11_name)
+      hm10_name =
+        dplyr::if_else(!is.na(.data$hm10_name), "HM10", .data$hm10_name),
+      hm11_name =
+        dplyr::if_else(!is.na(.data$hm11_name), "HM11", .data$hm11_name)
     )
 
 }
