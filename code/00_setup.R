@@ -28,6 +28,8 @@ library(openxlsx)
 library(stringr)
 library(magrittr)
 library(comix)
+library(purrr)
+library(tidyr)
 
 
 ### END OF SCRIPT ###
