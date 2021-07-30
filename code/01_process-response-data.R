@@ -55,14 +55,14 @@ write_rds(
 
 ### 2 - Get household changes ----
 
-hh_changes <-
+hm_changes <-
   resp %>%
   filter(str_starts(hm_changes, "No")) %>%
   select(cp_number, hm_remove:new_hm4_student)
 
 write_rds(
-  hh_changes,
-  here("data", "household-changes", paste0(wave, panel, "_hh-changes.rds")),
+  hm_changes,
+  here("data", "household-changes", paste0(wave, panel, "_hm-changes.rds")),
   compress = "gz"
 )
 
