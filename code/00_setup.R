@@ -27,6 +27,7 @@ library(here)
 library(openxlsx)
 library(stringr)
 library(magrittr)
+library(comix)
 
 
 ### END OF SCRIPT ###
