@@ -5,6 +5,7 @@
 #' @docType package
 #' @name comix
 #' @importFrom magrittr %>%
+#' @importFrom magrittr %<>%
 #' @importFrom rlang .data
 NULL
 
