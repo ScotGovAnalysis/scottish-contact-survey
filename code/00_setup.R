@@ -15,8 +15,8 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-wave  <- 26
-panel <- "A"
+cur_wave  <- 26
+cur_panel <- "A"
 
 
 ### 1 - Load packages ----
@@ -30,6 +30,7 @@ library(magrittr)
 library(comix)
 library(purrr)
 library(tidyr)
+library(forcats)
 
 
 ### END OF SCRIPT ###
