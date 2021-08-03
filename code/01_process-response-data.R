@@ -22,7 +22,7 @@ source(here::here("code", "00_setup.R"))
 # Read in raw response data
 resp <-
   here("data", "response-data",
-       paste0(wave, panel, "_response-data-uncleaned.xlsx")) %>%
+       paste0(cur_wave, cur_panel, "_response-data-uncleaned.xlsx")) %>%
   read.xlsx(sheet = "Raw Data")
 
 
@@ -48,7 +48,7 @@ resp %<>%
 write_rds(
   resp,
   here("data", "response-data",
-       paste0(wave, panel, "_response-data.rds")),
+       paste0(cur_wave, cur_panel, "_response-data.rds")),
   compress = "gz"
 )
 
@@ -62,7 +62,7 @@ hm_changes <-
 
 write_rds(
   hm_changes,
-  here("data", "household-changes", paste0(wave, panel, "_hm-changes.rds")),
+  here("data", "household-changes", paste0(cur_wave, cur_panel, "_hm-changes.rds")),
   compress = "gz"
 )
 
@@ -76,7 +76,7 @@ anon_resp <-
 
 write_rds(
   anon_resp,
-  here("data", "anon-data", paste0(wave, panel, "_response-data-anon.rds")),
+  here("data", "anon-data", paste0(cur_wave, cur_panel, "_response-data-anon.rds")),
   compress = "gz"
 )
 
