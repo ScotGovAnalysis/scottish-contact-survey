@@ -33,4 +33,14 @@ library(tidyr)
 library(forcats)
 
 
+### 2 - Derive previous wave and panel ----
+
+pre_wave <- case_when(
+  cur_panel == "A" ~ cur_wave - 1,
+  cur_panel == "B" ~ cur_wave
+)
+
+pre_panel <- setdiff(c("A", "B"), cur_panel)
+
+
 ### END OF SCRIPT ###
