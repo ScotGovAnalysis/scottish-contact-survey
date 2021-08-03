@@ -8,7 +8,9 @@
 # Written/run on - RStudio Desktop
 # Version of R - 3.6.3
 #
-# Description -
+# Description - Process response data as downloaded from Questback; clean
+# data, add CP number, get household changes, anonymise. Save file with
+# cp numbers for opt-outs.
 #########################################################################
 
 
@@ -62,7 +64,8 @@ hm_changes <-
 
 write_rds(
   hm_changes,
-  here("data", "household-changes", paste0(cur_wave, cur_panel, "_hm-changes.rds")),
+  here("data", "household-changes",
+       paste0(cur_wave, cur_panel, "_hm-changes.rds")),
   compress = "gz"
 )
 
@@ -76,8 +79,31 @@ anon_resp <-
 
 write_rds(
   anon_resp,
-  here("data", "anon-data", paste0(cur_wave, cur_panel, "_response-data-anon.rds")),
+  here("data", "anon-data",
+       paste0(cur_wave, cur_panel, "_response-data-anon.rds")),
   compress = "gz"
+)
+
+
+### 4 - Get opt outs ----
+
+opt_outs <-
+  here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.xlsx")) %>%
+  read.xlsx(sheet = 1) %>%
+  select(email = `E-mail`) %>%
+  left_join(cp_number_lookup, by = "email") %>%
+  select(-email)
+
+# Save list of cp numbers only
+write_rds(
+  opt_outs,
+  here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")),
+  compress = "gz"
+)
+
+# Delete opt out file with identifiable data
+unlink(
+  here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.xlsx"))
 )
 
 
