@@ -192,12 +192,28 @@ new_reg <-
   bind_rows(reg %>% filter(!(status == "active" & panel == cur_panel)))
 
 
-### 5 - Save files ----
+### 5 - Save updated registration data ----
 
 write_rds(
   new_reg,
   here("data", "registration-data",
        paste0(cur_wave, cur_panel, "_registration-data.rds")),
+  compress = "gz"
+)
+
+
+### 6 - Save anonymised registration data for current wave ----
+
+anon_reg <-
+  new_reg %>%
+  filter(status == "active" & panel == cur_panel) %>%
+  select(-email) %>%
+  anon_reg_data()
+
+write_rds(
+  anon_reg,
+  here("data", "anon-data",
+       paste0(cur_wave, cur_panel, "_registration-data-anon.rds")),
   compress = "gz"
 )
 
