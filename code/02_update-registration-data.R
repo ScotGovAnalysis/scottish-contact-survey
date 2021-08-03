@@ -21,10 +21,16 @@ source(here::here("code", "00_setup.R"))
 
 reg <-
 
-  # Get full registration file
+  # Get registration data
   here("data", "registration-data",
        paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
-  read_rds()
+  read_rds() %>%
+
+  # Recode opt outs
+  recode_opt_outs(
+    here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")) %>%
+      read_rds()
+  )
 
 reg_active <- reg %>%
 
