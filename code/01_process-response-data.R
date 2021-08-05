@@ -34,10 +34,16 @@ names <- read_rds(here("lookups", "response-data-names.rds"))
 names(resp) <- names$new_names
 
 
+# Reformat variables
+
+resp %<>% mutate_at(vars(matches("^new_hm[1-4]")), ~ as.character(.))
+
+
 # Add CP Number
 
 cp_number_lookup <-
-  here("data", "registration-data", "registration-data.rds") %>%
+  here("data", "registration-data",
+       paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
   read_rds() %>%
   select(cp_number, email)
 
