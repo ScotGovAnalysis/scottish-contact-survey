@@ -14,7 +14,9 @@
 recode_opt_outs <- function(reg_data, opt_out_data){
 
   # Add flag for opt outs
-  opt_out_data %<>% dplyr::mutate(opt_out = 1)
+  opt_out_data %<>%
+    dplyr::select(-c(.data$age, .data$gender)) %>%
+    dplyr::mutate(opt_out = 1)
 
   reg_data %>%
 
@@ -30,7 +32,18 @@ recode_opt_outs <- function(reg_data, opt_out_data){
 
     # Remove all registraion data; keep cp_number, status, panel ONLY
     dplyr::mutate_at(
-      dplyr::vars(!c(.data$cp_number, .data$status, .data$panel)),
-      ~ dplyr::if_else(.data$status == "opt-out", NA_character_, .))
+      dplyr::vars(!c(.data$cp_number, .data$status, .data$panel,
+                     .data$date_of_birth, .data$n_household)),
+      ~ dplyr::if_else(.data$status == "opt-out", NA_character_, .)) %>%
+    dplyr::mutate(
+      date_of_birth =
+        dplyr::if_else(.data$status == "opt-out",
+                       as.Date(NA),
+                       .data$date_of_birth),
+      n_household =
+        dplyr::if_else(.data$status == "opt-out",
+                       NA_integer_,
+                       .data$n_household)
+      )
 
 }
