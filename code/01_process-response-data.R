@@ -18,25 +18,25 @@
 
 source(here::here("code", "00_setup.R"))
 
+# Get clean names for response data
+names <- read_rds(here("lookups", "response-data-names.rds"))
+
 
 ### 1 - Save clean response data file ----
 
-# Read in raw response data
 resp <-
+
+  # Read in raw response data
   here("data", "response-data",
        paste0(cur_wave, cur_panel, "_response-data-uncleaned.xlsx")) %>%
-  read.xlsx(sheet = "Raw Data")
+  read.xlsx(sheet = "Raw Data") %>%
 
+  # Clean names
+  set_names(names$new_names) %>%
 
-# Rename variables
-names <- read_rds(here("lookups", "response-data-names.rds"))
-
-names(resp) <- names$new_names
-
-
-# Reformat variables
-
-resp %<>% mutate_at(vars(matches("^new_hm[1-4]")), ~ as.character(.))
+  # Fix formatting
+  mutate(date_completed = janitor::excel_numeric_to_date(date_completed)) %>%
+  mutate_at(vars(matches("^new_hm[1-4]")), ~ as.character(.))
 
 
 # Add CP Number
@@ -45,8 +45,7 @@ cp_number_lookup <-
   here("data", "registration-data",
        paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
   read_rds() %>%
-  select(cp_number, email, date_of_birth, gender) %>%
-  mutate(date_of_birth = ymd(date_of_birth)) # temp - fix this in reg data
+  select(cp_number, email, date_of_birth, gender)
 
 resp %<>%
   left_join(cp_number_lookup %>% select(cp_number, email), by = "email") %>%
@@ -82,7 +81,13 @@ write_rds(
 anon_resp <-
   resp %>%
   select(-email) %>%
-  anon_response_data()
+  anon_response_data() %>%
+
+  # Temp - move some columns to end for controller script
+  select(setdiff(names(.),
+                 c("vaccination", "n_vacc_doses",
+                   "sheilding", "long_term_condition")),
+         vaccination, n_vacc_doses, sheilding, long_term_condition)
 
 write_rds(
   anon_resp,
