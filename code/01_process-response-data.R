@@ -45,10 +45,11 @@ cp_number_lookup <-
   here("data", "registration-data",
        paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
   read_rds() %>%
-  select(cp_number, email)
+  select(cp_number, email, date_of_birth, gender) %>%
+  mutate(date_of_birth = ymd(date_of_birth)) # temp - fix this in reg data
 
 resp %<>%
-  left_join(cp_number_lookup, by = "email") %>%
+  left_join(cp_number_lookup %>% select(cp_number, email), by = "email") %>%
   select(cp_number, everything())
 
 
@@ -98,7 +99,8 @@ opt_outs <-
   read.xlsx(sheet = 1) %>%
   select(email = `E-mail`) %>%
   left_join(cp_number_lookup, by = "email") %>%
-  select(-email)
+  mutate(age = age(date_of_birth, cur_wave, cur_panel)) %>%
+  select(-email, -date_of_birth)
 
 # Save list of cp numbers only
 write_rds(
