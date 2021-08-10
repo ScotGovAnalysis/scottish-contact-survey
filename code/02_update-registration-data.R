@@ -218,5 +218,38 @@ write_rds(
   compress = "gz"
 )
 
+# Temp - reformat as required for controller script
+# Future work will incorporate controllor script into comix package
+# This section can be dropped once this is done.
+
+temp_anon_reg <- anon_reg %>%
+
+  # Temp - add missing columns and reorder
+  select(-status, -panel, -local_authority_code) %>%
+  add_column(hh_changes = NA, .after = "cp_number") %>%
+  add_column(ethnicity2 = NA, .after = "ethnicity") %>%
+  select(cp_number:n_household,
+         matches("hm\\d{1,2}_name"), everything()) %>%
+  add_column(
+    `12.1` = NA, `12.2` = NA, `12.3` = NA,
+    `12.4` = NA, `12.5` = NA, `12.6` = NA,
+    `12.7` = NA, `12.8` = NA, `12.9` = NA,
+    `12.10` = NA, `12.11` = NA, `12.12` = NA,
+    .after = "hm10_name"
+  ) %>%
+  select(cp_number:`12.12`,
+         employment_status:total_household_income,
+         everything()) %>%
+  mutate(date_of_birth = age(date_of_birth, cur_wave, cur_panel)) %>%
+
+  # Temp - rename variables for controller script
+  set_names(read_rds(here("lookups", "anon-sample-names.rds"))$names)
+
+write.xlsx(
+  temp_anon_reg,
+  here("data", "anon-data",
+       paste0(cur_wave, cur_panel, "_reg-data-anon.xlsx"))
+)
+
 
 ### END OF SCRIPT ###
