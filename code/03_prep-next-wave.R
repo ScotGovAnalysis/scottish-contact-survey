@@ -1,14 +1,15 @@
 #########################################################################
-# Name of file - 04_get-sample-data.R
+# Name of file - 03_prep-next-wave.R
 # Data release - Weekly CoMix Survey Analysis
 # Original Authors - Alice Byers
-# Original Date - July 2021
+# Original Date - August 2021
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Desktop
 # Version of R - 3.6.3
 #
-# Description -
+# Description - Replace opt outs from reserve list and get information
+# for Questback invites for next wave.
 #########################################################################
 
 
@@ -25,20 +26,26 @@ reg <-
   read_rds()
 
 
-### 2 - Get data required for next wave QB invites ----
+### 2 - Replace opt outs ----
 
-sample <-
+
+### 3 - Save updated registration data ----
+
+
+### 4 - Get data required for next wave QB invites ----
+
+invites <-
   reg %>%
   filter(panel == cur_panel) %>%
   select(email, contains("_name"), employment_status, studying_location)
 
 
-### 3 - Save data ---
+### 5 - Save data for upload to Questback ---
 
 write_csv(
-  sample,
-  here("data", "sample-data",
-       paste0(cur_wave + 1, cur_panel, "_sample-data.csv"))
+  invites,
+  here("data", "questback-invites",
+       paste0(cur_wave + 1, cur_panel, "_qb-invites.csv"))
 )
 
 
