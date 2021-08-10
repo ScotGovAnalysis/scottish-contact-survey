@@ -18,9 +18,6 @@
 
 source(here::here("code", "00_setup.R"))
 
-# Get clean names for response data
-names <- read_rds(here("lookups", "response-data-names.rds"))
-
 
 ### 1 - Save clean response data file ----
 
@@ -32,7 +29,7 @@ resp <-
   read.xlsx(sheet = "Raw Data") %>%
 
   # Clean names
-  set_names(names$new_names) %>%
+  set_names(read_rds(here("lookups", "response-data-names.rds"))$new_names) %>%
 
   # Fix formatting
   mutate(date_completed = janitor::excel_numeric_to_date(date_completed)) %>%
@@ -81,19 +78,34 @@ write_rds(
 anon_resp <-
   resp %>%
   select(-email) %>%
-  anon_response_data() %>%
-
-  # Temp - move some columns to end for controller script
-  select(setdiff(names(.),
-                 c("vaccination", "n_vacc_doses",
-                   "sheilding", "long_term_condition")),
-         vaccination, n_vacc_doses, sheilding, long_term_condition)
+  anon_response_data()
 
 write_rds(
   anon_resp,
   here("data", "anon-data",
        paste0(cur_wave, cur_panel, "_response-data-anon.rds")),
   compress = "gz"
+)
+
+# Temp - reformat as required for controller script
+# Future work will incorporate controllor script into comix package
+# This section can be dropped once this is done.
+
+temp_anon_resp <- anon_resp %>%
+
+  # Temp - move some columns to end for controller script
+  select(setdiff(names(.),
+                 c("vaccination", "n_vacc_doses",
+                   "sheilding", "long_term_condition")),
+         vaccination, n_vacc_doses, sheilding, long_term_condition) %>%
+
+  # Temp - rename variables for controller script
+  set_names(read_rds(here("lookups", "anon-response-names.rds"))$names)
+
+write.xlsx(
+  temp_anon_resp,
+  here("data", "anon-data",
+       paste0(cur_wave, cur_panel, "_response-data-anon.xlsx"))
 )
 
 
