@@ -248,7 +248,7 @@ temp_anon_reg <- anon_reg %>%
 write.xlsx(
   temp_anon_reg,
   here("data", "anon-data",
-       paste0(cur_wave, cur_panel, "_reg-data-anon.xlsx"))
+       paste0(cur_wave, cur_panel, "_registration-data-anon.xlsx"))
 )
 
 
