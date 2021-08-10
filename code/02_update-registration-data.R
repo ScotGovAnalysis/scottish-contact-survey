@@ -8,7 +8,8 @@
 # Written/run on - RStudio Desktop
 # Version of R - 3.6.3
 #
-# Description -
+# Description - Remove personal data for opt outs and update household
+# information in registration data.
 #########################################################################
 
 
