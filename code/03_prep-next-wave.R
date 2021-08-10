@@ -31,6 +31,12 @@ reg <-
 
 ### 3 - Save updated registration data ----
 
+write_rds(
+  reg,
+  here("data", "registration-data",
+       paste0(next_wave, next_panel, "_registration-data.rds"))
+)
+
 
 ### 4 - Get data required for next wave QB invites ----
 

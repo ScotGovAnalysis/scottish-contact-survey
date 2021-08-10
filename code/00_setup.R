@@ -34,7 +34,7 @@ library(lubridate)
 library(here)
 
 
-### 2 - Derive previous wave and panel ----
+### 2 - Derive previous/next wave and panel ----
 
 pre_wave <- case_when(
   cur_panel == "A" ~ cur_wave - 1,
@@ -42,6 +42,13 @@ pre_wave <- case_when(
 )
 
 pre_panel <- setdiff(c("A", "B"), cur_panel)
+
+next_wave <- case_when(
+  cur_panel == "A" ~ cur_wave,
+  cur_panel == "B" ~ cur_wave + 1
+)
+
+next_panel <- pre_panel
 
 
 ### END OF SCRIPT ###
