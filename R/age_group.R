@@ -16,11 +16,11 @@
 
 age_group <- function(age){
 
-  if(!inherits(age, "numeric")){
-    stop("Ages must be in numeric format.")
+  if(!inherits(age, c("numeric", "integer"))){
+    stop("Ages must have numeric or integer class.")
   }
 
-  if(any(age < 18)){
+  if(any(age < 18, na.rm = TRUE)){
     warning(paste("Ages under 18 are coded as NA as",
                   "CoMix survey participants must be 18 or over."))
   }
