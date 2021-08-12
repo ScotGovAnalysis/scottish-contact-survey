@@ -40,7 +40,7 @@ resp <-
 
 cp_number_lookup <-
   here("data", "registration-data",
-       paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
+       paste0(cur_wave, cur_panel, "_registration-data.rds")) %>%
   read_rds() %>%
   select(cp_number, email, date_of_birth, gender)
 
@@ -119,7 +119,7 @@ opt_outs <-
   mutate(age = age(date_of_birth, cur_wave, cur_panel)) %>%
   select(-email, -date_of_birth)
 
-# Save list of cp numbers only
+# Save list of cp number, age and gender only
 write_rds(
   opt_outs,
   here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")),

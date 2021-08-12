@@ -24,7 +24,7 @@ reg <-
 
   # Get registration data
   here("data", "registration-data",
-       paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
+       paste0(cur_wave, cur_panel, "_registration-data.rds")) %>%
   read_rds() %>%
 
   # Recode opt outs
