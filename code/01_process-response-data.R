@@ -102,10 +102,10 @@ temp_anon_resp <- anon_resp %>%
   # Temp - rename variables for controller script
   set_names(read_rds(here("lookups", "anon-response-names.rds"))$names)
 
-write.xlsx(
+write_csv(
   temp_anon_resp,
   here("data", "anon-data",
-       paste0(cur_wave, cur_panel, "_response-data-anon.xlsx"))
+       paste0(cur_wave, cur_panel, "_response-data-anon.csv"))
 )
 
 
