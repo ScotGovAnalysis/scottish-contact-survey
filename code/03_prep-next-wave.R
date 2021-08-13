@@ -34,7 +34,8 @@ reg <-
 write_rds(
   reg,
   here("data", "registration-data",
-       paste0(next_wave, next_panel, "_registration-data.rds"))
+       paste0(next_wave, next_panel, "_registration-data.rds")),
+  compress = "gz"
 )
 
 
