@@ -36,11 +36,7 @@ reg <-
 reg_active <- reg %>%
 
   # Keep only active participants in panel
-  filter(status == "active" & panel == cur_panel) %>%
-
-  # Get total number of household members
-  mutate(reg_hm_count = reduce(select(., matches("^hm([1-9]|10)_name$")) %>%
-                             mutate_all(~ !is.na(.)), `+`))
+  filter(status == "active" & panel == cur_panel)
 
 
 hm_changes <-
@@ -53,16 +49,16 @@ hm_changes <-
   # Get total number of household members with removals and
   # total number of new household members
   mutate(
-    hm_count = reduce(select(., matches("^hm([1-9]|10)_change$")), `+`),
-    new_hm_count = reduce(select(., matches("^new_hm[1-4]_name")) %>%
+    n_old_hm = reduce(select(., matches("^hm([1-9]|10)_change$")), `+`),
+    n_new_hm = reduce(select(., matches("^new_hm[1-4]_name")) %>%
                             mutate_all(~!is.na(.)), `+`)
   ) %>%
 
   # Get number of household members removed compared to reg data
   left_join(
-    reg_active %>% select(cp_number, reg_hm_count), by = "cp_number"
+    reg_active %>% select(cp_number, n_household), by = "cp_number"
   ) %>%
-  mutate(hm_removed_count = reg_hm_count - hm_count)
+  mutate(n_removed = n_household - n_old_hm)
 
 
 ### 2 - Remove household members ----
@@ -71,7 +67,7 @@ remove <-
 
   # Get changes for households with members removed
   hm_changes %>%
-  filter(hm_remove == 1 & hm_removed_count > 0) %>%
+  filter(hm_remove == 1 & n_removed > 0) %>%
   select(cp_number, hm1_change:hm11_change) %>%
 
   # Restrucutre to long format
@@ -134,7 +130,7 @@ add <-
 
   # Get changes for households with members added
   hm_changes %>%
-  filter(hm_add == 1 & new_hm_count > 0) %>%
+  filter(hm_add == 1 & n_new_hm > 0) %>%
   select(cp_number, new_hm1_name:new_hm4_student) %>%
 
   # Restrucutre to long format
@@ -190,7 +186,11 @@ new_reg <-
   select(-names(hm_added)[-1]) %>%
   left_join(hm_added, by = "cp_number") %>%
   select(names(reg)) %>%
-  bind_rows(reg %>% filter(!(status == "active" & panel == cur_panel)))
+  bind_rows(reg %>% filter(!(status == "active" & panel == cur_panel))) %>%
+
+  # Update household count
+  mutate(n_household = reduce(select(., matches("^hm([1-9]|10)_name$")) %>%
+                                mutate_all(~ !is.na(.)), `+`))
 
 
 ### 5 - Save updated registration data ----
@@ -245,10 +245,10 @@ temp_anon_reg <- anon_reg %>%
   # Temp - rename variables for controller script
   set_names(read_rds(here("lookups", "anon-sample-names.rds"))$names)
 
-write.xlsx(
+write_csv(
   temp_anon_reg,
   here("data", "anon-data",
-       paste0(cur_wave, cur_panel, "_registration-data-anon.xlsx"))
+       paste0(cur_wave, cur_panel, "_registration-data-anon.csv"))
 )
 
 
