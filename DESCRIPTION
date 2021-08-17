@@ -18,4 +18,5 @@ Imports:
     lubridate,
     tidyselect,
     rlang,
-    utils
+    utils,
+    tidyr
