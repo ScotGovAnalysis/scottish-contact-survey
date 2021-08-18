@@ -28,6 +28,48 @@ reg <-
 
 ### 2 - Replace opt outs ----
 
+# Get data for people on reserve list
+reserve_data <-
+  reg %>%
+  mutate(age_group = age_group(age(date_of_birth, cur_wave, cur_panel))) %>%
+  filter(status == "reserve") %>%
+  select(email, age_group, gender)
+
+# Get data for opt outs
+opt_out_data <-
+  here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")) %>%
+  read_rds() %>%
+  #temp
+  mutate(age_group = age_group(age)) %>%
+  count(age_group, gender) %>%
+  rename(n_opt_outs = n)
+
+# Get maximum CP number for current panel
+max_cp <-
+  reg %>%
+  filter(str_starts(cp_number, paste0("CP", cur_panel))) %>%
+  mutate(cp = str_remove(cp_number, paste0("CP", cur_panel))) %$%
+  as.numeric(max(cp))
+
+# Get list of emails and new cp numbers for replacement
+replace <-
+  tibble(
+    email = replace_opt_outs(reserve_data, opt_out_data)
+  ) %>%
+  mutate(new_cp = paste0(
+    "CP", cur_panel, seq(from = max_cp + 1, by = 1, length.out = nrow(.))
+  ))
+
+# Update registration data to add replacements to current panel
+reg %<>%
+  left_join(replace, by = "email") %>%
+  mutate(
+    panel = if_else(!is.na(new_cp), cur_panel, panel),
+    status = if_else(!is.na(new_cp), "active", status),
+    cp_number = if_else(!is.na(new_cp), new_cp, cp_number)
+  ) %>%
+  select(-new_cp)
+
 
 ### 3 - Save updated registration data ----
 
