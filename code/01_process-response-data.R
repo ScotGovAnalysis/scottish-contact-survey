@@ -116,7 +116,7 @@ opt_outs <-
   read.xlsx(sheet = 1) %>%
   select(email = `E-mail`) %>%
   left_join(cp_number_lookup, by = "email") %>%
-  mutate(age = age(date_of_birth, cur_wave, cur_panel)) %>%
+  mutate(age_group = age_group(age(date_of_birth, cur_wave, cur_panel))) %>%
   select(-email, -date_of_birth)
 
 # Save list of cp number, age and gender only
