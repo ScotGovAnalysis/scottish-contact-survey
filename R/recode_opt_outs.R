@@ -15,7 +15,7 @@ recode_opt_outs <- function(reg_data, opt_out_data){
 
   # Add flag for opt outs
   opt_out_data %<>%
-    dplyr::select(-c(.data$age, .data$gender)) %>%
+    dplyr::select(-c(.data$age_group, .data$gender)) %>%
     dplyr::mutate(opt_out = 1)
 
   reg_data %>%

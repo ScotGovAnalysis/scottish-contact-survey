@@ -39,8 +39,6 @@ reserve_data <-
 opt_out_data <-
   here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")) %>%
   read_rds() %>%
-  #temp
-  mutate(age_group = age_group(age)) %>%
   count(age_group, gender) %>%
   rename(n_opt_outs = n)
 
