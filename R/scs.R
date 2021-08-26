@@ -1,9 +1,9 @@
-#' \code{comix} package
+#' \code{scs} package
 #'
-#' CoMix Scotland R Package
+#' Scottish Contact Survey R Package
 #'
 #' @docType package
-#' @name comix
+#' @name scs
 #' @importFrom magrittr %>%
 #' @importFrom magrittr %<>%
 #' @importFrom rlang .data

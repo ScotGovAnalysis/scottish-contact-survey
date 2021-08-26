@@ -1,12 +1,12 @@
-Package: comix
-Title: Reproducible Analytical Pipeline of CoMix Scotland Analysis
+Package: scs
+Title: Reproducible Analytical Pipeline of Scottish Contact Survey analysis
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Alice",
            family = "Byers",
            role = c("aut", "cre"),
            email = "alice.byers@gov.scot")
-Description: Processes and analyses responses to the Scottish Governent CoMix Scottish Contact Survey. Results are used to produce the weekly Research Findings publication.
+Description: Processes and analyses responses to the Scottish Government Scottish Contact Survey. Results are used to produce the weekly Research Findings publication.
 Maintainer: Alice Byers <alice.byers@gov.scot>
 License: MIT + file LICENSE
 Encoding: UTF-8
