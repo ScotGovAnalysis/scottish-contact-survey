@@ -42,7 +42,7 @@ recode_opt_outs <- function(reg_data, opt_out_data){
                        .data$date_of_birth),
       n_household =
         dplyr::if_else(.data$status == "opt-out",
-                       NA_integer_,
+                       NA_real_,
                        .data$n_household)
       )
 
