@@ -21,21 +21,26 @@ source(here::here("code", "00_setup.R"))
 ### 1 - Get data ----
 
 reg <-
-
-  # Get registration data
   here("data", "registration-data",
        paste0(cur_wave, cur_panel, "_registration-data.rds")) %>%
-  read_rds() %>%
+  read_rds()
 
-  # Recode opt outs
+
+### 2 - Recode opt outs ----
+
+# For opt outs, keep CP number and remove all other registration data
+
+reg %<>%
   recode_opt_outs(
     here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")) %>%
       read_rds()
   )
 
-reg_active <- reg %>%
 
-  # Keep only active participants in panel
+### 3 - Get data required for household changes ----
+
+# Keep only active participants in panel
+reg_active <- reg %>%
   filter(status == "active" & panel == cur_panel)
 
 
@@ -49,7 +54,7 @@ hm_changes <-
   # Get total number of household members with removals and
   # total number of new household members
   mutate(
-    n_old_hm = reduce(select(., matches("^hm([1-9]|10)_change$")), `+`),
+    n_old_hm = reduce(select(., matches("^hm([1-9]|10)_change$")), `+`) + 1,
     n_new_hm = reduce(select(., matches("^new_hm[1-4]_name")) %>%
                             mutate_all(~!is.na(.)), `+`)
   ) %>%
@@ -61,7 +66,7 @@ hm_changes <-
   mutate(n_removed = n_household - n_old_hm)
 
 
-### 2 - Remove household members ----
+### 4 - Remove household members ----
 
 remove <-
 
@@ -124,7 +129,7 @@ n_hm <-
 
 
 
-### 3 - Add new household members ---
+### 5 - Add new household members ---
 
 add <-
 
@@ -179,7 +184,7 @@ hm_added <-
               values_from = dat)
 
 
-### 4 - Add updated household data back into registration data
+### 6 - Add updated household data back into registration data
 
 new_reg <-
   reg_active %>%
@@ -190,10 +195,10 @@ new_reg <-
 
   # Update household count
   mutate(n_household = reduce(select(., matches("^hm([1-9]|10)_name$")) %>%
-                                mutate_all(~ !is.na(.)), `+`))
+                                mutate_all(~ !is.na(.)), `+`) + 1)
 
 
-### 5 - Save updated registration data ----
+### 7 - Save updated registration data ----
 
 write_rds(
   new_reg,
@@ -203,7 +208,7 @@ write_rds(
 )
 
 
-### 6 - Save anonymised registration data for current wave ----
+### 8 - Save anonymised registration data for current wave ----
 
 anon_reg <-
   new_reg %>%
