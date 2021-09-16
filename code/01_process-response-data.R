@@ -58,7 +58,20 @@ write_rds(
 )
 
 
-### 2 - Get household changes ----
+### 2 - Run prize draw ----
+
+winner <-
+  resp %>%
+  select(cp_number, email) %>%
+  sample_n(1)
+
+write_csv(
+  winner,
+  here("data", "prize-draw", paste0(cur_wave, cur_panel, "_prize-draw.csv"))
+)
+
+
+### 3 - Get household changes ----
 
 hm_changes <-
   resp %>%
@@ -73,7 +86,7 @@ write_rds(
 )
 
 
-### 3 - Anonymise response data ----
+### 4 - Anonymise response data ----
 
 anon_resp <-
   resp %>%
@@ -109,7 +122,7 @@ write_csv(
 )
 
 
-### 4 - Get opt outs ----
+### 5 - Get opt outs ----
 
 opt_outs <-
   here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.xlsx")) %>%
