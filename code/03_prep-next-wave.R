@@ -83,7 +83,7 @@ write_rds(
 
 invites <-
   reg %>%
-  filter(panel == cur_panel) %>%
+  filter(status == "active" & panel == cur_panel) %>%
   select(email, contains("_name"), employment_status, studying_location)
 
 
