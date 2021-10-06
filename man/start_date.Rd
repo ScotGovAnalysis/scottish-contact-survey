@@ -4,7 +4,7 @@
 \alias{start_date}
 \title{Date of the first day CoMix survey was open}
 \usage{
-start_date(wave, panel = c("A", "B"))
+start_date(wave, panel)
 }
 \arguments{
 \item{wave}{A numeric value denoting the survey wave number.}

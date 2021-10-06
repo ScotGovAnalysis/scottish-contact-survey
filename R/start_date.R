@@ -15,13 +15,15 @@
 #'
 #' @export
 
-start_date <- function(wave, panel = c("A", "B")){
+start_date <- function(wave, panel){
 
   if(!inherits(wave, "numeric")){
     stop("The wave number must be in numeric format.")
   }
 
-  panel <- match.arg(panel)
+  if(any(!panel %in% c("A", "B"))){
+    stop("Panel must be A or B.")
+  }
 
   week_1_start_date <- dplyr::case_when(
     panel == "A" ~ lubridate::dmy(06082020),
