@@ -89,8 +89,19 @@ invites <-
 
 ### 5 - Save data for upload to Questback ---
 
+# Temp - reformat as required for controller script
+# Future work will incorporate controllor script into comix package
+# This section can be dropped once this is done.
+
+temp_invites <-
+  invites %>%
+  add_column(x1 = NA, x2 = NA, .after = "hm10_name") %>%
+  add_column(x3 = NA, x4 = NA, .after = "employment_status") %>%
+  inset(sprintf("x%d", 18:69), value = NA) %>%
+  set_colnames(read_rds(here("lookups", "questback-invite-names.rds"))$names)
+
 write_csv(
-  invites,
+  temp_invites,
   here("data", "questback-invites",
        paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
   na = ""
