@@ -15,8 +15,8 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-cur_wave  <- 30
-cur_panel <- "B"
+cur_wave  <- 31
+cur_panel <- "A"
 
 
 ### 1 - Load packages ----
