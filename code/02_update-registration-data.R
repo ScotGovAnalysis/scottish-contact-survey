@@ -223,6 +223,14 @@ write_rds(
   compress = "gz"
 )
 
+# Save backup
+write_rds(
+  anon_resp,
+  paste0("//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data/",
+         cur_wave, cur_panel, "_registration-data-anon.rds"),
+  compress = "gz"
+)
+
 # Temp - reformat as required for controller script
 # Future work will incorporate controllor script into comix package
 # This section can be dropped once this is done.
