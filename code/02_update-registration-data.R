@@ -33,7 +33,8 @@ reg <-
 reg %<>%
   recode_opt_outs(
     here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")) %>%
-      read_rds()
+      read_rds() %>%
+      pull(cp_number)
   )
 
 
