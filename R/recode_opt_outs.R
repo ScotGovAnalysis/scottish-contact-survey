@@ -5,45 +5,44 @@
 #' \code{cp_number}, \code{status} and \code{panel}.
 #'
 #' @param reg_data A dataframe of registraion data.
-#' @param opt_out_data A dataframe of cp_numbers opted out.
+#' @param cp_number A character vector of cp_numbers opted out.
 #'
 #' @return Registration data with opt outs recoded.
 #'
 #' @export
 
-recode_opt_outs <- function(reg_data, opt_out_data){
-
-  # Add flag for opt outs
-  opt_out_data %<>%
-    dplyr::select(-c(.data$age_group, .data$gender)) %>%
-    dplyr::mutate(opt_out = 1)
+recode_opt_outs <- function(reg_data, cp){
 
   reg_data %>%
 
-    # Add flag for new opt outs
-    dplyr::left_join(opt_out_data, by = "cp_number") %>%
+    # Add flag for opt outs
+    dplyr::mutate(opt_out = dplyr::if_else(.data$cp_number %in% cp,
+                                           1,
+                                           0)) %>%
 
     # Recode status
     dplyr::mutate(status = dplyr::case_when(
       .data$opt_out == 1 ~ "opt-out",
       TRUE ~ .data$status
     )) %>%
-    dplyr::select(-.data$opt_out) %>%
 
     # Remove all registraion data; keep cp_number, status, panel ONLY
     dplyr::mutate_at(
       dplyr::vars(!c(.data$cp_number, .data$status, .data$panel,
-                     .data$date_of_birth, .data$n_household)),
-      ~ dplyr::if_else(.data$status == "opt-out", NA_character_, .)) %>%
+                     .data$date_of_birth, .data$n_household, .data$opt_out)),
+      ~ dplyr::if_else(.data$opt_out == 1, NA_character_, .)) %>%
     dplyr::mutate(
       date_of_birth =
-        dplyr::if_else(.data$status == "opt-out",
+        dplyr::if_else(.data$opt_out == 1,
                        as.Date(NA),
                        .data$date_of_birth),
       n_household =
-        dplyr::if_else(.data$status == "opt-out",
+        dplyr::if_else(.data$opt_out == 1,
                        NA_real_,
                        .data$n_household)
-      )
+      ) %>%
+
+    # Remove opt out flag
+    dplyr::select(-.data$opt_out)
 
 }
