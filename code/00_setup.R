@@ -33,6 +33,7 @@ library(forcats)
 library(lubridate)
 library(here)
 library(tibble)
+library(usethis)
 
 
 ### 2 - Derive previous/next wave and panel ----
@@ -50,6 +51,18 @@ next_wave <- case_when(
 )
 
 next_panel <- pre_panel
+
+
+### 3 - Create data folders ----
+
+c("anon-data",
+  "household-changes",
+  "opt-outs",
+  "prize-draw",
+  "questback-invites",
+  "registration-data",
+  "response-data") %>%
+  walk(~ use_directory(paste0("data/", .)))
 
 
 ### END OF SCRIPT ###
