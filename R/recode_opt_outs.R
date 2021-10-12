@@ -5,7 +5,7 @@
 #' \code{cp_number}, \code{status} and \code{panel}.
 #'
 #' @param reg_data A dataframe of registraion data.
-#' @param cp_number A character vector of cp_numbers opted out.
+#' @param cp A character vector of cp_numbers opted out.
 #'
 #' @return Registration data with opt outs recoded.
 #'

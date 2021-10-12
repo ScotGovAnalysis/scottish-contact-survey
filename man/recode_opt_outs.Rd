@@ -9,7 +9,7 @@ recode_opt_outs(reg_data, cp)
 \arguments{
 \item{reg_data}{A dataframe of registraion data.}
 
-\item{cp_number}{A character vector of cp_numbers opted out.}
+\item{cp}{A character vector of cp_numbers opted out.}
 }
 \value{
 Registration data with opt outs recoded.
