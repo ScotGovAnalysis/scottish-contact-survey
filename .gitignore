@@ -22,3 +22,6 @@ readme.docx
 # R data files #
 *.[rR][dD][aA][tT][aA]
 *.[rR][dD][sS]
+
+# Include lookup data files #
+!lookups/*
