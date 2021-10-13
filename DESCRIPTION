@@ -19,4 +19,5 @@ Imports:
     tidyselect,
     rlang,
     utils,
-    tidyr
+    tidyr,
+    readr

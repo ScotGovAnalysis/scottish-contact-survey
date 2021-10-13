@@ -42,21 +42,12 @@ reg <-
 #   count(age_group, gender) %>%
 #   rename(n_opt_outs = n)
 #
-# # Get maximum CP number for current panel
-# max_cp <-
-#   reg %>%
-#   filter(str_starts(cp_number, paste0("CP", cur_panel))) %>%
-#   mutate(cp = str_remove(cp_number, paste0("CP", cur_panel))) %$%
-#   as.numeric(max(cp))
-#
 # # Get list of emails and new cp numbers for replacement
 # replace <-
 #   tibble(
 #     email = replace_opt_outs(reserve_data, opt_out_data)
 #   ) %>%
-#   mutate(new_cp = paste0(
-#     "CP", cur_panel, seq(from = max_cp + 1, by = 1, length.out = nrow(.))
-#   ))
+#   mutate(new_cp = generate_cp_number(reg$cp_number, cur_panel, n = nrow(.)))
 #
 # # Update registration data to add replacements to current panel
 # reg %<>%
