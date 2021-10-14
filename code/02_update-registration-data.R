@@ -223,7 +223,7 @@ write_rds(
 
 # Save backup
 write_rds(
-  anon_resp,
+  anon_reg,
   paste0("//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data/",
          cur_survey, "_registration-data-anon.rds"),
   compress = "gz"
