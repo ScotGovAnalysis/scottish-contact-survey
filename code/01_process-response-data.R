@@ -19,7 +19,7 @@
 source(here::here("code", "00_setup.R"))
 
 
-### 1 - Save clean response data file ----
+### 1 - Clean response data file ----
 
 resp <-
 
@@ -47,14 +47,6 @@ cp_number_lookup <-
 resp %<>%
   left_join(cp_number_lookup %>% select(cp_number, email), by = "email") %>%
   select(cp_number, everything())
-
-
-# Save clean response data as rds
-write_rds(
-  resp,
-  here("data", cur_survey, paste0(cur_survey, "_response-data.rds")),
-  compress = "gz"
-)
 
 
 ### 2 - Run prize draw ----
