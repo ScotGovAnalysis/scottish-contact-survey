@@ -24,8 +24,8 @@ source(here::here("code", "00_setup.R"))
 resp <-
 
   # Read in raw response data
-  here("data", "response-data",
-       paste0(cur_wave, cur_panel, "_response-data-uncleaned.xlsx")) %>%
+  here("data", cur_survey,
+       paste0(cur_survey, "_response-data-uncleaned.xlsx")) %>%
   read.xlsx(sheet = "Raw Data") %>%
 
   # Clean names
@@ -40,7 +40,7 @@ resp <-
 
 cp_number_lookup <-
   here("data", "registration-data",
-       paste0(cur_wave, cur_panel, "_registration-data.rds")) %>%
+       paste0(cur_survey, "_registration-data.rds")) %>%
   read_rds() %>%
   select(cp_number, email, date_of_birth, gender)
 
@@ -52,8 +52,7 @@ resp %<>%
 # Save clean response data as rds
 write_rds(
   resp,
-  here("data", "response-data",
-       paste0(cur_wave, cur_panel, "_response-data.rds")),
+  here("data", cur_survey, paste0(cur_survey, "_response-data.rds")),
   compress = "gz"
 )
 
@@ -67,7 +66,7 @@ winner <-
 
 write_csv(
   winner,
-  here("data", "prize-draw", paste0(cur_wave, cur_panel, "_prize-draw.csv"))
+  here("data", cur_survey, paste0(cur_survey, "_prize-draw.csv"))
 )
 
 
@@ -80,8 +79,7 @@ hm_changes <-
 
 write_rds(
   hm_changes,
-  here("data", "household-changes",
-       paste0(cur_wave, cur_panel, "_hm-changes.rds")),
+  here("data", cur_survey, paste0(cur_survey, "_hm-changes.rds")),
   compress = "gz"
 )
 
@@ -95,8 +93,7 @@ anon_resp <-
 
 write_rds(
   anon_resp,
-  here("data", "anon-data",
-       paste0(cur_wave, cur_panel, "_response-data-anon.rds")),
+  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.rds")),
   compress = "gz"
 )
 
@@ -104,7 +101,7 @@ write_rds(
 write_rds(
   anon_resp,
   paste0("//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data/",
-         cur_wave, cur_panel, "_response-data-anon.rds"),
+         cur_survey, "_response-data-anon.rds"),
   compress = "gz"
 )
 
@@ -125,15 +122,14 @@ temp_anon_resp <- anon_resp %>%
 
 write_csv(
   temp_anon_resp,
-  here("data", "anon-data",
-       paste0(cur_wave, cur_panel, "_response-data-anon.csv"))
+  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.csv"))
 )
 
 
 ### 5 - Get opt outs ----
 
 opt_outs <-
-  here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.xlsx")) %>%
+  here("data", cur_survey, paste0(cur_survey, "_opt-outs.xlsx")) %>%
   read.xlsx(sheet = 1) %>%
   select(email = `E-mail`) %>%
   left_join(cp_number_lookup, by = "email") %>%
@@ -143,13 +139,13 @@ opt_outs <-
 # Save list of cp number, age and gender only
 write_rds(
   opt_outs,
-  here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")),
+  here("data", cur_survey, paste0(cur_survey, "_opt-outs-anon.rds")),
   compress = "gz"
 )
 
 # Delete opt out file with identifiable data
 unlink(
-  here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.xlsx"))
+  here("data", cur_survey, paste0(cur_survey, "_opt-outs.xlsx"))
 )
 
 

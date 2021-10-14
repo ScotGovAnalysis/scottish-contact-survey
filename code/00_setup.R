@@ -38,6 +38,8 @@ library(usethis)
 
 ### 2 - Derive previous/next wave and panel ----
 
+cur_survey <- paste0(cur_wave, cur_panel)
+
 pre_wave <- case_when(
   cur_panel == "A" ~ cur_wave - 1,
   cur_panel == "B" ~ cur_wave
@@ -55,13 +57,9 @@ next_panel <- pre_panel
 
 ### 3 - Create data folders ----
 
-c("anon-data",
-  "household-changes",
-  "opt-outs",
-  "prize-draw",
-  "questback-invites",
-  "registration-data",
-  "response-data") %>%
+c(paste0(cur_wave, cur_panel),
+  paste0(next_wave, next_panel),
+  paste0(cur_wave + 1, cur_panel)) %>%
   walk(~ use_directory(paste0("data/", .)))
 
 

@@ -21,8 +21,7 @@ source(here::here("code", "00_setup.R"))
 ### 1 - Get data ----
 
 reg <-
-  here("data", "registration-data",
-       paste0(cur_wave, cur_panel, "_registration-data.rds")) %>%
+  here("data", cur_survey, paste0(cur_survey, "_registration-data.rds")) %>%
   read_rds()
 
 
@@ -32,7 +31,7 @@ reg <-
 
 reg %<>%
   recode_opt_outs(
-    here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")) %>%
+    here("data", cur_survey, paste0(cur_survey, "_opt-outs-anon.rds")) %>%
       read_rds() %>%
       pull(cp_number)
   )
@@ -48,8 +47,7 @@ reg_active <- reg %>%
 hm_changes <-
 
   # Get household changes from latest survey
-  here("data", "household-changes",
-       paste0(cur_wave, cur_panel, "_hm-changes.rds")) %>%
+  here("data", cur_survey, paste0(cur_survey, "_hm-changes.rds")) %>%
   read_rds() %>%
 
   # Get total number of household members with removals and
@@ -204,7 +202,7 @@ new_reg <-
 write_rds(
   new_reg,
   here("data", "registration-data",
-       paste0(cur_wave, cur_panel, "_registration-data.rds")),
+       paste0(cur_survey, "_registration-data.rds")),
   compress = "gz"
 )
 
@@ -219,8 +217,7 @@ anon_reg <-
 
 write_rds(
   anon_reg,
-  here("data", "anon-data",
-       paste0(cur_wave, cur_panel, "_registration-data-anon.rds")),
+  here("data", cur_survey, paste0(cur_survey, "_registration-data-anon.rds")),
   compress = "gz"
 )
 
@@ -228,7 +225,7 @@ write_rds(
 write_rds(
   anon_resp,
   paste0("//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data/",
-         cur_wave, cur_panel, "_registration-data-anon.rds"),
+         cur_survey, "_registration-data-anon.rds"),
   compress = "gz"
 )
 
@@ -261,8 +258,7 @@ temp_anon_reg <- anon_reg %>%
 
 write_csv(
   temp_anon_reg,
-  here("data", "anon-data",
-       paste0(cur_wave, cur_panel, "_registration-data-anon.csv"))
+  here("data", cur_survey, paste0(cur_survey, "_registration-data-anon.csv"))
 )
 
 

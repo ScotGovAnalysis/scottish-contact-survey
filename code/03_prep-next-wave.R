@@ -21,8 +21,7 @@ source(here::here("code", "00_setup.R"))
 ### 1 - Get registration data ----
 
 reg <-
-  here("data", "registration-data",
-       paste0(cur_wave, cur_panel, "_registration-data.rds")) %>%
+  here("data", cur_survey, paste0(cur_survey, "_registration-data.rds")) %>%
   read_rds()
 
 
@@ -37,7 +36,7 @@ reg <-
 #
 # # Get data for opt outs
 # opt_out_data <-
-#   here("data", "opt-outs", paste0(cur_wave, cur_panel, "_opt-outs.rds")) %>%
+#   here("data", cur_survey, paste0(cur_survey, "_opt-outs-anon.rds")) %>%
 #   read_rds() %>%
 #   count(age_group, gender) %>%
 #   rename(n_opt_outs = n)
@@ -93,7 +92,7 @@ temp_invites <-
 
 write_csv(
   temp_invites,
-  here("data", "questback-invites",
+  here("data", paste0(cur_wave + 1, cur_panel),
        paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
   na = ""
 )
