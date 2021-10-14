@@ -1,6 +1,6 @@
 #########################################################################
 # Name of file - 00_setup.R
-# Data release - Weekly CoMix Survey Analysis
+# Data release - Weekly Scottish Contact Survey Analysis
 # Original Authors - Alice Byers
 # Original Date - July 2021
 #
@@ -8,9 +8,9 @@
 # Written/run on - RStudio Desktop
 # Version of R - 3.6.3
 #
-# Description - Sets up environment required for running CoMix RAP.
-# This is the only file which should require updating every time the RAP
-# process is run.
+# Description - Sets up environment required for running Scottish Contact
+# Survey RAP. This is the only file which should require updating every
+# time the RAP process is run.
 #########################################################################
 
 ### 0 - Manual Variables - TO UPDATE ----

@@ -1,6 +1,6 @@
 #########################################################################
 # Name of file - 02_update-registration-data.R
-# Data release - Weekly CoMix Survey Analysis
+# Data release - Weekly Scottish Contact Survey Analysis
 # Original Authors - Alice Byers
 # Original Date - July 2021
 #

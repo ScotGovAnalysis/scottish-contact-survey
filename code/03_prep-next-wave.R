@@ -1,6 +1,6 @@
 #########################################################################
 # Name of file - 03_prep-next-wave.R
-# Data release - Weekly CoMix Survey Analysis
+# Data release - Weekly Scottish Contact Survey Analysis
 # Original Authors - Alice Byers
 # Original Date - August 2021
 #

@@ -1,6 +1,6 @@
 #########################################################################
-# Name of file - 01_clean-response-data.R
-# Data release - Weekly CoMix Survey Analysis
+# Name of file - 01_process-response-data.R
+# Data release - Weekly Scottish Contact Survey Analysis
 # Original Authors - Alice Byers
 # Original Date - July 2021
 #
