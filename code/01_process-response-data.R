@@ -25,7 +25,7 @@ resp <-
 
   # Read in raw response data
   here("data", cur_survey,
-       paste0(cur_survey, "_response-data-uncleaned.xlsx")) %>%
+       paste0(cur_survey, "_response-data.xlsx")) %>%
   read.xlsx(sheet = "Raw Data") %>%
 
   # Clean names
