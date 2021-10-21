@@ -21,7 +21,8 @@ source(here::here("code", "00_setup.R"))
 ### 1 - Get data ----
 
 reg <-
-  here("data", cur_survey, paste0(cur_survey, "_registration-data.rds")) %>%
+  here("data", "registration-data",
+       paste0(cur_survey, "_registration-data.rds")) %>%
   read_rds()
 
 
