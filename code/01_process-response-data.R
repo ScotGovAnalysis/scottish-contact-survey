@@ -29,7 +29,8 @@ resp <-
   read.xlsx(sheet = "Raw Data") %>%
 
   # Clean names
-  set_names(read_rds(here("lookups", "response-data-names.rds"))$new_names) %>%
+  set_names(read_rds(here("lookups", "response-data-names-temp.rds"))$new_names) %>%
+  select(-starts_with("temp")) %>%
 
   # Fix formatting
   mutate(date_completed = janitor::excel_numeric_to_date(date_completed)) %>%
