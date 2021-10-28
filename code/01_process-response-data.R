@@ -110,6 +110,9 @@ temp_anon_resp <- anon_resp %>%
                    "sheilding", "long_term_condition")),
          vaccination, n_vacc_doses, sheilding, long_term_condition) %>%
 
+  # Temp - remove 'confirm in scotland' column
+  select(-in_scotland) %>%
+
   # Temp - rename variables for controller script
   set_names(read_rds(here("lookups", "anon-response-names.rds"))$names)
 
