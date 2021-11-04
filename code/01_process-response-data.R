@@ -139,10 +139,5 @@ write_rds(
   compress = "gz"
 )
 
-# Delete opt out file with identifiable data
-unlink(
-  here("data", cur_survey, paste0(cur_survey, "_opt-outs.xlsx"))
-)
-
 
 ### END OF SCRIPT ###
