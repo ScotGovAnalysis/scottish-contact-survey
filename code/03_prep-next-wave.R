@@ -75,24 +75,11 @@ write_rds(
 invites <-
   reg %>%
   filter(status == "active" & panel == cur_panel) %>%
-  select(email, contains("_name"), employment_status, studying_location)
-
-
-### 5 - Save data for upload to Questback ---
-
-# Temp - reformat as required for controller script
-# Future work will incorporate controllor script into comix package
-# This section can be dropped once this is done.
-
-temp_invites <-
-  invites %>%
-  add_column(x1 = NA, x2 = NA, .after = "hm10_name") %>%
-  add_column(x3 = NA, x4 = NA, .after = "employment_status") %>%
-  inset(sprintf("x%d", 18:69), value = NA) %>%
-  set_colnames(read_rds(here("lookups", "questback-invite-names.rds"))$names)
+  select(email, contains("_name"), employment_status, studying_location,
+         vaccine_n_doses)
 
 write_csv(
-  temp_invites,
+  invites,
   here("data", paste0(cur_wave + 1, cur_panel),
        paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
   na = ""
