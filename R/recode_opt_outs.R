@@ -29,13 +29,13 @@ recode_opt_outs <- function(reg_data, cp){
     # Remove all registraion data; keep cp_number, status, panel ONLY
     dplyr::mutate_at(
       dplyr::vars(!c(.data$cp_number, .data$status, .data$panel,
-                     .data$date_of_birth, .data$n_household, .data$opt_out)),
+                     .data$date_of_birth, .data$n_household, .data$opt_out,
+                     .data$last_updated)),
       ~ dplyr::if_else(.data$opt_out == 1, NA_character_, .)) %>%
+    dplyr::mutate_at(
+      dplyr::vars(.data$date_of_birth, .data$last_updated),
+      ~  dplyr::if_else(.data$opt_out == 1, as.Date(NA), .)) %>%
     dplyr::mutate(
-      date_of_birth =
-        dplyr::if_else(.data$opt_out == 1,
-                       as.Date(NA),
-                       .data$date_of_birth),
       n_household =
         dplyr::if_else(.data$opt_out == 1,
                        NA_real_,
