@@ -237,7 +237,8 @@ write_rds(
 temp_anon_reg <- anon_reg %>%
 
   # Temp - add missing columns and reorder
-  select(-status, -panel, -local_authority_code) %>%
+  select(-status, -panel, -local_authority_code,
+         -contains("vaccine"), -last_updated) %>%
   add_column(hh_changes = NA, .after = "cp_number") %>%
   add_column(ethnicity2 = NA, .after = "ethnicity") %>%
   select(cp_number:n_household,
