@@ -11,7 +11,7 @@ anon_response_data <- function(data){
 
   exp_names <- c(paste0("new_hm", 1:4, "_name"),
                  paste0("c", 1:30),
-                 paste0("hm", 1:11, "_name"))
+                 paste0("hm", 1:10, "_name"))
 
   if(any(!exp_names %in% names(data))){
     stop(paste("Following variables missing from data:",
@@ -23,7 +23,7 @@ anon_response_data <- function(data){
     dplyr::mutate_at(
       dplyr::vars(c(tidyselect::matches("^new_hm[1-4]_name$"),
                     tidyselect::matches("^c([1-9]|1[0-9]|2[0-9]|30)$"),
-                    tidyselect::matches("^hm([1-9]|1[0-1])_name$"))),
+                    tidyselect::matches("^hm([1-9]|10)_name$"))),
       ~ as.character(.)
     ) %>%
 
@@ -89,9 +89,7 @@ anon_response_data <- function(data){
       hm8_name = dplyr::if_else(!is.na(.data$hm8_name), "HM8", .data$hm8_name),
       hm9_name = dplyr::if_else(!is.na(.data$hm9_name), "HM9", .data$hm9_name),
       hm10_name =
-        dplyr::if_else(!is.na(.data$hm10_name), "HM10", .data$hm10_name),
-      hm11_name =
-        dplyr::if_else(!is.na(.data$hm11_name), "HM11", .data$hm11_name)
+        dplyr::if_else(!is.na(.data$hm10_name), "HM10", .data$hm10_name)
     )
 
 }

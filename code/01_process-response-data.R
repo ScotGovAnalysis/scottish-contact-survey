@@ -29,7 +29,7 @@ resp <-
   read.xlsx(sheet = "Raw Data") %>%
 
   # Clean names
-  set_names(read_rds(here("lookups", "response-data-names-temp.rds"))$new_names) %>%
+  set_names(read_rds(here("lookups", "response-data-names-new.rds"))$new_names) %>%
   select(-starts_with("temp")) %>%
 
   # Fix formatting
@@ -104,14 +104,27 @@ write_rds(
 
 temp_anon_resp <- anon_resp %>%
 
+  # Temp - remove new vaccine columns
+  select(-vacc_1, -vacc_2, -vacc_3) %>%
+
   # Temp - move some columns to end for controller script
   select(setdiff(names(.),
-                 c("vaccination", "n_vacc_doses",
+                 c("old_vaccination", "old_n_vacc_doses",
                    "sheilding", "long_term_condition")),
-         vaccination, n_vacc_doses, sheilding, long_term_condition) %>%
+         old_vaccination, old_n_vacc_doses, sheilding, long_term_condition) %>%
 
   # Temp - remove 'confirm in scotland' column
-  select(-in_scotland) %>%
+  select(-in_scotland, -vaccine) %>%
+
+  # Temp - add empty columns
+  add_column(x1 = NA, x2 = NA, .after = 1700) %>%
+  add_column(x3 = NA, x4 = NA, .after = 1703) %>%
+  magrittr::inset(sprintf("test_%d", 1:52), value = NA) %>%
+
+  select(setdiff(names(.),
+                 c("old_vaccination", "old_n_vacc_doses",
+                   "sheilding", "long_term_condition")),
+         old_vaccination, old_n_vacc_doses, sheilding, long_term_condition) %>%
 
   # Temp - rename variables for controller script
   set_names(read_rds(here("lookups", "anon-response-names.rds"))$names)
