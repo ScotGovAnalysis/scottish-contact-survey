@@ -198,7 +198,28 @@ new_reg <-
                                 mutate_all(~ !is.na(.)), `+`) + 1)
 
 
-### 7 - Save updated registration data ----
+### 7 - Update vaccination data ----
+
+vacc_changes <-
+  here("data", cur_survey, paste0(cur_survey, "_vacc-changes.rds")) %>%
+  read_rds()
+
+new_reg %<>%
+  left_join(vacc_changes, by = "cp_number") %>%
+  mutate(
+    vaccine_type = case_when(
+      !is.na(vaccine_type_new) ~ vaccine_type_new,
+      TRUE ~ vaccine_type
+    ),
+    vaccine_n_doses = case_when(
+      !is.na(vaccine_n_doses_new) ~ vaccine_n_doses_new,
+      TRUE ~ vaccine_n_doses
+    )
+  ) %>%
+  select(-ends_with("_new"))
+
+
+### 8 - Save updated registration data ----
 
 write_rds(
   new_reg,
@@ -208,7 +229,7 @@ write_rds(
 )
 
 
-### 8 - Save anonymised registration data for current wave ----
+### 9 - Save anonymised registration data for current wave ----
 
 anon_reg <-
   new_reg %>%
