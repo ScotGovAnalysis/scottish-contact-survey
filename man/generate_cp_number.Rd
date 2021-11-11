@@ -4,7 +4,7 @@
 \alias{generate_cp_number}
 \title{Generate new CP numbers}
 \usage{
-generate_cp_number(active_cp, panel = c("A", "B", "C", "D"), n)
+generate_cp_number(active_cp, panel, n)
 }
 \arguments{
 \item{active_cp}{A character vector of existing CP numbers.}
