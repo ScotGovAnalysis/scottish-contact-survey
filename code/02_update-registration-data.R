@@ -191,11 +191,12 @@ new_reg <-
   select(-names(hm_added)[-1]) %>%
   left_join(hm_added, by = "cp_number") %>%
   select(names(reg)) %>%
-  bind_rows(reg %>% filter(!(status == "active" & panel == cur_panel))) %>%
 
   # Update household count
   mutate(n_household = reduce(select(., matches("^hm([1-9]|10)_name$")) %>%
-                                mutate_all(~ !is.na(.)), `+`) + 1)
+                                mutate_all(~ !is.na(.)), `+`) + 1) %>%
+
+  bind_rows(reg %>% filter(!(status == "active" & panel == cur_panel)))
 
 
 ### 7 - Update vaccination data ----
