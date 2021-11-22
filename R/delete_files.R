@@ -20,6 +20,16 @@ delete_files <- function(wave, panel){
 
     magrittr::extract(!stringr::str_detect(., "-anon"))
 
+  # Include registration file if exists
+  to_delete <- c(
+    to_delete,
+    list.files(
+      here::here("data", "registration-data"),
+      pattern = paste0(wave, panel),
+      full.names = TRUE
+    )
+  )
+
   # Error if no files found
   if(length(to_delete) == 0){
     stop("No files found.")
