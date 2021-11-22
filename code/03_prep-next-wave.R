@@ -74,10 +74,10 @@ write_rds(
 
 invites <-
   reg %>%
-  filter(status == "active" & str_sub(panel, 1, 1) == cur_panel) %>%
+  filter(status == "active" & panel == cur_panel) %>%
 
-  # Temp - add flag for old reserves - ask them to update data
-  mutate(to_update = ifelse(nchar(panel) == 2 & is.na(last_updated), 1, 0)) %>%
+  # Temp - add flag for reg data to be updated
+  mutate(to_update = ifelse(is.na(last_updated), 1, 0)) %>%
 
   select(email, contains("_name"), employment_status, studying_location,
          vaccine_n_doses, panel, to_update)
