@@ -136,7 +136,7 @@ write_rds(
 temp_anon_resp <- anon_resp %>%
 
   # Temp - remove new vaccine columns
-  select(-vacc_1, -vacc_2, -vacc_3) %>%
+  select(-vacc_1, -vacc_2, -vacc_3, -lateral_flow) %>%
 
   # Temp - move some columns to end for controller script
   select(setdiff(names(.),
