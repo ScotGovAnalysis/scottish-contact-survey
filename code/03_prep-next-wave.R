@@ -76,11 +76,11 @@ invites <-
   reg %>%
   filter(status == "active" & panel == cur_panel) %>%
 
-  # Temp - add flag for reg data to be updated
+  # Add flag for reg data to be updated
   mutate(to_update = ifelse(is.na(last_updated), 1, 0)) %>%
 
   select(email, contains("_name"), employment_status, studying_location,
-         vaccine_n_doses, panel, to_update)
+         vaccine_n_doses, to_update)
 
 write_csv(
   invites,
