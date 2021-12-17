@@ -34,7 +34,10 @@ resp <-
 
   # Fix formatting
   mutate(date_completed = janitor::excel_numeric_to_date(date_completed)) %>%
-  mutate_at(vars(matches("^new_hm[1-4]")), ~ as.character(.))
+  mutate_at(vars(matches("^new_hm[1-4]")), ~ as.character(.)) %>%
+
+  # Remove responses where consent not given
+  filter(!is.na(consent))
 
 
 # Add CP Number
