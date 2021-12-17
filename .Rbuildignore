@@ -3,4 +3,5 @@
 ^LICENSE\.md
 ^code$
 ^data$
+^data-raw$
 ^lookups$
