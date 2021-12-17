@@ -30,7 +30,6 @@ resp <-
 
   # Clean names
   set_names(read_rds(here("lookups", "response-data-names.rds"))$new_names) %>%
-  select(-starts_with("temp"), -panel, -to_update) %>%
 
   # Fix formatting
   mutate(date_completed = janitor::excel_numeric_to_date(date_completed)) %>%
