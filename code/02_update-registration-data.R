@@ -220,7 +220,25 @@ new_reg %<>%
   select(-ends_with("_new"))
 
 
-### 8 - Save updated registration data ----
+### 8 - Update registration data where refreshed in latest survey ----
+
+updates <- reg_data_updates(cur_wave, cur_panel)
+
+new_reg %<>%
+
+  # People without updated info
+  filter(!cp_number %in% updates$cp_number) %>%
+
+  # People with updated info
+  bind_rows(
+    new_reg %>%
+      filter(cp_number %in% updates$cp_number) %>%
+      select(-all_of(setdiff(names(updates), "cp_number"))) %>%
+      left_join(updates, by = "cp_number")
+  )
+
+
+### 9 - Save updated registration data ----
 
 write_rds(
   new_reg,
@@ -230,7 +248,7 @@ write_rds(
 )
 
 
-### 9 - Save anonymised registration data for current wave ----
+### 10 - Save anonymised registration data for current wave ----
 
 anon_reg <-
   new_reg %>%
