@@ -34,7 +34,7 @@ reg_data_updates <- function(wave, panel){
                      ~ stringr::str_remove(., "updated_")) %>%
 
     # Clean postcode
-    dplyr::mutate(postcode = scs::postcode(postcode)) %>%
+    dplyr::mutate(postcode = postcode(postcode)) %>%
 
     # Add Local Authority code
     dplyr::left_join(la, by = "local_authority") %>%
