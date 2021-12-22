@@ -80,7 +80,11 @@ invites <-
   mutate(to_update = ifelse(is.na(last_updated), 1, 0)) %>%
 
   select(email, contains("_name"), employment_status, studying_location,
-         vaccine_n_doses, to_update)
+         vaccine_n_doses, to_update) %>%
+
+  # Rename columns for Questback
+  set_names(c("email", paste0("HM", 1:10), "Employment status (raw)",
+              "Studying", "Vaccine", "to_update"))
 
 write_csv(
   invites,
