@@ -137,8 +137,9 @@ write_rds(
 
 temp_anon_resp <- anon_resp %>%
 
-  # Temp - remove new vaccine columns
-  select(-vacc_1, -vacc_2, -vacc_3, -lateral_flow) %>%
+  # Temp - remove some columns
+  select(-vacc_1, -vacc_2, -vacc_3, -lateral_flow,
+         -in_scotland, -vaccine, -to_update, -matches("^updated_")) %>%
 
   # Temp - move some columns to end for controller script
   select(setdiff(names(.),
@@ -146,14 +147,12 @@ temp_anon_resp <- anon_resp %>%
                    "sheilding", "long_term_condition")),
          old_vaccination, old_n_vacc_doses, sheilding, long_term_condition) %>%
 
-  # Temp - remove 'confirm in scotland' column
-  select(-in_scotland, -vaccine) %>%
-
   # Temp - add empty columns
-  add_column(x1 = NA, x2 = NA, .after = 1700) %>%
-  add_column(x3 = NA, x4 = NA, .after = 1703) %>%
+  add_column(hm11_name = NA, employment_1_0 = NA, .after = 1700) %>%
+  add_column(child1 = NA, child2 = NA, .after = 1703) %>%
   magrittr::inset(sprintf("test_%d", 1:52), value = NA) %>%
 
+  # Temp - move some columns to end for controller script
   select(setdiff(names(.),
                  c("old_vaccination", "old_n_vacc_doses",
                    "sheilding", "long_term_condition")),
