@@ -79,12 +79,13 @@ invites <-
   # Add flag for reg data to be updated
   mutate(to_update = ifelse(is.na(last_updated), 1, 0)) %>%
 
-  select(email, contains("_name"), employment_status, studying_location,
-         vaccine_n_doses, to_update) %>%
+  # Add flag for household members
+  mutate(household_members = if_else(n_household > 1, 1, 0)) %>%
 
-  # Rename columns for Questback
-  set_names(c("email", paste0("HM", 1:10), "Employment status (raw)",
-              "Studying", "Vaccine", "to_update"))
+  select(email, employment = employment_status,
+         education = studying_location,
+         vaccine = vaccine_n_doses, to_update,
+         contains("_name"), household_members)
 
 write_csv(
   invites,
