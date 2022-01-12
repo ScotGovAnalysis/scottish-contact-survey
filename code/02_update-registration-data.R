@@ -208,16 +208,12 @@ vacc_changes <-
 new_reg %<>%
   left_join(vacc_changes, by = "cp_number") %>%
   mutate(
-    vaccine_type = case_when(
-      !is.na(vaccine_type_new) ~ vaccine_type_new,
-      TRUE ~ vaccine_type
-    ),
     vaccine_n_doses = case_when(
       !is.na(vaccine_n_doses_new) ~ vaccine_n_doses_new,
       TRUE ~ vaccine_n_doses
     )
   ) %>%
-  select(-ends_with("_new"))
+  select(-vaccine_n_doses_new)
 
 
 ### 8 - Update registration data where refreshed in latest survey ----
@@ -250,9 +246,15 @@ write_rds(
 
 ### 10 - Save anonymised registration data for current wave ----
 
+# CP numbers for survey responses
+cp_responses <-
+  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.rds")) %>%
+  read_rds() %>%
+  pull(cp_number)
+
 anon_reg <-
   new_reg %>%
-  filter(status == "active" & panel == cur_panel) %>%
+  filter(cp_number %in% cp_responses) %>%
   select(-email) %>%
   anon_reg_data()
 
