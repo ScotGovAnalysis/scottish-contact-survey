@@ -91,17 +91,8 @@ vacc_changes <-
       . == "No" ~ "no doses",
       TRUE ~ NA_character_
     )) %>%
-  mutate(
-    vacc_3 = case_when(
-      str_detect(vacc_3, "^the \\w+ vaccine$") ~  word(vacc_3, 2),
-      str_detect(vacc_3, "combination") ~ "Combination",
-      str_detect(vacc_3, "not listed") ~ "Not listed",
-      str_detect(vacc_3, "unsure") ~ "Unsure",
-      TRUE ~ NA_character_
-    )
-  ) %>%
   mutate(vaccine_n_doses_new = ifelse(!is.na(vacc_1), vacc_1, vacc_2)) %>%
-  select(cp_number, vaccine_n_doses_new, vaccine_type_new = vacc_3)
+  select(cp_number, vaccine_n_doses_new)
 
 write_rds(
   vacc_changes,
