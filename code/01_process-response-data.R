@@ -129,7 +129,7 @@ write_rds(
 temp_anon_resp <- anon_resp %>%
 
   # Temp - remove some columns
-  select(-vacc_1, -vacc_2, -vacc_3, -lateral_flow,
+  select(-vacc_1, -vacc_2, -vacc_3, -lateral_flow, -test_positive,
          -in_scotland, -vaccine, -panel, -to_update, -matches("^updated_")) %>%
 
   # Temp - move some columns to end for controller script
