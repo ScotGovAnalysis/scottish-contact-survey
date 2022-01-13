@@ -82,9 +82,8 @@ invites <-
   # Add flag for household members
   mutate(household_members = if_else(n_household > 1, 1, 0)) %>%
 
-  select(email, employment = employment_status,
-         education = studying_location,
-         vaccine = vaccine_n_doses, to_update,
+  select(email, employment, studying,
+         vaccine_n_doses, to_update,
          contains("_name"), household_members)
 
 write_csv(
