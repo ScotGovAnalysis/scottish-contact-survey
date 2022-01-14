@@ -33,15 +33,31 @@ reg_data_updates <- function(wave, panel){
     dplyr::rename_at(dplyr::vars(-cp_number),
                      ~ stringr::str_remove(., "updated_")) %>%
 
+    # Clean employment / studying
+    dplyr::mutate(
+      employment = dplyr::case_when(
+        stringr::str_detect(employed, "^Employed") ~ employed,
+        TRUE ~ employment_status
+      ),
+      studying = dplyr::case_when(
+        !is.na(studying_location) ~ studying_location,
+        studying == "Yes" ~ "Prefer not to say",
+        TRUE ~ studying_location
+      )
+    ) %>%
+
     # Clean postcode
     dplyr::mutate(postcode = postcode(postcode)) %>%
 
     # Add Local Authority code
     dplyr::left_join(la, by = "local_authority") %>%
-    dplyr::select(cp_number, postcode, local_authority_code,
-                  local_authority, everything()) %>%
 
     # Add date of last update
-    dplyr::mutate(last_updated = date_updated)
+    dplyr::mutate(last_updated = date_updated) %>%
+
+    # Reorder columns
+    dplyr::select(-employment_status, -employed, -studying_location) %>%
+    dplyr::select(cp_number, postcode, local_authority_code,
+                  local_authority, employment, studying, everything()) -> x
 
 }
