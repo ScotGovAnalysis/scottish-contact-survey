@@ -32,7 +32,8 @@ resp <-
   set_names(read_rds(here("lookups", "response-data-names.rds"))$new_names) %>%
 
   # Fix formatting
-  mutate(date_completed = janitor::excel_numeric_to_date(date_completed)) %>%
+  mutate(date_completed = excel_numeric_to_date(date_completed,
+                                                include_time = TRUE)) %>%
   mutate_at(vars(matches("^new_hm[1-4]")), ~ as.character(.)) %>%
 
   # Remove responses where consent not given or not in scotland
