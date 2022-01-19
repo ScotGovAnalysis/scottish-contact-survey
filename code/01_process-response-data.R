@@ -130,25 +130,20 @@ write_rds(
 temp_anon_resp <- anon_resp %>%
 
   # Temp - remove some columns
-  select(-vacc_1, -vacc_2, -vacc_3, -lateral_flow, -test_positive,
-         -in_scotland, -vaccine, -panel, -to_update, -matches("^updated_")) %>%
+  select(-in_scotland, -matches("^updated_"), -c(vacc_1:hm14_test_positive),
+          -vaccine, -to_update, -household_members) %>%
 
-  # Temp - move some columns to end for controller script
-  select(setdiff(names(.),
-                 c("old_vaccination", "old_n_vacc_doses",
-                   "sheilding", "long_term_condition")),
-         old_vaccination, old_n_vacc_doses, sheilding, long_term_condition) %>%
-
-  # Temp - add empty columns
+  # Temp - add empty columns and rearrange
+  add_column(hm11_change = NA, .after = 16) %>%
+  magrittr::inset(sprintf("temp_%d", 1:245), value = NA) %>%
+  magrittr::extract(, c(1:39, 1430:1674, 40:1429)) %>%
+  add_column(hm15_contact = NA, .after = 332) %>%
+  magrittr::inset(sprintf("temp_%d", 246:(246+26)), value = NA) %>%
+  magrittr::extract(, c(1:741, 1676:1702, 742:1675)) %>%
+  magrittr::extract(, c(1:1690, 1693:1702, 1691:1692)) %>%
   add_column(hm11_name = NA, employment_1_0 = NA, .after = 1700) %>%
-  add_column(child1 = NA, child2 = NA, .after = 1703) %>%
-  magrittr::inset(sprintf("test_%d", 1:52), value = NA) %>%
-
-  # Temp - move some columns to end for controller script
-  select(setdiff(names(.),
-                 c("old_vaccination", "old_n_vacc_doses",
-                   "sheilding", "long_term_condition")),
-         old_vaccination, old_n_vacc_doses, sheilding, long_term_condition) %>%
+  add_column(children_1 = NA, children_2 = NA, .after = 1703) %>%
+  magrittr::inset(sprintf("end_%d", 1:56), value = NA) %>%
 
   # Temp - rename variables for controller script
   set_names(read_rds(here("lookups", "anon-response-names.rds"))$names)
