@@ -73,10 +73,10 @@ remove <-
   # Get changes for households with members removed
   hm_changes %>%
   filter(hm_remove == 1 & n_removed > 0) %>%
-  select(cp_number, hm1_change:hm11_change) %>%
+  select(cp_number, hm1_change:hm10_change) %>%
 
   # Restrucutre to long format
-  pivot_longer(cols = hm1_change:hm11_change,
+  pivot_longer(cols = hm1_change:hm10_change,
                names_to = "hm",
                values_to = "change") %>%
   mutate(hm = str_remove(hm, "_change"))
@@ -281,8 +281,12 @@ temp_anon_reg <- anon_reg %>%
   # Temp - add missing columns and reorder
   select(-status, -panel, -local_authority_code,
          -contains("vaccine"), -last_updated) %>%
+  add_column(high_risk = NA, medium_risk = NA, .after = "other_ethnicity") %>%
   add_column(hh_changes = NA, .after = "cp_number") %>%
   add_column(ethnicity2 = NA, .after = "ethnicity") %>%
+  add_column(studying_yn = NA, .after = "employment") %>%
+  add_column(also_employed = NA, furloughed = NA, .after = "studying") %>%
+
   select(cp_number:n_household,
          matches("hm\\d{1,2}_name"), everything()) %>%
   add_column(
@@ -293,7 +297,7 @@ temp_anon_reg <- anon_reg %>%
     .after = "hm10_name"
   ) %>%
   select(cp_number:`12.12`,
-         employment_status:total_household_income,
+         employment:total_household_income,
          everything()) %>%
   mutate(date_of_birth = age(date_of_birth, cur_wave, cur_panel)) %>%
 
