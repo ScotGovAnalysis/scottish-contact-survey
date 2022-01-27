@@ -131,7 +131,8 @@ temp_anon_resp <- anon_resp %>%
 
   # Temp - remove some columns
   select(-in_scotland, -matches("^updated_"), -c(vacc_1:hm14_test_positive),
-          -vaccine, -to_update, -household_members) %>%
+          -vaccine, -to_update, -household_members,
+         -had_covid, -time_since_covid) %>%
 
   # Temp - add empty columns and rearrange
   add_column(hm11_change = NA, .after = 16) %>%
