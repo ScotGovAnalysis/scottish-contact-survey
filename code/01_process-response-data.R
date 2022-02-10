@@ -21,21 +21,20 @@ source(here::here("code", "00_setup.R"))
 
 ### 1 - Clean response data file ----
 
+resp_names <- read_rds(here("lookups", "response-data-names.rds"))
+
 resp <-
 
   # Read in raw response data
   here("data", cur_survey,
-       paste0(cur_survey, "_response-data.xlsx")) %>%
-  read.xlsx(sheet = "Raw Data") %>%
+       paste0(cur_survey, "_response-data.csv")) %>%
+  read_csv(col_types = paste(resp_names$type, collapse = "")) %>%
 
   # Clean names
-  set_names(read_rds(here("lookups", "response-data-names.rds"))$new_names) %>%
+  set_names(resp_names$new_names) %>%
 
-  # Fix formatting
-  mutate(date_completed = excel_numeric_to_date(date_completed,
-                                                include_time = TRUE)) %>%
-  mutate_at(vars(matches("^new_hm[1-4]"), matches("^updated_")),
-            ~ as.character(.)) %>%
+  # Format date
+  mutate(date_completed = dmy_hms(date_completed)) %>%
 
   # Remove responses where consent not given or not in scotland
   filter(!is.na(consent) & in_scotland == "Yes")
@@ -132,8 +131,8 @@ temp_anon_resp <- anon_resp %>%
 
   # Temp - remove some columns
   select(-in_scotland, -matches("^updated_"), -c(vacc_1:hm14_test_positive),
-          -vaccine, -to_update, -household_members,
-         -had_covid, -time_since_covid) %>%
+         -vaccine, -to_update, -household_members,
+         -matches("^covid_(un)?confirmed"), -time_since_covid_unconfirmed) %>%
 
   # Temp - add empty columns and rearrange
   add_column(hm11_change = NA, .after = 16) %>%
