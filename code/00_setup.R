@@ -15,7 +15,7 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-cur_wave  <- 39
+cur_wave  <- 40
 cur_panel <- "A"
 
 
