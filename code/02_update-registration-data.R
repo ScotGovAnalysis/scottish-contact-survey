@@ -281,6 +281,7 @@ temp_anon_reg <- anon_reg %>%
   # Temp - add missing columns and reorder
   select(-status, -panel, -local_authority_code,
          -contains("vaccine"), -last_updated) %>%
+  add_column(occupation_3 = NA, .after = "occupation_2") %>%
   add_column(high_risk = NA, medium_risk = NA, .after = "other_ethnicity") %>%
   add_column(hh_changes = NA, .after = "cp_number") %>%
   add_column(ethnicity2 = NA, .after = "ethnicity") %>%
