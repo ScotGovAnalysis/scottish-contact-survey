@@ -3,14 +3,14 @@
 .RData
 .Ruserdata
 
-# 'data' folder #
+# data folder #
 data/
 
 # dev folder #
 code/dev/
 
-# Internal readme #
-readme.docx
+# guidance folder #
+guidance/
 
 # Common text files that may contain data #
 *.[cC][sS][vV]
