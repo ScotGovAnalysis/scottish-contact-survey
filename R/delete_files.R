@@ -54,6 +54,6 @@ delete_files <- function(wave, panel){
 
   # Delete files
   unlink(to_delete)
-  print("Success: Files have been deleted.")
+  message("Success: Files have been deleted.")
 
 }
