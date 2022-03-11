@@ -201,12 +201,8 @@ new_reg <-
 
 ### 7 - Update vaccination data ----
 
-vacc_changes <-
-  here("data", cur_survey, paste0(cur_survey, "_vacc-changes.rds")) %>%
-  read_rds()
-
 new_reg %<>%
-  left_join(vacc_changes, by = "cp_number") %>%
+  left_join(vaccine_changes(cur_wave, cur_panel), by = "cp_number") %>%
   mutate(
     vaccine_n_doses = case_when(
       !is.na(vaccine_n_doses_new) ~ vaccine_n_doses_new,

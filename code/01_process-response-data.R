@@ -66,7 +66,7 @@ write_csv(
 )
 
 
-### 3 - Get household and vaccine changes ----
+### 3 - Get household changes ----
 
 hm_changes <-
   resp %>%
@@ -76,28 +76,6 @@ hm_changes <-
 write_rds(
   hm_changes,
   here("data", cur_survey, paste0(cur_survey, "_hm-changes.rds")),
-  compress = "gz"
-)
-
-vacc_changes <-
-  resp %>%
-  filter(!is.na(vacc_1) |
-           (!is.na(vacc_2) & vacc_2 != "Yes, this is still correct.")) %>%
-  mutate_at(
-    vars(c(vacc_1, vacc_2)),
-    ~ case_when(
-      str_detect(., "booster") ~ "three doses",
-      str_detect(., "two doses") ~ "two doses",
-      str_detect(., "one dose") ~ "one dose",
-      . == "No" ~ "no doses",
-      TRUE ~ NA_character_
-    )) %>%
-  mutate(vaccine_n_doses_new = ifelse(!is.na(vacc_1), vacc_1, vacc_2)) %>%
-  select(cp_number, vaccine_n_doses_new)
-
-write_rds(
-  vacc_changes,
-  here("data", cur_survey, paste0(cur_survey, "_vacc-changes.rds")),
   compress = "gz"
 )
 
