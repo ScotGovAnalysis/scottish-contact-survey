@@ -7,8 +7,9 @@
 #' are capitalised.
 #'
 #' This function is based on the function of the same name from
-#' Public Health Scotland's \href{https://github.com/Public-Health-Scotland/
-#' phsmethods}{\code{phsmethods}} package.
+#' Public Health Scotland's
+#' \href{https://github.com/Public-Health-Scotland/phsmethods}{\code{phsmethods}}
+#' package.
 #'
 #' @details The standard UK postcode format (without spaces) is:
 #'
@@ -20,9 +21,7 @@
 #' \item 2 letters
 #' }
 #'
-#' \href{https://assets.publishing.service.gov.uk/government/uploads/system/
-#' uploads/attachment_data/file/283357/ILRSpecification2013_14Appendix_C_
-#' Dec2012_v1.pdf}{UK government regulations}
+#' \href{https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/283357/ILRSpecification2013_14Appendix_C_Dec2012_v1.pdf}{UK government regulations}
 #' mandate which letters and numbers can be used in specific sections of a
 #' postcode. However, these regulations are liable to change over time. For
 #' this reason, \code{postcode} does not validate whether a given postcode
@@ -58,14 +57,6 @@
 #' Any input values which do adhere to the standard UK postcode format but
 #' contain lower case letters will generate a warning message explaining that
 #' these letters will be capitalised.
-#'
-#' @examples
-#' postcode("G26QE")
-#' postcode(c("KA89NB", "PA152TY"), format = "pc8")
-#'
-#' library(dplyr)
-#' df <- tibble(pc = c("G429BA", "G207AL", "DD37JY", "DG98BS"))
-#' df %>% mutate(pc = postcode(pc))
 
 postcode <- function(x, format = c("pc7", "pc8")) {
 

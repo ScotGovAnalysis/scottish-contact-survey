@@ -45,8 +45,9 @@ of spacing to them (for both pc7 and pc8 formats) and ensures all letters
 are capitalised.
 
 This function is based on the function of the same name from
-Public Health Scotland's \href{https://github.com/Public-Health-Scotland/
-phsmethods}{\code{phsmethods}} package.
+Public Health Scotland's
+\href{https://github.com/Public-Health-Scotland/phsmethods}{\code{phsmethods}}
+package.
 }
 \details{
 The standard UK postcode format (without spaces) is:
@@ -59,9 +60,7 @@ The standard UK postcode format (without spaces) is:
 \item 2 letters
 }
 
-\href{https://assets.publishing.service.gov.uk/government/uploads/system/
-uploads/attachment_data/file/283357/ILRSpecification2013_14Appendix_C_
-Dec2012_v1.pdf}{UK government regulations}
+\href{https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/283357/ILRSpecification2013_14Appendix_C_Dec2012_v1.pdf}{UK government regulations}
 mandate which letters and numbers can be used in specific sections of a
 postcode. However, these regulations are liable to change over time. For
 this reason, \code{postcode} does not validate whether a given postcode
@@ -69,12 +68,4 @@ actually exists, or whether specific numbers and letters are being used in
 the appropriate places. It only assesses whether the given input is
 consistent with the above format and, if so, assigns the appropriate amount
 of spacing and capitalises any lower case letters.
-}
-\examples{
-postcode("G26QE")
-postcode(c("KA89NB", "PA152TY"), format = "pc8")
-
-library(dplyr)
-df <- tibble(pc = c("G429BA", "G207AL", "DD37JY", "DG98BS"))
-df \%>\% mutate(pc = postcode(pc))
 }
