@@ -70,28 +70,15 @@ write_rds(
 )
 
 
-### 4 - Get data required for next wave QB invites ----
+### 4 - Get invite data for next wave of survey ----
 
 invites <-
-  reg %>%
-  filter(status == "active" & panel == cur_panel) %>%
-
-  # Add flag for reg data to be updated
-  mutate(to_update = ifelse(is.na(last_updated), 1, 0)) %>%
-
-  # Add flag for household members
-  mutate(household_members = if_else(n_household > 1, 1, 0)) %>%
-
-  select(email, employment, studying,
-         vaccine_n_doses, to_update,
-         contains("_name"), household_members)
-
-write_csv(
-  invites,
-  here("data", paste0(cur_wave + 1, cur_panel),
-       paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
-  na = ""
-)
+  survey_invites(reg) %T>%
+  write_csv(
+    here("data", paste0(cur_wave + 1, cur_panel),
+         paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
+    na = ""
+  )
 
 
 ### 5 - Delete non-anonymised data files ----
