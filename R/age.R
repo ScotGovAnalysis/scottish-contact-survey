@@ -39,15 +39,15 @@ age_group <- function(age){
 
 #' @title Calculate age at time of survey
 #'
-#' @description `age` returns a persons age (or age group if `grouped = TRUE`)
-#' as at the beginning of a survey given their date of birth,
-#' survey wave number and panel.
+#' @description \code{age} returns a persons age (or age group if
+#' \code{grouped = TRUE}) as at the beginning of a survey given their
+#' date of birth, survey wave number and panel.
 #'
 #' @param date_of_birth Date of birth in date format
 #' @param wave Wave number
 #' @param panel Panel number
-#' @param grouped If `TRUE`, will return age group. Default value of `FALSE`
-#' will return age.
+#' @param grouped If \code{TRUE}, will return age group. Default value of
+#' \code{FALSE} will return age.
 #'
 #' @return A numeric value corresponding to a persons age as at the
 #' beginning of the survey.

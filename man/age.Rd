@@ -13,17 +13,17 @@ age(date_of_birth, wave, panel = c("A", "B"), grouped = FALSE)
 
 \item{panel}{Panel number}
 
-\item{grouped}{If `TRUE`, will return age group. Default value of `FALSE`
-will return age.}
+\item{grouped}{If \code{TRUE}, will return age group. Default value of
+\code{FALSE} will return age.}
 }
 \value{
 A numeric value corresponding to a persons age as at the
 beginning of the survey.
 }
 \description{
-`age` returns a persons age (or age group if `grouped = TRUE`)
-as at the beginning of a survey given their date of birth,
-survey wave number and panel.
+\code{age} returns a persons age (or age group if
+\code{grouped = TRUE}) as at the beginning of a survey given their
+date of birth, survey wave number and panel.
 }
 \examples{
 # Age of someone with DOB 25/12/1980 during survey 25A
