@@ -68,16 +68,19 @@ write_csv(
 
 ### 3 - Get household changes ----
 
-hm_changes <-
-  resp %>%
-  filter(str_starts(hm_changes, "No")) %>%
-  select(cp_number, hm_remove:new_hm4_student)
+hm_removed <-
+  household_changes(resp, "remove") %T>%
+  write_rds(
+    here("data", cur_survey, paste0(cur_survey, "_hm-removed.rds")),
+    compress = "gz"
+  )
 
-write_rds(
-  hm_changes,
-  here("data", cur_survey, paste0(cur_survey, "_hm-changes.rds")),
-  compress = "gz"
-)
+hm_added <-
+  household_changes(resp, "add") %T>%
+  write_rds(
+    here("data", cur_survey, paste0(cur_survey, "_hm-added.rds")),
+    compress = "gz"
+  )
 
 
 ### 4 - Anonymise response data ----
