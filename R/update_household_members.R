@@ -27,7 +27,7 @@ update_household_members <- function(reg_data,
   # Restructure household data to long format
   reg_updated <- reg_active %>%
     dplyr::select(cp_number, tidyselect::matches("hm\\d{1,2}_")) %>%
-    tidyr::pivot_longer(cols = matches("^hm\\d{1,2}_"),
+    tidyr::pivot_longer(cols = tidyselect::matches("^hm\\d{1,2}_"),
                         names_to = c("hm", ".value"),
                         names_sep = "_",
                         values_drop_na = TRUE)
@@ -36,7 +36,7 @@ update_household_members <- function(reg_data,
 
   if(!is.null(to_remove)) {
     reg_updated %<>%
-      dplyr::left_join(remove %>% dplyr::mutate(remove = 1),
+      dplyr::left_join(to_remove %>% dplyr::mutate(remove = 1),
                        by = c("cp_number", "hm" = "hm_remove")) %>%
       dplyr::filter(is.na(remove)) %>%
       dplyr::select(-remove)
