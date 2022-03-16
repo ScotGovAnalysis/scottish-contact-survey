@@ -1,0 +1,102 @@
+#' @title Reformat anonymised response data
+#'
+#' @param anon_resp_data Data frame of anonymised response data.
+#' @param names Column names for reformatted data.
+#'
+#' @return Reformatted data frame of anonymised response data.
+#'
+#' @export
+
+reformat_anon_resp <- function(anon_resp_data, names) {
+
+  if(!inherits(names, "character")){
+    stop("Names must be in character format.")
+  }
+
+  anon_resp_data %>%
+
+    # Remove some columns
+    dplyr::select(
+      -.data$in_scotland, -tidyselect::matches("^updated_"),
+      -c(.data$vacc_1:.data$hm14_test_positive), -.data$lateral_flow_stock,
+      -tidyselect::matches("^visit_healthcare_"), -.data$vaccine,
+      -.data$to_update, -.data$household_members,
+      -tidyselect::matches("^covid_(un)?confirmed"),
+      -.data$time_since_covid_unconfirmed
+    ) %>%
+
+    # Add empty columns and rearrange
+    tibble::add_column(hm11_change = NA, .after = 16) %>%
+    magrittr::inset(sprintf("temp_%d", 1:245), value = NA) %>%
+    magrittr::extract(, c(1:39, 1430:1674, 40:1429)) %>%
+    tibble::add_column(hm15_contact = NA, .after = 332) %>%
+    magrittr::inset(sprintf("temp_%d", 246:(246+26)), value = NA) %>%
+    magrittr::extract(, c(1:741, 1676:1702, 742:1675)) %>%
+    magrittr::extract(, c(1:1690, 1693:1702, 1691:1692)) %>%
+    tibble::add_column(hm11_name = NA, employment_1_0 = NA, .after = 1700) %>%
+    tibble::add_column(children_1 = NA, children_2 = NA, .after = 1703) %>%
+    magrittr::inset(sprintf("end_%d", 1:56), value = NA) %>%
+
+    # Rename variables for controller script
+    magrittr::set_names(names)
+
+}
+
+
+#' @title Reformat anonymised registration data
+#'
+#' @param anon_reg_data Data frame of anonymised registration data.
+#' @param names Column names for reformatted data.
+#' @param wave Survey wave.
+#' @param panel Survey panel.
+#'
+#' @return Reformatted data frame of anonymised registration data.
+#'
+#' @export
+
+reformat_anon_reg <- function(anon_reg_data, names, wave, panel) {
+
+  if(!inherits(names, "character")){
+    stop("Names must be in character format.")
+  }
+
+  if(!inherits(wave, "numeric")){
+    stop("The wave number must be in numeric format.")
+  }
+
+  if(any(!panel %in% c("A", "B"))){
+    stop("Panel must be A or B.")
+  }
+
+  anon_reg_data %>%
+
+    # Add missing columns and reorder
+    dplyr::select(-.data$status, -.data$panel, -.data$local_authority_code,
+                  -tidyselect::contains("vaccine"), -.data$last_updated) %>%
+    tibble::add_column(occupation_3 = NA, .after = "occupation_2") %>%
+    tibble::add_column(high_risk = NA, medium_risk = NA,
+                       .after = "other_ethnicity") %>%
+    tibble::add_column(hh_changes = NA, .after = "cp_number") %>%
+    tibble::add_column(ethnicity2 = NA, .after = "ethnicity") %>%
+    tibble::add_column(studying_yn = NA, .after = "employment") %>%
+    tibble::add_column(also_employed = NA, furloughed = NA, .after = "studying") %>%
+
+    dplyr::select(.data$cp_number:.data$n_household,
+                  tidyselect::matches("hm\\d{1,2}_name"),
+                  tidyselect::everything()) %>%
+    tibble::add_column(
+      `12.1` = NA, `12.2` = NA, `12.3` = NA,
+      `12.4` = NA, `12.5` = NA, `12.6` = NA,
+      `12.7` = NA, `12.8` = NA, `12.9` = NA,
+      `12.10` = NA, `12.11` = NA, `12.12` = NA,
+      .after = "hm10_name"
+    ) %>%
+    dplyr::select(.data$cp_number:.data$`12.12`,
+           .data$employment:.data$total_household_income,
+           tidyselect::everything()) %>%
+    dplyr::mutate(date_of_birth = age(.data$date_of_birth, wave, panel)) %>%
+
+    # Rename variables
+    magrittr::set_names(names)
+
+}

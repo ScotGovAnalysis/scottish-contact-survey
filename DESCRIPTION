@@ -26,4 +26,5 @@ Imports:
     stringr,
     glue,
     here,
-    purrr
+    purrr,
+    tibble
