@@ -42,35 +42,36 @@ household_changes <- function(resp_data, change_type = c("add", "remove")){
     ) %>%
 
     # Keep required variables only
-    dplyr::select(cp_number, all_of(col_names))
+    dplyr::select(.data$cp_number, tidyselect::all_of(col_names))
 
   # Remove rows where no actual changes made
 
   if(change_type == "add") {
 
     changes %>%
-      dplyr::filter_at(dplyr::vars(matches("^new_hm\\d{1}_name$")),
+      dplyr::filter_at(dplyr::vars(tidyselect::matches("^new_hm\\d{1}_name$")),
                        dplyr::any_vars(!is.na(.))) %>%
 
-      dplyr::mutate(new_hm = reduce(
+      dplyr::mutate(new_hm = purrr::reduce(
         dplyr::select(., tidyselect::matches("^new_hm[1-4]_name")) %>%
           dplyr::mutate_all(~ !is.na(.)), `+`))
 
     changes %>%
-      dplyr::rename_at(vars(!cp_number), ~ str_remove(., "new_")) %>%
-      tidyr::pivot_longer(cols = !cp_number,
+      dplyr::rename_at(dplyr::vars(!.data$cp_number),
+                       ~ stringr::str_remove(., "new_")) %>%
+      tidyr::pivot_longer(cols = !.data$cp_number,
                           names_to = c("hm_add", ".value"),
                           names_sep = "_") %>%
-      filter(!is.na(name))
+      dplyr::filter(!is.na(.data$name))
 
   } else if(change_type == "remove") {
 
     changes %>%
-      tidyr::pivot_longer(cols = !cp_number,
+      tidyr::pivot_longer(cols = !.data$cp_number,
                           names_to = c("hm_remove", ".value"),
                           names_sep = "_") %>%
-      dplyr::filter(change == 0 & !is.na(name)) %>%
-      dplyr::select(cp_number, hm_remove)
+      dplyr::filter(.data$change == 0 & !is.na(.data$name)) %>%
+      dplyr::select(.data$cp_number, .data$hm_remove)
 
   }
 

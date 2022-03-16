@@ -20,7 +20,3 @@ Get updates to vaccine status from
 anonymised response data for given \code{wave} and \code{panel} of
 Scottish Contact Survey (SCS).
 }
-\examples{
-vaccine_changes(36, "A")
-
-}

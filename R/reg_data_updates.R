@@ -11,8 +11,6 @@
 #' @return Data frame of updated registration data from responses for given
 #' \code{wave} and \code{panel}.
 #'
-#' @examples reg_data_updates(36, "A")
-#'
 #' @export
 
 reg_data_updates <- function(wave, panel){
@@ -26,28 +24,28 @@ reg_data_updates <- function(wave, panel){
     readr::read_rds() %>%
 
     # Select responses with updated data
-    dplyr::filter(to_update == 1) %>%
+    dplyr::filter(.data$to_update == 1) %>%
 
     # Get columns with refreshed reg data
-    dplyr::select(cp_number, tidyselect::matches("^updated_")) %>%
-    dplyr::rename_at(dplyr::vars(-cp_number),
+    dplyr::select(.data$cp_number, tidyselect::matches("^updated_")) %>%
+    dplyr::rename_at(dplyr::vars(-.data$cp_number),
                      ~ stringr::str_remove(., "updated_")) %>%
 
     # Clean employment / studying
     dplyr::mutate(
       employment = dplyr::case_when(
-        stringr::str_detect(employed, "^Employed") ~ employed,
-        TRUE ~ employment_status
+        stringr::str_detect(.data$employed, "^Employed") ~ .data$employed,
+        TRUE ~ .data$employment_status
       ),
       studying = dplyr::case_when(
-        !is.na(studying_location) ~ studying_location,
-        studying == "Yes" ~ "Prefer not to say",
-        TRUE ~ studying_location
+        !is.na(.data$studying_location) ~ .data$studying_location,
+        .datastudying == "Yes" ~ "Prefer not to say",
+        TRUE ~ .data$studying_location
       )
     ) %>%
 
     # Clean postcode
-    dplyr::mutate(postcode = postcode(postcode)) %>%
+    dplyr::mutate(postcode = postcode(.data$postcode)) %>%
 
     # Add Local Authority code
     dplyr::left_join(la, by = "local_authority") %>%
@@ -56,8 +54,10 @@ reg_data_updates <- function(wave, panel){
     dplyr::mutate(last_updated = date_updated) %>%
 
     # Reorder columns
-    dplyr::select(-employment_status, -employed, -studying_location) %>%
-    dplyr::select(cp_number, postcode, local_authority_code,
-                  local_authority, employment, studying, everything()) -> x
+    dplyr::select(-.data$employment_status, -.data$employed,
+                  -.data$studying_location) %>%
+    dplyr::select(.data$cp_number, .data$postcode, .data$local_authority_code,
+                  .data$local_authority, .data$employment, .data$studying,
+                  tidyselect::everything())
 
 }

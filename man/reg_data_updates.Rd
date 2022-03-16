@@ -21,7 +21,3 @@ employment/education status, occupation and household income from
 anonymised response data for given \code{wave} and \code{panel} of
 Scottish Contact Survey (SCS).
 }
-\examples{
-reg_data_updates(36, "A")
-
-}

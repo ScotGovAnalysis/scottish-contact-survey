@@ -10,8 +10,6 @@
 #' @return Data frame of vaccine status changes from responses for given
 #' \code{wave} and \code{panel}.
 #'
-#' @examples vaccine_changes(36, "A")
-#'
 #' @export
 
 vaccine_changes <- function(wave, panel){
@@ -45,12 +43,14 @@ vaccine_changes <- function(wave, panel){
 
     # Select rows where vaccine status has changed
     dplyr::filter(
-      !is.na(vacc_1) |
-        (!is.na(vacc_2) & vacc_2 != "Yes, this is still correct.")) %>%
+      !is.na(.data$vacc_1) |
+        (!is.na(.data$vacc_2) &
+           .data$vacc_2 != "Yes, this is still correct.")
+    ) %>%
 
     # Recode responses
     dplyr::mutate_at(
-      dplyr::vars(c(vacc_1, vacc_2)),
+      dplyr::vars(c(.data$vacc_1, .data$vacc_2)),
       ~ dplyr::case_when(
         stringr::str_detect(., "booster") ~ "three doses",
         stringr::str_detect(., "two doses") ~ "two doses",
@@ -60,8 +60,10 @@ vaccine_changes <- function(wave, panel){
       )) %>%
 
     # Combine vaccine status changes into one column
-    dplyr::mutate(vaccine_n_doses_new =
-                    ifelse(!is.na(vacc_1), vacc_1, vacc_2)) %>%
-    dplyr::select(cp_number, vaccine_n_doses_new)
+    dplyr::mutate(
+      vaccine_n_doses_new =
+        ifelse(!is.na(.data$vacc_1), .data$vacc_1, .data$vacc_2)
+    ) %>%
+    dplyr::select(.data$cp_number, .data$vaccine_n_doses_new)
 
 }

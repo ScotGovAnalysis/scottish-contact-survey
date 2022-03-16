@@ -81,17 +81,20 @@ replace_opt_outs <- function(reserve_data, opt_out_data){
     opt_out_data %>%
     dplyr::left_join(
       match_age_only %>%
-        dplyr::count(age_group, gender) %>%
+        dplyr::count(.data$age_group, .data$gender) %>%
         dplyr::mutate(gender = dplyr::case_when(
-          gender == "Female" ~ "Male",
-          gender == "Male" ~ "Female"
+          .data$gender == "Female" ~ "Male",
+          .data$gender == "Male" ~ "Female"
         )),
       by = c("age_group", "gender")
     ) %>%
     tidyr::replace_na(list(n = 0)) %>%
-    dplyr::rename(age_gender_match = n_replaced,
-                  age_only_match   = n) %>%
-    dplyr::mutate(unmatched = n_opt_outs - age_gender_match - age_only_match)
+    dplyr::rename(age_gender_match = .data$n_replaced,
+                  age_only_match   = .data$n) %>%
+    dplyr::mutate(
+      unmatched =
+        .data$n_opt_outs - .data$age_gender_match - .data$age_only_match
+    )
 
   message(
     "Summary of opt outs and replacements: \n",

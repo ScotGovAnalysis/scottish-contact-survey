@@ -22,11 +22,11 @@ update_household_members <- function(reg_data,
   }
 
   # Select active panel members only
-  reg_active <- reg_data %>% dplyr::filter(status == "active")
+  reg_active <- reg_data %>% dplyr::filter(.data$status == "active")
 
   # Restructure household data to long format
   reg_updated <- reg_active %>%
-    dplyr::select(cp_number, tidyselect::matches("hm\\d{1,2}_")) %>%
+    dplyr::select(.data$cp_number, tidyselect::matches("hm\\d{1,2}_")) %>%
     tidyr::pivot_longer(cols = tidyselect::matches("^hm\\d{1,2}_"),
                         names_to = c("hm", ".value"),
                         names_sep = "_",
@@ -38,38 +38,38 @@ update_household_members <- function(reg_data,
     reg_updated %<>%
       dplyr::left_join(to_remove %>% dplyr::mutate(remove = 1),
                        by = c("cp_number", "hm" = "hm_remove")) %>%
-      dplyr::filter(is.na(remove)) %>%
-      dplyr::select(-remove)
+      dplyr::filter(is.na(.data$remove)) %>%
+      dplyr::select(-.data$remove)
   }
 
   # Add new household members
 
   if(!is.null(to_add)) {
-    reg_updated %<>% dplyr::bind_rows(to_add %>% dplyr::select(-hm_add))
+    reg_updated %<>% dplyr::bind_rows(to_add %>% dplyr::select(-.data$hm_add))
   }
 
   reg_updated %<>%
 
     # Renumber household members
-    dplyr::group_by(cp_number) %>%
+    dplyr::group_by(.data$cp_number) %>%
     dplyr::mutate(hm = paste0("hm", dplyr::row_number()))%>%
     dplyr::ungroup() %>%
 
     # Complete for 10 household members per participant
-    dplyr::group_by(cp_number) %>%
+    dplyr::group_by(.data$cp_number) %>%
     tidyr::complete(hm = paste0("hm", 1:10)) %>%
     dplyr::ungroup() %>%
 
     # Restructure data to wide format; one row per participant
-    tidyr::pivot_wider(names_from = hm,
-                       values_from = name:student) %>%
+    tidyr::pivot_wider(names_from = .data$hm,
+                       values_from = .data$name:.data$student) %>%
 
     # Fix value names
     dplyr::rename_at(dplyr::vars(tidyselect::matches("^.*_hm\\d{1,2}$")),
                      ~ stringr::str_replace(., "(.*)_(.*)", "\\2_\\1")) %>%
 
     # Reorder columns from HM1 to HM10
-    dplyr::select(cp_number,
+    dplyr::select(.data$cp_number,
                   purrr::pmap_chr(expand.grid(c("name", "age", "gender",
                                                 "occupation", "student"),
                                               1:10),
@@ -93,7 +93,7 @@ update_household_members <- function(reg_data,
     ) %>%
 
     dplyr::bind_rows(
-      reg %>% dplyr::filter(status != "active")
+      reg_data %>% dplyr::filter(.data$status != "active")
     )
 
 }
