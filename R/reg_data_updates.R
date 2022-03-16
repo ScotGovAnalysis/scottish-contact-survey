@@ -39,7 +39,7 @@ reg_data_updates <- function(wave, panel){
       ),
       studying = dplyr::case_when(
         !is.na(.data$studying_location) ~ .data$studying_location,
-        .datastudying == "Yes" ~ "Prefer not to say",
+        .data$studying == "Yes" ~ "Prefer not to say",
         TRUE ~ .data$studying_location
       )
     ) %>%
