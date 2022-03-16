@@ -73,7 +73,7 @@ write_rds(
 ### 4 - Get invite data for next wave of survey ----
 
 invites <-
-  survey_invites(reg) %T>%
+  survey_invites(reg, cur_panel) %T>%
   write_csv(
     here("data", paste0(cur_wave + 1, cur_panel),
          paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
