@@ -51,7 +51,7 @@ reg %<>% update_household_members(remove, add)
 
 ### 7 - Update vaccination data ----
 
-new_reg %<>%
+reg %<>%
   left_join(vaccine_changes(cur_wave, cur_panel), by = "cp_number") %>%
   mutate(
     vaccine_n_doses = case_when(
@@ -66,14 +66,14 @@ new_reg %<>%
 
 updates <- reg_data_updates(cur_wave, cur_panel)
 
-new_reg %<>%
+reg %<>%
 
   # People without updated info
   filter(!cp_number %in% updates$cp_number) %>%
 
   # People with updated info
   bind_rows(
-    new_reg %>%
+    reg %>%
       filter(cp_number %in% updates$cp_number) %>%
       select(-all_of(setdiff(names(updates), "cp_number"))) %>%
       left_join(updates, by = "cp_number")
@@ -99,7 +99,7 @@ cp_responses <-
   pull(cp_number)
 
 anon_reg <-
-  new_reg %>%
+  reg %>%
   filter(cp_number %in% cp_responses) %>%
   select(-email) %>%
   anon_reg_data()
@@ -119,42 +119,17 @@ write_rds(
 )
 
 # Temp - reformat as required for controller script
-# Future work will incorporate controllor script into comix package
-# This section can be dropped once this is done.
+# Future work will incorporate controllor script into SCS package
+# This section (and associated functions) can be dropped once this is done.
 
-temp_anon_reg <- anon_reg %>%
-
-  # Temp - add missing columns and reorder
-  select(-status, -panel, -local_authority_code,
-         -contains("vaccine"), -last_updated) %>%
-  add_column(occupation_3 = NA, .after = "occupation_2") %>%
-  add_column(high_risk = NA, medium_risk = NA, .after = "other_ethnicity") %>%
-  add_column(hh_changes = NA, .after = "cp_number") %>%
-  add_column(ethnicity2 = NA, .after = "ethnicity") %>%
-  add_column(studying_yn = NA, .after = "employment") %>%
-  add_column(also_employed = NA, furloughed = NA, .after = "studying") %>%
-
-  select(cp_number:n_household,
-         matches("hm\\d{1,2}_name"), everything()) %>%
-  add_column(
-    `12.1` = NA, `12.2` = NA, `12.3` = NA,
-    `12.4` = NA, `12.5` = NA, `12.6` = NA,
-    `12.7` = NA, `12.8` = NA, `12.9` = NA,
-    `12.10` = NA, `12.11` = NA, `12.12` = NA,
-    .after = "hm10_name"
-  ) %>%
-  select(cp_number:`12.12`,
-         employment:total_household_income,
-         everything()) %>%
-  mutate(date_of_birth = age(date_of_birth, cur_wave, cur_panel)) %>%
-
-  # Temp - rename variables for controller script
-  set_names(read_rds(here("lookups", "anon-sample-names.rds"))$names)
-
-write_csv(
-  temp_anon_reg,
-  here("data", cur_survey, paste0(cur_survey, "_registration-data-anon.csv"))
-)
+temp_anon_reg <-
+  reformat_anon_reg(anon_reg,
+                    read_rds(here("lookups", "anon-sample-names.rds"))$names,
+                    cur_wave,
+                    cur_panel) %T>%
+  write_csv(
+    here("data", cur_survey, paste0(cur_survey, "_registration-data-anon.csv"))
+  )
 
 
 ### END OF SCRIPT ###

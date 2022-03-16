@@ -88,13 +88,11 @@ hm_added <-
 anon_resp <-
   resp %>%
   select(-email) %>%
-  anon_response_data()
-
-write_rds(
-  anon_resp,
-  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.rds")),
-  compress = "gz"
-)
+  anon_response_data() %T>%
+  write_rds(
+    here("data", cur_survey, paste0(cur_survey, "_response-data-anon.rds")),
+    compress = "gz"
+  )
 
 # Save backup
 write_rds(
@@ -108,33 +106,14 @@ write_rds(
 # Future work will incorporate controllor script into comix package
 # This section can be dropped once this is done.
 
-temp_anon_resp <- anon_resp %>%
-
-  # Temp - remove some columns
-  select(-in_scotland, -matches("^updated_"), -c(vacc_1:hm14_test_positive),
-         -lateral_flow_stock, -matches("^visit_healthcare_"),
-         -vaccine, -to_update, -household_members,
-         -matches("^covid_(un)?confirmed"), -time_since_covid_unconfirmed) %>%
-
-  # Temp - add empty columns and rearrange
-  add_column(hm11_change = NA, .after = 16) %>%
-  magrittr::inset(sprintf("temp_%d", 1:245), value = NA) %>%
-  magrittr::extract(, c(1:39, 1430:1674, 40:1429)) %>%
-  add_column(hm15_contact = NA, .after = 332) %>%
-  magrittr::inset(sprintf("temp_%d", 246:(246+26)), value = NA) %>%
-  magrittr::extract(, c(1:741, 1676:1702, 742:1675)) %>%
-  magrittr::extract(, c(1:1690, 1693:1702, 1691:1692)) %>%
-  add_column(hm11_name = NA, employment_1_0 = NA, .after = 1700) %>%
-  add_column(children_1 = NA, children_2 = NA, .after = 1703) %>%
-  magrittr::inset(sprintf("end_%d", 1:56), value = NA) %>%
-
-  # Temp - rename variables for controller script
-  set_names(read_rds(here("lookups", "anon-response-names.rds"))$names)
-
-write_csv(
-  temp_anon_resp,
-  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.csv"))
-)
+temp_anon_resp <-
+  reformat_anon_resp(
+    anon_resp,
+    read_rds(here("lookups", "anon-sample-names.rds"))$names
+  ) %T>%
+  read_csv(
+    here("data", cur_survey, paste0(cur_survey, "_response-data-anon.csv"))
+  )
 
 
 ### 5 - Get opt outs ----
