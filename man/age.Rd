@@ -4,7 +4,7 @@
 \alias{age}
 \title{Calculate age at time of survey}
 \usage{
-age(date_of_birth, wave, panel = c("A", "B"))
+age(date_of_birth, wave, panel = c("A", "B"), grouped = FALSE)
 }
 \arguments{
 \item{date_of_birth}{Date of birth in date format}
@@ -12,14 +12,18 @@ age(date_of_birth, wave, panel = c("A", "B"))
 \item{wave}{Wave number}
 
 \item{panel}{Panel number}
+
+\item{grouped}{If `TRUE`, will return age group. Default value of `FALSE`
+will return age.}
 }
 \value{
 A numeric value corresponding to a persons age as at the
 beginning of the survey.
 }
 \description{
-\code{age} returns a persons age as at the beginning of a
-survey given their date of birth, survey wave number and panel.
+`age` returns a persons age (or age group if `grouped = TRUE`)
+as at the beginning of a survey given their date of birth,
+survey wave number and panel.
 }
 \examples{
 # Age of someone with DOB 25/12/1980 during survey 25A
