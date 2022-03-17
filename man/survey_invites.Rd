@@ -4,12 +4,12 @@
 \alias{survey_invites}
 \title{Extract data for survey invites}
 \usage{
-survey_invites(reg_data, panel = c("A", "B"))
+survey_invites(reg_data, survey_panel)
 }
 \arguments{
 \item{reg_data}{Data frame of registration data}
 
-\item{panel}{Survey panel}
+\item{survey_panel}{Survey panel}
 }
 \value{
 Data frame of participants and registration data required for

@@ -1,21 +1,23 @@
 #' @title Extract data for survey invites
 #'
 #' @param reg_data Data frame of registration data
-#' @param panel Survey panel
+#' @param survey_panel Survey panel
 #'
 #' @return Data frame of participants and registration data required for
 #' survey invites.
 #'
 #' @export
 
-survey_invites <- function(reg_data, panel = c("A", "B")) {
+survey_invites <- function(reg_data, survey_panel) {
 
-  panel <- match.arg(panel)
+  if(any(!survey_panel %in% c("A", "B"))){
+    stop("Survey Panel must be A or B.")
+  }
 
   reg_data %>%
 
     # Select active participants in panel
-    dplyr::filter(.data$status == "active" & .data$panel == panel) %>%
+    dplyr::filter(.data$status == "active" & .data$panel == survey_panel) %>%
 
     # Add flag for registration data to be updated
     dplyr::mutate(to_update =

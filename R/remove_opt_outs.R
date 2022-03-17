@@ -1,17 +1,17 @@
-#' @title Recode opt-outs in registration data
+#' @title Remove opt-outs from active panel in registration data
 #'
-#' @description \code{recode_opt_outs()} takes the registration data, recodes
+#' @description \code{remove_opt_outs()} takes the registration data, recodes
 #' status for opt outs and removes all registraion data other than
 #' \code{cp_number}, \code{status} and \code{panel}.
 #'
-#' @param reg_data A dataframe of registraion data.
+#' @param reg_data A dataframe of registration data.
 #' @param cp A character vector of cp_numbers opted out.
 #'
 #' @return Registration data with opt outs recoded.
 #'
 #' @export
 
-recode_opt_outs <- function(reg_data, cp){
+remove_opt_outs <- function(reg_data, cp){
 
   reg_data %>%
 
