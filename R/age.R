@@ -58,7 +58,7 @@ age_group <- function(age){
 #'
 #' @export
 
-age <- function(date_of_birth, wave, panel = c("A", "B"), grouped = FALSE){
+age <- function(date_of_birth, wave, panel, grouped = FALSE){
 
   if(!inherits(date_of_birth, "Date")){
     stop("date_of_birth must be in date format.")
@@ -68,7 +68,9 @@ age <- function(date_of_birth, wave, panel = c("A", "B"), grouped = FALSE){
     stop("The wave number must be in numeric format.")
   }
 
-  panel <- match.arg(panel)
+  if(any(!panel %in% c("A", "B"))){
+    stop("Panel must be A or B.")
+  }
 
   wave_date <- start_date(wave, panel)
 

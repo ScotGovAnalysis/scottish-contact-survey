@@ -4,7 +4,7 @@
 \alias{age}
 \title{Calculate age at time of survey}
 \usage{
-age(date_of_birth, wave, panel = c("A", "B"), grouped = FALSE)
+age(date_of_birth, wave, panel, grouped = FALSE)
 }
 \arguments{
 \item{date_of_birth}{Date of birth in date format}
