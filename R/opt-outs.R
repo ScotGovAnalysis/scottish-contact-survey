@@ -1,31 +1,83 @@
-#' @title Replace opt outs
+#' @title Remove opt-outs from active panel in registration data
 #'
-#' @description \code{replace_opt_outs} finds replacements for opt outs from
-#' the reserve list matched by age group and gender
-#' (or age group only if no complete matches).
+#' @description \code{remove_opt_outs()} takes the registration data, recodes
+#' status for opt outs and removes all registraion data other than
+#' \code{cp_number}, \code{status} and \code{panel}.
 #'
-#' @param reserve_data A data frame containing an age and gender breakdown of
-#' the reserve list.
-#' @param opt_out_data A data frame containing an age and gender breakdown of
-#' opt outs.
+#' @param reg_data A dataframe of registration data.
+#' @param cp A character vector of cp_numbers opted out.
 #'
-#' @return A character vector of email addresses to replace opt outs.
+#' @return Registration data with opt outs recoded.
 #'
 #' @export
 
-replace_opt_outs <- function(reserve_data, opt_out_data){
+remove_opt_outs <- function(reg_data, cp){
 
-  if(!all(c("email", "age_group", "gender") %in% names(reserve_data))){
-    stop(paste("At least one of the following variables is missing from",
-               "reserve_data: email, age_group, gender."))
-  }
+  reg_data %>%
+
+    # Add flag for opt outs
+    dplyr::mutate(opt_out = dplyr::if_else(.data$cp_number %in% cp,
+                                           1,
+                                           0)) %>%
+
+    # Recode status
+    dplyr::mutate(status = dplyr::case_when(
+      .data$opt_out == 1 ~ "opt-out",
+      TRUE ~ .data$status
+    )) %>%
+
+    # Remove all registraion data; keep cp_number, status, panel ONLY
+    dplyr::mutate_at(
+      dplyr::vars(!c(.data$cp_number, .data$status, .data$panel,
+                     .data$date_of_birth, .data$n_household, .data$opt_out,
+                     .data$last_updated)),
+      ~ dplyr::if_else(.data$opt_out == 1, NA_character_, .)) %>%
+    dplyr::mutate_at(
+      dplyr::vars(.data$date_of_birth, .data$last_updated),
+      ~  dplyr::if_else(.data$opt_out == 1, as.Date(NA), .)) %>%
+    dplyr::mutate(
+      n_household =
+        dplyr::if_else(.data$opt_out == 1,
+                       NA_real_,
+                       .data$n_household)
+    ) %>%
+
+    # Remove opt out flag
+    dplyr::select(-.data$opt_out)
+
+}
+
+
+#' @title Replace opt outs
+#'
+#' @description \code{replace_opt_outs} replaces opt outs from
+#' the reserve list matched by age group and gender
+#' (or age group only if no complete matches).
+#'
+#' @param reg_data Data frame of registration data.
+#' @param opt_out_data Data frame containing an age and gender breakdown of
+#' opt outs.
+#' @param cur_wave Current wave of the survey
+#' @param cur_panel Current panel of the survey; panel to add replacements to.
+#'
+#' @return Data frame of registration data with opt outs replaced.
+#'
+#' @export
+
+replace_opt_outs <- function(reg_data, opt_out_data, cur_wave, cur_panel){
 
   if(!all(c("age_group", "gender", "n_opt_outs") %in% names(opt_out_data))){
     stop(paste("At least one of the following variables is missing from",
                "opt_out_data: age_group, gender, n_opt_outs."))
   }
 
-  reserve_data %<>%
+  reserve_data <-
+    reg_data %>%
+    dplyr::mutate(age_group = age(.data$date_of_birth,
+                                  cur_wave,
+                                  cur_panel,
+                                  grouped = TRUE)) %>%
+    dplyr::filter(.data$status == "reserve") %>%
     dplyr::select(.data$email, .data$age_group, .data$gender)
 
   opt_out_data %<>%
@@ -40,6 +92,7 @@ replace_opt_outs <- function(reserve_data, opt_out_data){
     dplyr::mutate(n_available = dplyr::n(),
                   sample_size = min(.data$n_opt_outs, .data$n_available)) %>%
     dplyr::sample_n(size = max(.data$sample_size)) %>%
+    dplyr::ungroup() %>%
     dplyr::select(.data$email, .data$age_group, .data$gender)
 
   opt_out_data %<>%
@@ -67,15 +120,24 @@ replace_opt_outs <- function(reserve_data, opt_out_data){
                       by = "age_group")
 
   if(nrow(match_age_only) > 0){
+
+    set.seed(8828)
+
     match_age_only %<>%
       dplyr::group_by(.data$age_group) %>%
       dplyr::mutate(n_available = dplyr::n(),
                     sample_size = min(.data$n_remaining, .data$n_available)) %>%
       dplyr::sample_n(size = max(.data$sample_size)) %>%
+      dplyr::ungroup() %>%
       dplyr::select(.data$email, .data$age_group, .data$gender)
+
   }
 
-  replace <- dplyr::bind_rows(match, match_age_only)
+  replace <-
+    dplyr::bind_rows(match, match_age_only) %>%
+    dplyr::mutate(new_cp = generate_cp_number(reg_data$cp_number,
+                                              cur_panel,
+                                              n = nrow(.)))
 
   replace_summary <-
     opt_out_data %>%
@@ -108,6 +170,18 @@ replace_opt_outs <- function(reserve_data, opt_out_data){
     sum(replace_summary$unmatched)
   )
 
-  replace %>% dplyr::pull(.data$email)
+  reg_data %>%
+    dplyr::left_join(
+      replace %>% dplyr::select(.data$email, .data$new_cp),
+      by = "email"
+    ) %>%
+    dplyr::mutate(
+      panel = dplyr::if_else(!is.na(.data$new_cp), cur_panel, .data$panel),
+      status = dplyr::if_else(!is.na(.data$new_cp), "active", .data$status),
+      cp_number = dplyr::if_else(!is.na(.data$new_cp),
+                                 .data$new_cp,
+                                 .data$cp_number)
+    ) %>%
+    dplyr::select(-.data$new_cp)
 
 }
