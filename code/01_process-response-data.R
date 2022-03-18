@@ -69,18 +69,22 @@ write_csv(
 ### 3 - Get household changes ----
 
 hm_removed <-
-  household_changes(resp, "remove") %T>%
-  write_rds(
-    here("data", cur_survey, paste0(cur_survey, "_hm-removed.rds")),
-    compress = "gz"
-  )
+  household_changes(resp, "remove")
+
+write_rds(
+  hm_removed,
+  here("data", cur_survey, paste0(cur_survey, "_hm-removed.rds")),
+  compress = "gz"
+)
 
 hm_added <-
-  household_changes(resp, "add") %T>%
-  write_rds(
-    here("data", cur_survey, paste0(cur_survey, "_hm-added.rds")),
-    compress = "gz"
-  )
+  household_changes(resp, "add")
+
+write_rds(
+  hm_added,
+  here("data", cur_survey, paste0(cur_survey, "_hm-added.rds")),
+  compress = "gz"
+)
 
 
 ### 4 - Anonymise response data ----
@@ -88,11 +92,13 @@ hm_added <-
 anon_resp <-
   resp %>%
   select(-email) %>%
-  anon_response_data() %T>%
-  write_rds(
-    here("data", cur_survey, paste0(cur_survey, "_response-data-anon.rds")),
-    compress = "gz"
-  )
+  anon_response_data()
+
+write_rds(
+  anon_resp,
+  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.rds")),
+  compress = "gz"
+)
 
 # Save backup
 write_rds(
@@ -110,10 +116,12 @@ temp_anon_resp <-
   reformat_anon_resp(
     anon_resp,
     read_rds(here("lookups", "anon-sample-names.rds"))$names
-  ) %T>%
-  read_csv(
-    here("data", cur_survey, paste0(cur_survey, "_response-data-anon.csv"))
   )
+
+write_csv(
+  temp_anon_resp,
+  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.csv"))
+)
 
 
 ### 5 - Get opt outs ----

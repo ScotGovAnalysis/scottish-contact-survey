@@ -126,12 +126,14 @@ write_rds(
 ### 6 - Get invite data for next wave of survey ----
 
 invites <-
-  survey_invites(reg, cur_panel) %T>%
-  write_csv(
-    here("data", paste0(cur_wave + 1, cur_panel),
-         paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
-    na = ""
-  )
+  survey_invites(reg, cur_panel)
+
+write_csv(
+  invites,
+  here("data", paste0(cur_wave + 1, cur_panel),
+       paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
+  na = ""
+)
 
 
 ### 7 - Delete non-anonymised data files ----
