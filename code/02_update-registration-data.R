@@ -8,8 +8,9 @@
 # Written/run on - RStudio Desktop
 # Version of R - 3.6.3
 #
-# Description - Remove personal data for opt outs and update household
-# information in registration data.
+# Description - Replace opt-outs, update registration data, save
+# anonymised registration data for survey respondents, save invite data
+# for next survey and delete old non-anon files.
 #########################################################################
 
 
@@ -22,23 +23,38 @@ source(here::here("code", "00_setup.R"))
 
 reg <-
   here("data", "registration-data",
-       paste0(cur_survey, "_registration-data.rds")) %>%
+       paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
+  read_rds()
+
+resp <-
+  here("data", cur_survey,
+       paste0(cur_survey, "_response-data-anon.rds")) %>%
   read_rds()
 
 
-### 2 - Recode opt outs ----
+### 2 - Recode and replace opt outs ----
 
-# For opt outs, keep CP number and remove all other registration data
+opt_outs <-
+  here("data", cur_survey, paste0(cur_survey, "_opt-outs-anon.rds")) %>%
+  read_rds()
 
-reg %<>%
-  recode_opt_outs(
-    here("data", cur_survey, paste0(cur_survey, "_opt-outs-anon.rds")) %>%
-      read_rds() %>%
-      pull(cp_number)
-  )
+# Remove personal data for opt-outs
+reg %<>% remove_opt_outs(opt_outs$cp_number)
+
+# Replace opt-outs from reserve list
+if(add_reserves == TRUE) {
+  reg %<>%
+    replace_opt_outs(
+      opt_outs %>% count(age_group, gender) %>% rename(n_opt_outs = n),
+      cur_wave,
+      cur_panel
+    )
+}
 
 
-### 3 - Update registration data with household member changes ----
+### 3 - Update registration data ----
+
+# Changes to household members
 
 remove <- here("data", cur_survey, paste0(cur_survey, "_hm-removed.rds")) %>%
   read_rds()
@@ -49,58 +65,21 @@ add <- here("data", cur_survey, paste0(cur_survey, "_hm-added.rds")) %>%
 reg %<>% update_household_members(remove, add)
 
 
-### 7 - Update vaccination data ----
+# Changes to vaccine status
 
-new_reg %<>%
-  left_join(vaccine_changes(cur_wave, cur_panel), by = "cp_number") %>%
-  mutate(
-    vaccine_n_doses = case_when(
-      !is.na(vaccine_n_doses_new) ~ vaccine_n_doses_new,
-      TRUE ~ vaccine_n_doses
-    )
-  ) %>%
-  select(-vaccine_n_doses_new)
+reg %<>% vaccine_changes(resp %>% select(cp_number, vacc_1, vacc_2))
 
 
-### 8 - Update registration data where refreshed in latest survey ----
+# Changes to other registration data
 
-updates <- reg_data_updates(cur_wave, cur_panel)
-
-new_reg %<>%
-
-  # People without updated info
-  filter(!cp_number %in% updates$cp_number) %>%
-
-  # People with updated info
-  bind_rows(
-    new_reg %>%
-      filter(cp_number %in% updates$cp_number) %>%
-      select(-all_of(setdiff(names(updates), "cp_number"))) %>%
-      left_join(updates, by = "cp_number")
-  )
+reg %<>% reg_data_updates(resp, cur_wave, cur_panel)
 
 
-### 9 - Save updated registration data ----
-
-write_rds(
-  new_reg,
-  here("data", "registration-data",
-       paste0(cur_survey, "_registration-data.rds")),
-  compress = "gz"
-)
-
-
-### 10 - Save anonymised registration data for current wave ----
-
-# CP numbers for survey responses
-cp_responses <-
-  here("data", cur_survey, paste0(cur_survey, "_response-data-anon.rds")) %>%
-  read_rds() %>%
-  pull(cp_number)
+### 4 - Save anonymised registration data for current wave ----
 
 anon_reg <-
-  new_reg %>%
-  filter(cp_number %in% cp_responses) %>%
+  reg %>%
+  filter(cp_number %in% resp$cp_number) %>%
   select(-email) %>%
   anon_reg_data()
 
@@ -119,42 +98,50 @@ write_rds(
 )
 
 # Temp - reformat as required for controller script
-# Future work will incorporate controllor script into comix package
-# This section can be dropped once this is done.
+# Future work will incorporate controllor script into SCS package
+# This section (and associated functions) can be dropped once this is done.
 
-temp_anon_reg <- anon_reg %>%
-
-  # Temp - add missing columns and reorder
-  select(-status, -panel, -local_authority_code,
-         -contains("vaccine"), -last_updated) %>%
-  add_column(occupation_3 = NA, .after = "occupation_2") %>%
-  add_column(high_risk = NA, medium_risk = NA, .after = "other_ethnicity") %>%
-  add_column(hh_changes = NA, .after = "cp_number") %>%
-  add_column(ethnicity2 = NA, .after = "ethnicity") %>%
-  add_column(studying_yn = NA, .after = "employment") %>%
-  add_column(also_employed = NA, furloughed = NA, .after = "studying") %>%
-
-  select(cp_number:n_household,
-         matches("hm\\d{1,2}_name"), everything()) %>%
-  add_column(
-    `12.1` = NA, `12.2` = NA, `12.3` = NA,
-    `12.4` = NA, `12.5` = NA, `12.6` = NA,
-    `12.7` = NA, `12.8` = NA, `12.9` = NA,
-    `12.10` = NA, `12.11` = NA, `12.12` = NA,
-    .after = "hm10_name"
-  ) %>%
-  select(cp_number:`12.12`,
-         employment:total_household_income,
-         everything()) %>%
-  mutate(date_of_birth = age(date_of_birth, cur_wave, cur_panel)) %>%
-
-  # Temp - rename variables for controller script
-  set_names(read_rds(here("lookups", "anon-sample-names.rds"))$names)
+temp_anon_reg <-
+  reformat_anon_reg(anon_reg,
+                    read_rds(here("lookups", "anon-sample-names.rds"))$names,
+                    cur_wave,
+                    cur_panel)
 
 write_csv(
   temp_anon_reg,
   here("data", cur_survey, paste0(cur_survey, "_registration-data-anon.csv"))
 )
+
+
+### 5 - Save updated registration data ----
+
+write_rds(
+  reg,
+  here("data", "registration-data",
+       paste0(cur_survey, "_registration-data.rds")),
+  compress = "gz"
+)
+
+
+### 6 - Get invite data for next wave of survey ----
+
+invites <-
+  survey_invites(reg, cur_panel)
+
+write_csv(
+  invites,
+  here("data", paste0(cur_wave + 1, cur_panel),
+       paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
+  na = ""
+)
+
+
+### 7 - Delete non-anonymised data files ----
+
+# Keep rolling four-week history of non-anonymised files
+# Delete non-anon files for two waves prior to current survey
+
+delete_files(cur_wave - 2, cur_panel)
 
 
 ### END OF SCRIPT ###

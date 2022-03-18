@@ -1,45 +1,22 @@
 #' @title Vaccine Status Changes
 #'
-#' @description Get updates to vaccine status from
-#' anonymised response data for given \code{wave} and \code{panel} of
-#' Scottish Contact Survey (SCS).
+#' @description Update registration data with latest vaccine status information.
 #'
-#' @param wave Wave of survey data to delete
-#' @param panel Panel of survey data to delete
+#' @param reg_data Registration data
+#' @param raw_vaccine_data Vaccine data from response data
 #'
-#' @return Data frame of vaccine status changes from responses for given
-#' \code{wave} and \code{panel}.
+#' @return Registration data with vaccine status data updated.
 #'
 #' @export
 
-vaccine_changes <- function(wave, panel){
+vaccine_changes <- function(reg_data, raw_vaccine_data){
 
-  if(!inherits(wave, "numeric")){
-    stop("The wave number must be in numeric format.")
+  if(!all(c("cp_number", "vacc_1", "vacc_2") %in% names(raw_vaccine_data))){
+    stop(paste("At least one of the following variables is missing from",
+               "raw_vaccine_data: cp_number, vacc_1, vacc_2."))
   }
 
-  if(any(!panel %in% c("A", "B"))){
-    stop("Panel must be A or B.")
-  }
-
-  survey <- paste0(wave, panel)
-
-  # Check vaccine data exists for given survey
-  if(wave < 33 | survey == "33A") {
-    stop("Vaccine data only available from survey 33B onwards.")
-  }
-
-  # Check response file exists
-  if(!file.exists(
-    here::here("data", survey, paste0(survey, "_response-data-anon.rds")))) {
-    stop("Required data file does not exist.\n",
-         "Expected file: ",
-         here::here("data", survey, paste0(survey, "_response-data-anon.rds")))
-  }
-
-  # Read in response data
-  here::here("data", survey, paste0(survey, "_response-data-anon.rds")) %>%
-    readr::read_rds() %>%
+  changes <- raw_vaccine_data %>%
 
     # Select rows where vaccine status has changed
     dplyr::filter(
@@ -65,5 +42,16 @@ vaccine_changes <- function(wave, panel){
         ifelse(!is.na(.data$vacc_1), .data$vacc_1, .data$vacc_2)
     ) %>%
     dplyr::select(.data$cp_number, .data$vaccine_n_doses_new)
+
+  reg_data %>%
+
+    dplyr::left_join(changes, by = "cp_number") %>%
+    dplyr::mutate(
+      vaccine_n_doses = dplyr::case_when(
+        !is.na(.data$vaccine_n_doses_new) ~ .data$vaccine_n_doses_new,
+        TRUE ~ .data$vaccine_n_doses
+      )
+    ) %>%
+    dplyr::select(-.data$vaccine_n_doses_new)
 
 }

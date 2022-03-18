@@ -18,6 +18,9 @@
 cur_wave  <- 42
 cur_panel <- "B"
 
+# If TRUE, opt-outs will be replaced in active panel by reserve list
+add_reserves <- TRUE
+
 
 ### 1 - Load packages ----
 
