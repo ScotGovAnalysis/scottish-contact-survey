@@ -1,27 +1,31 @@
 #' @title Updates to registration data
 #'
-#' @description Get updates to registration data including area of residence,
+#' @description Update registration data including area of residence,
 #' employment/education status, occupation and household income from
-#' anonymised response data for given \code{wave} and \code{panel} of
-#' Scottish Contact Survey (SCS).
+#' Scottish Contact Survey (SCS) response data.
 #'
-#' @param wave Wave of survey data to delete
-#' @param panel Panel of survey data to delete
+#' @param reg_data Registration data
+#' @param resp_data Response data
+#' @param wave Survey wave
+#' @param panel Survey panel
 #'
-#' @return Data frame of updated registration data from responses for given
-#' \code{wave} and \code{panel}.
+#' @return Registration data with updates from responses.
 #'
 #' @export
 
-reg_data_updates <- function(wave, panel){
+reg_data_updates <- function(reg_data, resp_data, wave, panel){
 
-  survey <- paste0(wave, panel)
+  if(!inherits(wave, "numeric")){
+    stop("The wave number must be in numeric format.")
+  }
 
-  date_updated <- scs::start_date(wave, panel) + lubridate::days(6)
+  if(any(!panel %in% c("A", "B"))){
+    stop("Panel must be A or B.")
+  }
 
-  # Read in response data
-  here::here("data", survey, paste0(survey, "_response-data-anon.rds")) %>%
-    readr::read_rds() %>%
+  date_updated <- start_date(wave, panel) + lubridate::days(6)
+
+  changes <- resp_data %>%
 
     # Select responses with updated data
     dplyr::filter(.data$to_update == 1) %>%
@@ -59,5 +63,20 @@ reg_data_updates <- function(wave, panel){
     dplyr::select(.data$cp_number, .data$postcode, .data$local_authority_code,
                   .data$local_authority, .data$employment, .data$studying,
                   tidyselect::everything())
+
+  reg_data %>%
+
+    # People without updated info
+    dplyr::filter(!.data$cp_number %in% changes$cp_number) %>%
+
+    # People with updated info
+    dplyr::bind_rows(
+      reg_data %>%
+        dplyr::filter(.data$cp_number %in% changes$cp_number) %>%
+        dplyr::select(
+          -tidyselect::all_of(setdiff(names(changes), "cp_number"))
+        ) %>%
+        dplyr::left_join(changes, by = "cp_number")
+    )
 
 }

@@ -4,19 +4,16 @@
 \alias{vaccine_changes}
 \title{Vaccine Status Changes}
 \usage{
-vaccine_changes(wave, panel)
+vaccine_changes(reg_data, raw_vaccine_data)
 }
 \arguments{
-\item{wave}{Wave of survey data to delete}
+\item{reg_data}{Registration data}
 
-\item{panel}{Panel of survey data to delete}
+\item{raw_vaccine_data}{Vaccine data from response data}
 }
 \value{
-Data frame of vaccine status changes from responses for given
-\code{wave} and \code{panel}.
+Registration data with vaccine status data updated.
 }
 \description{
-Get updates to vaccine status from
-anonymised response data for given \code{wave} and \code{panel} of
-Scottish Contact Survey (SCS).
+Update registration data with latest vaccine status information.
 }

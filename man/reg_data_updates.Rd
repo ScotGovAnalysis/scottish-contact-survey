@@ -4,20 +4,22 @@
 \alias{reg_data_updates}
 \title{Updates to registration data}
 \usage{
-reg_data_updates(wave, panel)
+reg_data_updates(reg_data, resp_data, wave, panel)
 }
 \arguments{
-\item{wave}{Wave of survey data to delete}
+\item{reg_data}{Registration data}
 
-\item{panel}{Panel of survey data to delete}
+\item{resp_data}{Response data}
+
+\item{wave}{Survey wave}
+
+\item{panel}{Survey panel}
 }
 \value{
-Data frame of updated registration data from responses for given
-\code{wave} and \code{panel}.
+Registration data with updates from responses.
 }
 \description{
-Get updates to registration data including area of residence,
+Update registration data including area of residence,
 employment/education status, occupation and household income from
-anonymised response data for given \code{wave} and \code{panel} of
-Scottish Contact Survey (SCS).
+Scottish Contact Survey (SCS) response data.
 }
