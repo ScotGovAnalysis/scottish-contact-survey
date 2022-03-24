@@ -42,14 +42,12 @@ resp <-
 
 # Add CP Number
 
-cp_number_lookup <-
-  here("data", "registration-data",
-       paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
-  read_rds() %>%
-  select(cp_number, email, date_of_birth, gender)
-
 resp %<>%
-  left_join(cp_number_lookup %>% select(cp_number, email), by = "email") %>%
+  add_cp_number(
+    here("data", "registration-data",
+         paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
+      read_rds()
+  ) %>%
   select(cp_number, everything())
 
 
@@ -130,10 +128,15 @@ opt_outs <-
   here("data", cur_survey, paste0(cur_survey, "_opt-outs.xlsx")) %>%
   read.xlsx(sheet = 1) %>%
   select(email = `E-mail`) %>%
-  left_join(cp_number_lookup, by = "email") %>%
-  mutate(age_group =
-           age(date_of_birth, cur_wave, cur_panel, grouped = TRUE)) %>%
-  select(-email, -date_of_birth)
+  add_cp_number(
+    here("data", "registration-data",
+         paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
+      read_rds(),
+    cur_wave,
+    cur_panel,
+    age_gender = TRUE,
+    remove_email = TRUE
+  )
 
 # Save list of cp number, age and gender only
 write_rds(
