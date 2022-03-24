@@ -15,8 +15,8 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-cur_wave  <- 42
-cur_panel <- "B"
+cur_wave  <- 43
+cur_panel <- "A"
 
 # If TRUE, opt-outs will be replaced in active panel by reserve list
 add_reserves <- TRUE
