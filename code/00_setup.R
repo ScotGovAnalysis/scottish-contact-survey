@@ -15,8 +15,7 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-cur_wave  <- 43
-cur_panel <- "A"
+wave  <- 43
 
 # If TRUE, opt-outs will be replaced in active panel by reserve list
 add_reserves <- TRUE
@@ -42,28 +41,14 @@ library(janitor)
 
 ### 2 - Derive previous/next wave and panel ----
 
-cur_survey <- paste0(cur_wave, cur_panel)
+pre_wave <- wave - 1
 
-pre_wave <- case_when(
-  cur_panel == "A" ~ cur_wave - 1,
-  cur_panel == "B" ~ cur_wave
-)
-
-pre_panel <- setdiff(c("A", "B"), cur_panel)
-
-next_wave <- case_when(
-  cur_panel == "A" ~ cur_wave,
-  cur_panel == "B" ~ cur_wave + 1
-)
-
-next_panel <- pre_panel
+next_wave <- wave + 1
 
 
 ### 3 - Create data folders ----
 
-c(paste0(cur_wave, cur_panel),
-  paste0(next_wave, next_panel),
-  paste0(cur_wave + 1, cur_panel)) %>%
+c(wave, next_wave) %>%
   walk(~ use_directory(paste0("data/", .)))
 
 
