@@ -28,3 +28,5 @@ Imports:
     here,
     purrr,
     tibble
+Suggests: 
+    testthat (>= 2.1.0)
