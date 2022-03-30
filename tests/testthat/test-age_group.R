@@ -1,5 +1,7 @@
 test_that("Error if age isn't correct format", {
   expect_error(age_group("eighty"))
+  expect_error(age_group(-50))
+  expect_error(age_group(50.5))
 })
 
 test_that("Warning if age 18 or less", {

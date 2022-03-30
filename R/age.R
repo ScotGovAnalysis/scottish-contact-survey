@@ -20,6 +20,10 @@ age_group <- function(age){
     stop("Ages must have numeric or integer class.")
   }
 
+  if(age <= 0 | age %% 1 != 0){
+    stop("Age must be a non-negative whole number.")
+  }
+
   if(any(age < 18, na.rm = TRUE)){
     warning(paste("Ages under 18 are coded as NA as",
                   "SCS participants must be 18 or over."))
@@ -41,24 +45,33 @@ age_group <- function(age){
 #'
 #' @description \code{age} returns a persons age (or age group if
 #' \code{grouped = TRUE}) as at the beginning of a survey given their
-#' date of birth, survey wave number and panel.
+#' date of birth, survey wave number and panel (if wave 43 or earlier).
 #'
 #' @param date_of_birth Date of birth in date format
-#' @param wave Wave number
-#' @param panel Panel number
+#' @param wave A numeric value denoting the survey wave number.
+#' @param panel If wave is 43 or earlier, a character value denoting the survey
+#' panel. Valid options are 'A' and 'B'.
 #' @param grouped If \code{TRUE}, will return age group. Default value of
 #' \code{FALSE} will return age.
 #'
-#' @return A numeric value corresponding to a persons age as at the
-#' beginning of the survey.
+#' @return If \code{grouped = FALSE}, a numeric value corresponding to a
+#' person's age as at the beginning of the survey. If \code{grouped = TRUE},
+#' a character value corresponding to the person's age group as at the beginning
+#' of the survey.
 #'
 #' @examples
 #' # Age of someone with DOB 25/12/1980 during survey 25A
 #' age(as.Date("1980-12-25"), 25, "A")
 #'
+#' # Age of someone with DOB 25/12/1980 during wave 50
+#' age(as.Date("1980-12-25"), 50)
+#'
+#' # Age group of someone with DOB 25/12/1980 during survey 30A
+#' age(as.Date("1980-12-25"), 30, "A", grouped = TRUE)
+#'
 #' @export
 
-age <- function(date_of_birth, wave, panel, grouped = FALSE){
+age <- function(date_of_birth, wave, panel = NULL, grouped = FALSE){
 
   if(!inherits(date_of_birth, "Date")){
     stop("date_of_birth must be in date format.")
@@ -68,7 +81,17 @@ age <- function(date_of_birth, wave, panel, grouped = FALSE){
     stop("The wave number must be in numeric format.")
   }
 
-  if(any(!panel %in% c("A", "B"))){
+  if(wave < 0 | wave %% 1 != 0){
+    stop("Wave number must be whole number greater than 0.")
+  }
+
+  if(wave >= 44 & !is.null(panel)){
+    panel <- NULL
+    warning("Panels were merged from wave 44 onwards. ",
+            "`panel` value supplied will not be used.")
+  }
+
+  if(wave < 44 & any(is.null(panel), !panel %in% c("A", "B"))){
     stop("Panel must be A or B.")
   }
 
