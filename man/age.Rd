@@ -4,29 +4,38 @@
 \alias{age}
 \title{Calculate age at time of survey}
 \usage{
-age(date_of_birth, wave, panel, grouped = FALSE)
+age(date_of_birth, wave, panel = NULL, grouped = FALSE)
 }
 \arguments{
 \item{date_of_birth}{Date of birth in date format}
 
-\item{wave}{Wave number}
+\item{wave}{A numeric value denoting the survey wave number.}
 
-\item{panel}{Panel number}
+\item{panel}{If wave is 43 or earlier, a character value denoting the survey
+panel. Valid options are 'A' and 'B'.}
 
 \item{grouped}{If \code{TRUE}, will return age group. Default value of
 \code{FALSE} will return age.}
 }
 \value{
-A numeric value corresponding to a persons age as at the
-beginning of the survey.
+If \code{grouped = FALSE}, a numeric value corresponding to a
+person's age as at the beginning of the survey. If \code{grouped = TRUE},
+a character value corresponding to the person's age group as at the beginning
+of the survey.
 }
 \description{
 \code{age} returns a persons age (or age group if
 \code{grouped = TRUE}) as at the beginning of a survey given their
-date of birth, survey wave number and panel.
+date of birth, survey wave number and panel (if wave 43 or earlier).
 }
 \examples{
 # Age of someone with DOB 25/12/1980 during survey 25A
 age(as.Date("1980-12-25"), 25, "A")
+
+# Age of someone with DOB 25/12/1980 during wave 50
+age(as.Date("1980-12-25"), 50)
+
+# Age group of someone with DOB 25/12/1980 during survey 30A
+age(as.Date("1980-12-25"), 30, "A", grouped = TRUE)
 
 }

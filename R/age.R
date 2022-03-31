@@ -20,7 +20,8 @@ age_group <- function(age){
     stop("Ages must have numeric or integer class.")
   }
 
-  if(age <= 0 | age %% 1 != 0){
+  if(any(age <= 0, na.rm = TRUE) |
+     any(age %% 1 != 0, na.rm = TRUE)){
     stop("Age must be a non-negative whole number.")
   }
 
