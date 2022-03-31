@@ -4,10 +4,12 @@
 #'
 #' @param data Data frame including \code{email}.
 #' @param reg_data Data frame including \code{email, cp_number}.
-#' @param age_gender If \code{TRUE}, will also add age group and gender to \code{data}.
-#' @param cur_wave Wave number of survey to calculate age at.
-#' @param cur_panel Panel of survey to calculate age at.
-#' @param remove_email If \code{TRUE}, \code{email} will be removed from returned data.
+#' @param age_gender If \code{TRUE}, will also add age group and gender to
+#' \code{data}.
+#' @param age_wave Wave number of survey to calculate age at.
+#' @param age_panel Panel of survey to calculate age at.
+#' @param remove_email If \code{TRUE}, \code{email} will be removed from
+#' returned data.
 #'
 #' @return \code{data} with \code{cp_number} (and \code{age_group} and
 #' \code{gender} when \code{age_gender = TRUE}) added.
@@ -17,8 +19,8 @@
 add_cp_number <- function(data,
                           reg_data,
                           age_gender = FALSE,
-                          cur_wave = NULL,
-                          cur_panel = NULL,
+                          age_wave = NULL,
+                          age_panel = NULL,
                           remove_email = FALSE) {
 
   # Check columns to add don't already exist in `data`
@@ -48,16 +50,30 @@ add_cp_number <- function(data,
          "`age_gender = TRUE`.")
   }
 
-  if(age_gender & (is.null(cur_wave) | is.null(cur_panel))){
-    stop("If `age_gender = TRUE` then both `cur_wave` and `cur_panel` ",
-         "must be supplied.")
+  if(age_gender & is.null(age_wave)){
+    stop("If `age_gender = TRUE` then `wave` must be supplied.")
+  }
+
+  if(age_gender & is.null(age_panel)){
+    if(age_wave < 44){
+      stop("If `age_gender = TRUE` and wave is 43 or earlier, ",
+           "`panel` must be supplied.")
+    }
+  }
+
+  if(age_gender & !is.null(age_panel)){
+    if(age_wave >= 44){
+      age_panel <- NULL
+      warning("Panels were merged from wave 44 onwards. ",
+              "`panel` value supplied will not be used.")
+    }
   }
 
   if(age_gender){
     lookup <- reg_data %>%
       dplyr::mutate(
         age_group =
-          age(.data$date_of_birth, cur_wave, cur_panel, grouped = TRUE)) %>%
+          age(.data$date_of_birth, age_wave, age_panel, grouped = TRUE)) %>%
       dplyr::select(.data$email, .data$cp_number, .data$age_group, .data$gender)
   }else{
     lookup <- reg_data %>% dplyr::select(.data$email, .data$cp_number)

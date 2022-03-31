@@ -8,8 +8,8 @@ add_cp_number(
   data,
   reg_data,
   age_gender = FALSE,
-  cur_wave = NULL,
-  cur_panel = NULL,
+  age_wave = NULL,
+  age_panel = NULL,
   remove_email = FALSE
 )
 }
@@ -18,13 +18,15 @@ add_cp_number(
 
 \item{reg_data}{Data frame including \code{email, cp_number}.}
 
-\item{age_gender}{If \code{TRUE}, will also add age group and gender to \code{data}.}
+\item{age_gender}{If \code{TRUE}, will also add age group and gender to
+\code{data}.}
 
-\item{cur_wave}{Wave number of survey to calculate age at.}
+\item{age_wave}{Wave number of survey to calculate age at.}
 
-\item{cur_panel}{Panel of survey to calculate age at.}
+\item{age_panel}{Panel of survey to calculate age at.}
 
-\item{remove_email}{If \code{TRUE}, \code{email} will be removed from returned data.}
+\item{remove_email}{If \code{TRUE}, \code{email} will be removed from
+returned data.}
 }
 \value{
 \code{data} with \code{cp_number} (and \code{age_group} and
