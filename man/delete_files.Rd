@@ -4,15 +4,14 @@
 \alias{delete_files}
 \title{Delete non-anonymised data files}
 \usage{
-delete_files(wave, panel)
+delete_files(survey)
 }
 \arguments{
-\item{wave}{Wave of survey data to delete}
-
-\item{panel}{Panel of survey data to delete}
+\item{survey}{Character vector of surveys; e.g. 34A, 45. For waves 43 and
+earlier, a panel letter (A or B) must be included.}
 }
 \description{
 To comply with data retention rules, non-anonymised data must
-be regurlarly deleted. \code{delete_files} will delete any non-anonymised
-data files in data folder for given \code{wave} and \code{panel}.
+be regularly deleted. \code{delete_files} will delete any non-anonymised
+data files in data folder for given \code{survey}.
 }

@@ -1,20 +1,27 @@
 #' @title Delete non-anonymised data files
 #'
 #' @description To comply with data retention rules, non-anonymised data must
-#' be regurlarly deleted. \code{delete_files} will delete any non-anonymised
-#' data files in data folder for given \code{wave} and \code{panel}.
+#' be regularly deleted. \code{delete_files} will delete any non-anonymised
+#' data files in data folder for given \code{survey}.
 #'
-#' @param wave Wave of survey data to delete
-#' @param panel Panel of survey data to delete
+#' @param survey Character vector of surveys; e.g. 34A, 45. For waves 43 and
+#' earlier, a panel letter (A or B) must be included.
 #'
 #' @export
 
-delete_files <- function(wave, panel){
+delete_files <- function(survey){
+
+  exists <- file.exists(here::here("data", survey))
+
+  if(any(exists == FALSE)){
+    stop("Following survey folders do not exist in data/: ",
+         paste0(survey[!exists], collapse = ", "))
+  }
 
   # Get list of non-anonymised files
   to_delete <-
     list.files(
-      here::here("data", paste0(wave, panel)),
+      here::here("data", survey),
       full.names = TRUE
     ) %>%
 
@@ -25,7 +32,7 @@ delete_files <- function(wave, panel){
     to_delete,
     list.files(
       here::here("data", "registration-data"),
-      pattern = paste0(wave, panel),
+      pattern = paste(survey, collapse = "|"),
       full.names = TRUE
     )
   )

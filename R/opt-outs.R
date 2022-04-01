@@ -64,11 +64,28 @@ remove_opt_outs <- function(reg_data, cp){
 #'
 #' @export
 
-replace_opt_outs <- function(reg_data, opt_out_data, cur_wave, cur_panel){
+replace_opt_outs <- function(reg_data,
+                             opt_out_data,
+                             cur_wave,
+                             cur_panel = NULL){
 
   if(!all(c("age_group", "gender", "n_opt_outs") %in% names(opt_out_data))){
     stop(paste("At least one of the following variables is missing from",
                "opt_out_data: age_group, gender, n_opt_outs."))
+  }
+
+  if(cur_wave < 44 & is.null(cur_panel)){
+    stop("For waves 43 and earlier, `cur_panel` must be provided.")
+  }
+
+  if(cur_wave >= 44 & !is.null(cur_panel)){
+    cur_panel <- NULL
+    warning("Panels were merged from wave 44 onwards. ",
+            "`cur_panel` value supplied will not be used.")
+  }
+
+  if(cur_wave < 44 & any(is.null(cur_panel), !cur_panel %in% c("A", "B"))){
+    stop("Panel must be A or B.")
   }
 
   reserve_data <-
@@ -133,10 +150,12 @@ replace_opt_outs <- function(reg_data, opt_out_data, cur_wave, cur_panel){
 
   }
 
+  new_panel <- ifelse(is.null(cur_panel), "Z", cur_panel)
+
   replace <-
     dplyr::bind_rows(match, match_age_only) %>%
     dplyr::mutate(new_cp = generate_cp_number(reg_data$cp_number,
-                                              cur_panel,
+                                              new_panel,
                                               n = nrow(.)))
 
   replace_summary <-
@@ -176,7 +195,7 @@ replace_opt_outs <- function(reg_data, opt_out_data, cur_wave, cur_panel){
       by = "email"
     ) %>%
     dplyr::mutate(
-      panel = dplyr::if_else(!is.na(.data$new_cp), cur_panel, .data$panel),
+      panel = dplyr::if_else(!is.na(.data$new_cp), new_panel, .data$panel),
       status = dplyr::if_else(!is.na(.data$new_cp), "active", .data$status),
       cp_number = dplyr::if_else(!is.na(.data$new_cp),
                                  .data$new_cp,

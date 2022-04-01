@@ -54,7 +54,7 @@ reformat_anon_resp <- function(anon_resp_data, names) {
 #'
 #' @export
 
-reformat_anon_reg <- function(anon_reg_data, names, wave, panel) {
+reformat_anon_reg <- function(anon_reg_data, names, wave, panel = NULL) {
 
   if(!inherits(names, "character")){
     stop("Names must be in character format.")
@@ -64,7 +64,17 @@ reformat_anon_reg <- function(anon_reg_data, names, wave, panel) {
     stop("The wave number must be in numeric format.")
   }
 
-  if(any(!panel %in% c("A", "B"))){
+  if(wave < 44 & is.null(panel)){
+    stop("For waves 43 and earlier, `cur_panel` must be provided.")
+  }
+
+  if(wave >= 44 & !is.null(panel)){
+    panel <- NULL
+    warning("Panels were merged from wave 44 onwards. ",
+            "`cur_panel` value supplied will not be used.")
+  }
+
+  if(wave < 44 & any(is.null(panel), !panel %in% c("A", "B"))){
     stop("Panel must be A or B.")
   }
 

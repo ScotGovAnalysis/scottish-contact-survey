@@ -4,7 +4,7 @@
 \alias{reformat_anon_reg}
 \title{Reformat anonymised registration data}
 \usage{
-reformat_anon_reg(anon_reg_data, names, wave, panel)
+reformat_anon_reg(anon_reg_data, names, wave, panel = NULL)
 }
 \arguments{
 \item{anon_reg_data}{Data frame of anonymised registration data.}

@@ -6,24 +6,18 @@
 #'
 #' @param reg_data Registration data
 #' @param resp_data Response data
-#' @param wave Survey wave
-#' @param panel Survey panel
+#' @param date_updated Date data updates were made; usually last date survey
+#' open.
 #'
 #' @return Registration data with updates from responses.
 #'
 #' @export
 
-reg_data_updates <- function(reg_data, resp_data, wave, panel){
+reg_data_updates <- function(reg_data, resp_data, date_updated){
 
-  if(!inherits(wave, "numeric")){
-    stop("The wave number must be in numeric format.")
+  if(!inherits(date_updated, "Date")){
+    stop("`date_updated` must be in date format.")
   }
-
-  if(any(!panel %in% c("A", "B"))){
-    stop("Panel must be A or B.")
-  }
-
-  date_updated <- start_date(wave, panel) + lubridate::days(6)
 
   changes <- resp_data %>%
 

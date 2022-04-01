@@ -4,7 +4,7 @@
 \alias{replace_opt_outs}
 \title{Replace opt outs}
 \usage{
-replace_opt_outs(reg_data, opt_out_data, cur_wave, cur_panel)
+replace_opt_outs(reg_data, opt_out_data, cur_wave, cur_panel = NULL)
 }
 \arguments{
 \item{reg_data}{Data frame of registration data.}

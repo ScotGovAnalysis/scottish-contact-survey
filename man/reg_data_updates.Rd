@@ -4,16 +4,15 @@
 \alias{reg_data_updates}
 \title{Updates to registration data}
 \usage{
-reg_data_updates(reg_data, resp_data, wave, panel)
+reg_data_updates(reg_data, resp_data, date_updated)
 }
 \arguments{
 \item{reg_data}{Registration data}
 
 \item{resp_data}{Response data}
 
-\item{wave}{Survey wave}
-
-\item{panel}{Survey panel}
+\item{date_updated}{Date data updates were made; usually last date survey
+open.}
 }
 \value{
 Registration data with updates from responses.
