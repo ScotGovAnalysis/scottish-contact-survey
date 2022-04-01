@@ -23,19 +23,18 @@ source(here::here("code", "00_setup.R"))
 
 reg <-
   here("data", "registration-data",
-       paste0(pre_wave, pre_panel, "_registration-data.rds")) %>%
+       paste0(pre_wave, "_registration-data.rds")) %>%
   read_rds()
 
 resp <-
-  here("data", cur_survey,
-       paste0(cur_survey, "_response-data-anon.rds")) %>%
+  here("data", wave, paste0(wave, "_response-data-anon.rds")) %>%
   read_rds()
 
 
 ### 2 - Recode and replace opt outs ----
 
 opt_outs <-
-  here("data", cur_survey, paste0(cur_survey, "_opt-outs-anon.rds")) %>%
+  here("data", wave, paste0(wave, "_opt-outs-anon.rds")) %>%
   read_rds()
 
 # Remove personal data for opt-outs
@@ -46,8 +45,7 @@ if(add_reserves == TRUE) {
   reg %<>%
     replace_opt_outs(
       opt_outs %>% count(age_group, gender) %>% rename(n_opt_outs = n),
-      cur_wave,
-      cur_panel
+      44
     )
 }
 
@@ -56,10 +54,10 @@ if(add_reserves == TRUE) {
 
 # Changes to household members
 
-remove <- here("data", cur_survey, paste0(cur_survey, "_hm-removed.rds")) %>%
+remove <- here("data", wave, paste0(wave, "_hm-removed.rds")) %>%
   read_rds()
 
-add <- here("data", cur_survey, paste0(cur_survey, "_hm-added.rds")) %>%
+add <- here("data", wave, paste0(wave, "_hm-added.rds")) %>%
   read_rds()
 
 reg %<>% update_household_members(remove, add)
@@ -72,7 +70,7 @@ reg %<>% vaccine_changes(resp %>% select(cp_number, vacc_1, vacc_2))
 
 # Changes to other registration data
 
-reg %<>% reg_data_updates(resp, cur_wave, cur_panel)
+reg %<>% reg_data_updates(resp, start_date(wave))
 
 
 ### 4 - Save anonymised registration data for current wave ----
@@ -85,7 +83,7 @@ anon_reg <-
 
 write_rds(
   anon_reg,
-  here("data", cur_survey, paste0(cur_survey, "_registration-data-anon.rds")),
+  here("data", wave, paste0(wave, "_registration-data-anon.rds")),
   compress = "gz"
 )
 
@@ -93,7 +91,7 @@ write_rds(
 write_rds(
   anon_reg,
   paste0("//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data/",
-         cur_survey, "_registration-data-anon.rds"),
+         wave, "_registration-data-anon.rds"),
   compress = "gz"
 )
 
@@ -104,12 +102,11 @@ write_rds(
 temp_anon_reg <-
   reformat_anon_reg(anon_reg,
                     read_rds(here("lookups", "anon-sample-names.rds"))$names,
-                    cur_wave,
-                    cur_panel)
+                    wave)
 
 write_csv(
   temp_anon_reg,
-  here("data", cur_survey, paste0(cur_survey, "_registration-data-anon.csv"))
+  here("data", wave, paste0(wave, "_registration-data-anon.csv"))
 )
 
 
@@ -118,20 +115,18 @@ write_csv(
 write_rds(
   reg,
   here("data", "registration-data",
-       paste0(cur_survey, "_registration-data.rds")),
+       paste0(wave, "_registration-data.rds")),
   compress = "gz"
 )
 
 
 ### 6 - Get invite data for next wave of survey ----
 
-invites <-
-  survey_invites(reg, cur_panel)
+invites <- survey_invites(reg)
 
 write_csv(
   invites,
-  here("data", paste0(cur_wave + 1, cur_panel),
-       paste0(cur_wave + 1, cur_panel, "_qb-invites.csv")),
+  here("data", wave + 1, paste0(wave + 1, "_qb-invites.csv")),
   na = ""
 )
 
