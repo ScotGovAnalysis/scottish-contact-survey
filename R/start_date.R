@@ -20,11 +20,18 @@
 
 start_date <- function(wave, panel = NULL){
 
-  if(!inherits(wave, "numeric")){
-    stop("The wave number must be in numeric format.")
+  if(!inherits(wave, c("numeric", "integer"))){
+    stop("The wave number must be in numeric or integer format.")
   }
 
-  if(wave < 0 | wave %% 1 != 0){
+  if(any(length(wave) > 1, length(panel) > 1)){
+    stop("Wave and panel must be singular values; ",
+         "vectors cannot be supplied.\n  ",
+         "If applying the function to a data frame / tibble, ",
+         "precede with `rowwise()`.")
+  }
+
+  if(wave <= 0 | wave %% 1 != 0){
     stop("Wave number must be whole number greater than 0.")
   }
 
