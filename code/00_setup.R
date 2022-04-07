@@ -15,7 +15,7 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-wave  <- 43
+wave  <- 44
 
 # If TRUE, opt-outs will be replaced in active panel by reserve list
 add_reserves <- TRUE
@@ -37,6 +37,8 @@ library(here)
 library(tibble)
 library(usethis)
 library(janitor)
+
+options(readr.show_progress = FALSE)
 
 
 ### 2 - Derive previous/next wave and panel ----
