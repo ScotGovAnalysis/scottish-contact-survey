@@ -9,8 +9,8 @@ survey_invites(reg_data, survey_panel = NULL)
 \arguments{
 \item{reg_data}{Data frame of registration data}
 
-\item{survey_panel}{Survey panel. If NULL, will return all active panel
-members.}
+\item{survey_panel}{A character to specify which panel to extract
+invites for. If not specified, all active members will be included.}
 }
 \value{
 Data frame of participants and registration data required for

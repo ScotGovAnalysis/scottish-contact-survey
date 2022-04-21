@@ -1,8 +1,8 @@
 #' @title Extract data for survey invites
 #'
 #' @param reg_data Data frame of registration data
-#' @param survey_panel Survey panel. If NULL, will return all active panel
-#' members.
+#' @param survey_panel A character to specify which panel to extract
+#' invites for. If not specified, all active members will be included.
 #'
 #' @return Data frame of participants and registration data required for
 #' survey invites.

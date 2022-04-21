@@ -14,8 +14,7 @@ update_household_members(reg_data, to_remove = NULL, to_add = NULL)
 \item{to_add}{Data frame of new household members}
 }
 \value{
-A numeric value corresponding to a persons age as at the
-beginning of the survey.
+Data frame of registration data with household members updated.
 }
 \description{
 \code{update_household_members} takes registration data and

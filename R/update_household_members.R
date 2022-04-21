@@ -7,8 +7,7 @@
 #' @param to_remove Data frame of household members that have left household
 #' @param to_add Data frame of new household members
 #'
-#' @return A numeric value corresponding to a persons age as at the
-#' beginning of the survey.
+#' @return Data frame of registration data with household members updated.
 #'
 #' @export
 
