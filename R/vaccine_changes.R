@@ -29,11 +29,8 @@ vaccine_changes <- function(reg_data, raw_vaccine_data){
     dplyr::mutate_at(
       dplyr::vars(c(.data$vacc_1, .data$vacc_2)),
       ~ dplyr::case_when(
-        stringr::str_detect(., "booster") ~ "three doses",
-        stringr::str_detect(., "two doses") ~ "two doses",
-        stringr::str_detect(., "one dose") ~ "one dose",
         . == "No" ~ "no doses",
-        TRUE ~ NA_character_
+        TRUE ~ stringr::str_extract(., "\\w+ dose(s)?")
       )) %>%
 
     # Combine vaccine status changes into one column
