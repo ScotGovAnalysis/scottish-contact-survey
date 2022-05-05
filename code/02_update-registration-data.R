@@ -45,7 +45,7 @@ if(add_reserves == TRUE) {
   reg %<>%
     replace_opt_outs(
       opt_outs %>% count(age_group, gender) %>% rename(n_opt_outs = n),
-      44
+      wave
     )
 }
 
