@@ -17,12 +17,16 @@ reformat_anon_resp <- function(anon_resp_data, names) {
 
     # Remove some columns
     dplyr::select(
-      -.data$in_scotland, -tidyselect::matches("^updated_"),
-      -c(.data$vacc_1:.data$hm14_test_positive), -.data$lateral_flow_stock,
-      -tidyselect::matches("^visit_healthcare_"), -.data$vaccine,
-      -.data$to_update, -.data$household_members,
-      -tidyselect::matches("^covid_(un)?confirmed"),
-      -.data$time_since_covid_unconfirmed
+      -tidyselect::any_of(c(
+        "in_scotland", "vaccine", "to_update",
+        "household_members", "time_since_covid_unconfirmed"
+      )),
+      -tidyselect::matches("^vacc_[12]$"),
+      -tidyselect::matches("lateral_flow"),
+      -tidyselect::matches("^(hm\\d{1,2}_)?test_positive"),
+      -tidyselect::matches("^updated_"),
+      -tidyselect::matches("^visit_healthcare_"),
+      -tidyselect::matches("^covid_(un)?confirmed")
     ) %>%
 
     # Add empty columns and rearrange
