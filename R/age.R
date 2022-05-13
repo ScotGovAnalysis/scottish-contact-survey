@@ -72,28 +72,14 @@ age_group <- function(age){
 #'
 #' @export
 
-age <- function(date_of_birth, wave, panel = NULL, grouped = FALSE){
+age <- function(date_of_birth, wave, panel = NA_character_, grouped = FALSE){
 
-  if(!inherits(date_of_birth, "Date")){
+  if(!inherits(date_of_birth, "Date")) {
     stop("date_of_birth must be in date format.")
   }
 
-  if(!inherits(wave, "numeric")){
-    stop("The wave number must be in numeric format.")
-  }
-
-  if(wave < 0 | wave %% 1 != 0){
-    stop("Wave number must be whole number greater than 0.")
-  }
-
-  if(wave >= 44 & !is.null(panel)){
-    panel <- NULL
-    warning("Panels were merged from wave 44 onwards. ",
-            "`panel` value supplied will not be used.")
-  }
-
-  if(wave < 44 & any(is.null(panel), !panel %in% c("A", "B"))){
-    stop("Panel must be A or B.")
+  if(!inherits(grouped, "logical")) {
+    stop("grouped must be TRUE/FALSE.")
   }
 
   wave_date <- start_date(wave, panel)
