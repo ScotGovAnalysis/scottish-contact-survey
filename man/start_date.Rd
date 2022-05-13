@@ -4,7 +4,7 @@
 \alias{start_date}
 \title{Start date of survey}
 \usage{
-start_date(wave, panel = NULL)
+start_date(wave, panel = NA_character_)
 }
 \arguments{
 \item{wave}{A numeric value denoting the survey wave number.}

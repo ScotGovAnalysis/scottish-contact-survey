@@ -18,42 +18,61 @@
 #'
 #' @export
 
-start_date <- function(wave, panel = NULL){
+start_date <- function(wave, panel = NA_character_){
 
-  if(!inherits(wave, c("numeric", "integer"))){
+  # Check argument format
+
+  if(!inherits(wave, c("numeric", "integer"))) {
     stop("The wave number must be in numeric or integer format.")
   }
 
-  if(any(length(wave) > 1, length(panel) > 1)){
-    stop("Wave and panel must be singular values; ",
-         "vectors cannot be supplied.\n  ",
-         "If applying the function to a data frame / tibble, ",
-         "precede with `rowwise()`.")
+  if(!inherits(panel, "character")) {
+    stop("panel must be a character.")
   }
 
-  if(wave <= 0 | wave %% 1 != 0){
-    stop("Wave number must be whole number greater than 0.")
+  # Error if more argument lengths don't match
+  if(length(wave) > 1 & length(panel) > 1 & length(wave) != length(panel)) {
+    stop("wave and panel arguments must be length 1 or of equal length.")
   }
 
-  if(wave >= 44 & !is.null(panel)){
-    panel <- NULL
-    warning("Panels were merged from wave 44 onwards. ",
-            "`panel` value supplied will not be used.")
+  # Join arguments into tibble
+  dat <- tibble::tibble(wave = wave, panel = panel)
+
+  # Check wave valid
+
+  wave_invalid <- dplyr::filter(dat, is.na(wave) | wave <= 0 | wave %% 1 != 0)
+
+  if(nrow(wave_invalid) > 0) {
+    stop("wave is missing or invalid.\n",
+         "wave must be supplied and must be an integer greater than zero.")
   }
 
-  if(wave < 44 & any(is.null(panel), !panel %in% c("A", "B"))){
-    stop("Panel must be A or B.")
+  # Check panel argument valid
+
+  no_panel_needed <- dplyr::filter(dat, !is.na(panel) & wave > 43)
+
+  if(nrow(no_panel_needed) > 0) {
+    warning("Panels merged from wave 44 onwards. Supplied panel value(s) will ",
+            "not be used.")
   }
 
-  week_1_start_date <-
-    if(is.null(panel)){
-      lubridate::dmy(06082020)
-    } else if(panel == "A") {
-      lubridate::dmy(06082020)
-    } else {
-      lubridate::dmy(13082020)
-    }
+  dat %<>% dplyr::mutate(panel = ifelse(wave > 43, NA_character_, panel))
 
-  week_1_start_date + lubridate::weeks((2 * wave) - 2)
+  panel_invalid <-
+    dplyr::filter(dat, wave <= 43 & (is.na(panel) | !panel %in% c("A", "B")))
+
+  if(nrow(panel_invalid) > 0) {
+    stop("Panel is missing or invalid.\n",
+         "Where wave is 43 or earlier, panel must be 'A' or 'B'.")
+  }
+
+  # Derive week 1 start date for panel
+  dat %<>% dplyr::mutate(w1 = dplyr::case_when(
+    is.na(wave) ~ lubridate::dmy(NA),
+    is.na(panel) | panel == "A" ~ lubridate::dmy(06082020),
+    panel == "B" ~ lubridate::dmy(13082020)
+  ))
+
+  purrr::pmap(dat, ~ ..3 + lubridate::weeks((2 * ..1) - 2)) %>% purrr::reduce(c)
 
 }
