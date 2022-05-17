@@ -76,3 +76,46 @@ start_date <- function(wave, panel = NA_character_){
   purrr::pmap(dat, ~ ..3 + lubridate::weeks((2 * ..1) - 2)) %>% purrr::reduce(c)
 
 }
+
+
+#' @title Date range of survey
+#'
+#' @description \code{date_range()} takes the wave number and panel
+#' and returns the date range that the survey was open.
+#'
+#' @param wave A numeric value denoting the survey wave number.
+#' @param panel If wave is 43 or earlier, a character value denoting the survey
+#' panel. Valid options are 'A' and 'B'.
+#' @param suffix Default value is FALSE. If TRUE, the days will be formatted
+#' with suffix; e.g. 1st, 2nd.
+#'
+#' @return The date range that the survey was open.
+#'
+#' @examples
+#' # Date range of survey 24A
+#' date_range(24, "A")
+#'
+#' # Date range of survey wave 46 (with suffixes)
+#' date_range(46, suffix = TRUE)
+#'
+#' @export
+
+date_range <- function(wave, panel = NA_character_, suffix = FALSE) {
+
+  start_date <- scs::start_date(wave, panel)
+  end_date   <- start_date + lubridate::days(6)
+
+  if(suffix) {
+
+    paste(scales::ordinal(lubridate::day(start_date)),
+          format(start_date, "%B -"),
+          scales::ordinal(lubridate::day(end_date)),
+          format(end_date, "%B"))
+
+  } else {
+
+    paste(format(start_date, "%d %B -"), format(end_date, "%d %B"))
+
+  }
+
+}

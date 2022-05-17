@@ -27,6 +27,7 @@ Imports:
     glue,
     here,
     purrr,
-    tibble
+    tibble,
+    scales
 Suggests: 
     testthat (>= 2.1.0)
