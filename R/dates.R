@@ -86,7 +86,7 @@ start_date <- function(wave, panel = NA_character_){
 #' @param wave A numeric value denoting the survey wave number.
 #' @param panel If wave is 43 or earlier, a character value denoting the survey
 #' panel. Valid options are 'A' and 'B'.
-#' @param suffix Default value is FALSE. If TRUE, the days will be formatted
+#' @param suffix Default value is TRUE. If TRUE, the days will be formatted
 #' with suffix; e.g. 1st, 2nd.
 #'
 #' @return The date range that the survey was open.
@@ -95,12 +95,12 @@ start_date <- function(wave, panel = NA_character_){
 #' # Date range of survey 24A
 #' date_range(24, "A")
 #'
-#' # Date range of survey wave 46 (with suffixes)
-#' date_range(46, suffix = TRUE)
+#' # Date range of survey wave 46 (without suffixes)
+#' date_range(46, suffix = FALSE)
 #'
 #' @export
 
-date_range <- function(wave, panel = NA_character_, suffix = FALSE) {
+date_range <- function(wave, panel = NA_character_, suffix = TRUE) {
 
   start_date <- scs::start_date(wave, panel)
   end_date   <- start_date + lubridate::days(6)
