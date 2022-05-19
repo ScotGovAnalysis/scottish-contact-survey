@@ -1,3 +1,37 @@
+#' @title Add empty columns to data
+#'
+#' @param data Data to add columns to
+#' @param n_to_add Number of columns to add
+#' @param after Name of columns to add columns after
+
+add_cols <- function(data, n_to_add, after) {
+
+  n_cols  <- ncol(data)
+  n_after <- which(names(data) == after)
+
+  max_temp <-
+    data %>%
+    dplyr::select(tidyselect::matches("^temp_\\d+$")) %>%
+    names() %>%
+    stringr::str_extract("\\d+$") %>%
+    as.numeric()
+
+  first_temp <- ifelse(length(max_temp) > 0, max(max_temp) + 1, 1)
+
+  new_names <- sprintf("temp_%d", first_temp:(first_temp + n_to_add - 1))
+
+  data %<>% magrittr::inset(new_names, value = NA)
+
+  if(n_cols == n_after) data else {
+    data %<>%
+      dplyr::select(1:n_after,
+                    (n_cols + 1):(n_cols + n_to_add),
+                    (n_after + 1):n_cols)
+  }
+
+}
+
+
 #' @title Reformat anonymised response data
 #'
 #' @param anon_resp_data Data frame of anonymised response data.
