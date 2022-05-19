@@ -18,7 +18,7 @@
 #'
 #' @export
 
-start_date <- function(wave, panel = NA_character_){
+start_date <- function(wave, panel = NULL){
 
   # Check argument format
 
@@ -26,7 +26,7 @@ start_date <- function(wave, panel = NA_character_){
     stop("The wave number must be in numeric or integer format.")
   }
 
-  if(!inherits(panel, "character")) {
+  if(!is.null(panel) & !inherits(panel, "character")) {
     stop("panel must be a character.")
   }
 
@@ -34,6 +34,9 @@ start_date <- function(wave, panel = NA_character_){
   if(length(wave) > 1 & length(panel) > 1 & length(wave) != length(panel)) {
     stop("wave and panel arguments must be length 1 or of equal length.")
   }
+
+  # If panel is null, replace with NA
+  if(is.null(panel)) panel <- NA_character_
 
   # Join arguments into tibble
   dat <- tibble::tibble(wave = wave, panel = panel)
@@ -100,7 +103,7 @@ start_date <- function(wave, panel = NA_character_){
 #'
 #' @export
 
-date_range <- function(wave, panel = NA_character_, suffix = TRUE) {
+date_range <- function(wave, panel = NULL, suffix = TRUE) {
 
   start_date <- scs::start_date(wave, panel)
   end_date   <- start_date + lubridate::days(6)

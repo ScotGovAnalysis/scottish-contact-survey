@@ -4,7 +4,7 @@
 \alias{date_range}
 \title{Date range of survey}
 \usage{
-date_range(wave, panel = NA_character_, suffix = TRUE)
+date_range(wave, panel = NULL, suffix = TRUE)
 }
 \arguments{
 \item{wave}{A numeric value denoting the survey wave number.}
