@@ -47,9 +47,8 @@ reformat_anon_resp <- function(anon_resp_data, names) {
     stop("Names must be in character format.")
   }
 
-  anon_resp_data %>%
-
-    # Remove some columns
+  # Remove some columns
+  anon_resp_data %<>%
     dplyr::select(
       -tidyselect::any_of(c(
         "in_scotland", "vaccine", "to_update",
@@ -61,22 +60,44 @@ reformat_anon_resp <- function(anon_resp_data, names) {
       -tidyselect::matches("^updated_"),
       -tidyselect::matches("^visit_healthcare_"),
       -tidyselect::matches("^covid_(un)?confirmed")
-    ) %>%
+    )
 
-    # Add empty columns and rearrange
-    tibble::add_column(hm11_change = NA, .after = 16) %>%
-    magrittr::inset(sprintf("temp_%d", 1:245), value = NA) %>%
-    magrittr::extract(, c(1:39, 1430:1674, 40:1429)) %>%
-    tibble::add_column(hm15_contact = NA, .after = 332) %>%
-    magrittr::inset(sprintf("temp_%d", 246:(246+26)), value = NA) %>%
-    magrittr::extract(, c(1:741, 1676:1702, 742:1675)) %>%
-    magrittr::extract(, c(1:1690, 1693:1702, 1691:1692)) %>%
-    tibble::add_column(hm11_name = NA, employment_1_0 = NA, .after = 1700) %>%
-    tibble::add_column(children_1 = NA, children_2 = NA, .after = 1703) %>%
-    magrittr::inset(sprintf("end_%d", 1:56), value = NA) %>%
+  # Add empty columns
+  anon_resp_data %<>%
+    add_cols(1, after = "hm10_change") %>%
+    add_cols(245, after = "new_hm4_student") %>%
+    add_cols(1, after = "hm14_contact")
 
-    # Rename variables for controller script
-    magrittr::set_names(names)
+  for(i in 1:14) {
+    anon_resp_data %<>%
+      add_cols(10, after = paste0("hm", i, "_other")) %>%
+      add_cols(1, after = paste0("hm", i, "_outside"))
+  }
+
+  anon_resp_data %<>%
+    add_cols(27, after = "temp_401")
+
+  for(i in 1:30) {
+    anon_resp_data %<>%
+      add_cols(1, after = paste0("c", i, "_gender")) %>%
+      add_cols(10, after = paste0("c", i, "_other")) %>%
+      add_cols(1, after = paste0("c", i, "_outside"))
+  }
+
+  anon_resp_data %<>%
+    add_cols(1, after = "work_physical_65_over") %>%
+    add_cols(1, after = "education_physical_65_over") %>%
+    add_cols(1, after = "other_physical_65_over") %>%
+    dplyr::select(1:(ncol(.) - 12),
+                  (ncol(.) - 9):ncol(.),
+                  .data$employment,
+                  .data$studying) %>%
+    add_cols(2, after = "hm10_name") %>%
+    add_cols(2, after = "employment") %>%
+    add_cols(56, after = "studying")
+
+  # Rename variables for controller script
+  anon_resp_data %>% magrittr::set_names(names)
 
 }
 
