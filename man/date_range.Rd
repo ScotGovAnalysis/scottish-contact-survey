@@ -4,7 +4,7 @@
 \alias{date_range}
 \title{Date range of survey}
 \usage{
-date_range(wave, panel = NULL, suffix = TRUE)
+date_range(wave, panel = NULL, suffix = TRUE, year = FALSE)
 }
 \arguments{
 \item{wave}{A numeric value denoting the survey wave number.}
@@ -14,6 +14,8 @@ panel. Valid options are 'A' and 'B'.}
 
 \item{suffix}{Default value is TRUE. If TRUE, the days will be formatted
 with suffix; e.g. 1st, 2nd.}
+
+\item{year}{Default value is FALSE. If TRUE, year will be included.}
 }
 \value{
 The date range that the survey was open.
@@ -28,5 +30,8 @@ date_range(24, "A")
 
 # Date range of survey wave 46 (without suffixes)
 date_range(46, suffix = FALSE)
+
+# Date range of survey wave 46 (with year)
+date_range(46, year = TRUE)
 
 }

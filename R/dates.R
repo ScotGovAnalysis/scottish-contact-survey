@@ -91,6 +91,7 @@ start_date <- function(wave, panel = NULL){
 #' panel. Valid options are 'A' and 'B'.
 #' @param suffix Default value is TRUE. If TRUE, the days will be formatted
 #' with suffix; e.g. 1st, 2nd.
+#' @param year Default value is FALSE. If TRUE, year will be included.
 #'
 #' @return The date range that the survey was open.
 #'
@@ -101,24 +102,52 @@ start_date <- function(wave, panel = NULL){
 #' # Date range of survey wave 46 (without suffixes)
 #' date_range(46, suffix = FALSE)
 #'
+#' # Date range of survey wave 46 (with year)
+#' date_range(46, year = TRUE)
+#'
 #' @export
 
-date_range <- function(wave, panel = NULL, suffix = TRUE) {
+date_range <- function(wave, panel = NULL, suffix = TRUE, year = FALSE) {
 
+  # Check suffix and year are logical
+  if(!inherits(suffix, "logical")) {
+    stop("suffix must be TRUE or FALSE.")
+  }
+
+  if(!inherits(year, "logical")) {
+    stop("year must be TRUE or FALSE.")
+  }
+
+  # Start and end date of survey
   start_date <- scs::start_date(wave, panel)
   end_date   <- start_date + lubridate::days(6)
 
-  if(suffix) {
+  # Boolean for whether to include year for start and end date
+  start_date_year <- year &
+    (lubridate::year(start_date) != lubridate::year(end_date))
+  end_date_year <- year
 
-    paste(scales::ordinal(lubridate::day(start_date)),
-          format(start_date, "%B -"),
-          scales::ordinal(lubridate::day(end_date)),
-          format(end_date, "%B"))
+  # Construct date range
+  paste(
 
-  } else {
+    # Start date day
+    ifelse(suffix,
+           scales::ordinal(lubridate::day(start_date)),
+           format(start_date, "%d")),
 
-    paste(format(start_date, "%d %B -"), format(end_date, "%d %B"))
+    # Start date month and year
+    format(start_date,
+           ifelse(start_date_year, "%B %Y", "%B")),
+    "-",
 
-  }
+    # End date day
+    ifelse(suffix,
+           scales::ordinal(lubridate::day(end_date)),
+           format(end_date, "%d")),
+
+    # End date month and year
+    format(end_date,
+           ifelse(end_date_year, "%B %Y", "%B"))
+  )
 
 }
