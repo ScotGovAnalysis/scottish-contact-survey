@@ -37,6 +37,7 @@ library(here)
 library(tibble)
 library(usethis)
 library(janitor)
+library(rmarkdown)
 
 options(readr.show_progress = FALSE)
 

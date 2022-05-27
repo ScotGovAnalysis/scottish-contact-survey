@@ -120,7 +120,15 @@ write_rds(
 )
 
 
-### 6 - Get invite data for next wave of survey ----
+### 6 - Produce demographics summary report ----
+
+render(
+  input = here("markdown", "demographics-summary.Rmd"),
+  output_file = here("data", wave, paste0(wave, "_demographics-summary.html"))
+)
+
+
+### 7 - Get invite data for next wave of survey ----
 
 invites <- survey_invites(reg)
 
@@ -131,7 +139,7 @@ write_csv(
 )
 
 
-### 7 - Delete non-anonymised data files ----
+### 8 - Delete non-anonymised data files ----
 
 # Keep rolling four-week history of non-anonymised files
 # Delete non-anon files for two waves prior to current survey
