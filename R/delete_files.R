@@ -24,8 +24,8 @@ delete_files <- function(survey){
       here::here("data", survey),
       full.names = TRUE
     ) %>%
-
-    magrittr::extract(!stringr::str_detect(., "-anon"))
+    magrittr::extract(!stringr::str_detect(., "-anon") &
+                        !stringr::str_detect(., "demographics-summary"))
 
   # Include registration file if exists
   to_delete <- c(
