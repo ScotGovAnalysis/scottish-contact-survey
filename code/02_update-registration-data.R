@@ -142,7 +142,7 @@ write_csv(
 ### 8 - Delete non-anonymised data files ----
 
 # Keep rolling four-week history of non-anonymised files
-# Delete non-anon files for two waves prior to current survey
+# Delete non-anon files for four waves prior to current survey
 
 delete_files(wave - 4)
 
