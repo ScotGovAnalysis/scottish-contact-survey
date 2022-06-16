@@ -428,6 +428,45 @@ rate_trend <-
 
 ```
 
+<br>
+
+```{r trend-rate-table}
+
+rate_trend %>%
+  group_by(wave, date, age_group) %>%
+  summarise_at(vars(starts_with("n")), sum) %>%
+  ungroup() %>%
+  bind_rows(
+    rate_trend %>%
+      group_by(wave, date) %>%
+      summarise_at(vars(starts_with("n")), sum) %>%
+      mutate(age_group = "Total") %>%
+      ungroup()
+  ) %>%
+  arrange(wave) %>%
+  mutate(rate = paste0(sprintf("%.1f", 
+                               round_half_up(n_resp / n_reg * 100, 1)),
+                       "%")) %>%
+  select(-n_resp, -n_reg) %>%
+  mutate(date = date_range(wave, suffix = FALSE)) %>%
+  rename(Wave = wave, Date = date) %>%
+  pivot_wider(names_from = age_group, values_from = rate) %>%
+  flextable(cwidth = 0.9) %>%
+  width(j = 2, width = 2.2) %>%
+  theme_alafoli() %>%
+  align(j = 1:2, align = "left", part = "all") %>%
+  align(j = 3:9, align = "right", part = "all") %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  vline(j = 8, part = "all", border = fp_border(color = "black")) %>%
+  bold(part = "header") %>%
+  bg(j = 9, bg = "snow2", part = "all")
+
+```
+
+<br>
+
 #### Overall
 
 ```{r trend-rate}
@@ -515,6 +554,31 @@ opt_out_data <- function(x) {
 opt_outs <- map_dfr(c(31:42, 44:wave), opt_out_data)
 
 ```
+
+<br>
+
+```{r opt-outs-table}
+
+opt_outs %>%
+  filter(survey_wave >= 44) %>%
+  group_by(survey_wave, date) %>%
+  summarise(n = sum(n)) %>%
+  ungroup() %>%
+  mutate(date = date_range(survey_wave, suffix = FALSE)) %>%
+  rename(Wave = survey_wave, Date = date, `Opt Outs` = n) %>%
+  flextable(cwidth = 0.9) %>%
+  width(j = 2, width = 2.2) %>%
+  width(j = 3, width = 1.5) %>%
+  theme_alafoli() %>%
+  align(j = 1:2, align = "left", part = "all") %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  bold(part = "header")
+
+```
+
+<br>
 
 ```{r opt-outs}
 
