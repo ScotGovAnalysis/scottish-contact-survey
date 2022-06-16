@@ -43,7 +43,7 @@ reg_data_updates <- function(reg_data, resp_data, date_updated){
     ) %>%
 
     # Clean postcode
-    dplyr::mutate(postcode = postcode(.data$postcode)) %>%
+    dplyr::mutate(postcode = format_postcode(.data$postcode)) %>%
 
     # Add Local Authority code
     dplyr::left_join(la, by = "local_authority") %>%

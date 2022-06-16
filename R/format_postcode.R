@@ -1,8 +1,8 @@
 #' @title Format a postcode
 #'
-#' @description \code{postcode} takes a character string or vector of character
-#' strings. It extracts the input values which adhere to the standard UK
-#' postcode format (with or without spaces), assigns the appropriate amount
+#' @description \code{format_postcode} takes a character string or vector of
+#' character strings. It extracts the input values which adhere to the standard
+#' UK postcode format (with or without spaces), assigns the appropriate amount
 #' of spacing to them (for both pc7 and pc8 formats) and ensures all letters
 #' are capitalised.
 #'
@@ -58,7 +58,7 @@
 #' contain lower case letters will generate a warning message explaining that
 #' these letters will be capitalised.
 
-postcode <- function(x, format = c("pc7", "pc8")) {
+format_postcode <- function(x, format = c("pc7", "pc8")) {
 
   format <- match.arg(format)
 
@@ -89,13 +89,8 @@ postcode <- function(x, format = c("pc7", "pc8")) {
         pattern))) {
     warning(glue::glue("{n} non-NA input {ifelse(n == 1, singular, multiple)} ",
                        "not adhere to the standard UK postcode format (with ",
-                       "or without spaces) and will be coded as NA. The ",
-                       "standard format is:\n",
-                       "\U2022 1 or 2 letters, followed by\n",
-                       "\U2022 1 number, followed by\n",
-                       "\U2022 1 optional letter or number, followed by\n",
-                       "\U2022 1 number, followed by\n",
-                       "\U2022 2 letters"))
+                       "or without spaces) and will be coded as NA. See ",
+                       "function help file for standard format."))
   }
 
   # Replace postcodes which do not adhere to the standard format with NA (this
