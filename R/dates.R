@@ -128,26 +128,45 @@ date_range <- function(wave, panel = NULL, suffix = TRUE, year = FALSE) {
   end_date_year <- year
 
   # Construct date range
-  paste(
+  if(suffix) {
 
-    # Start date day
-    ifelse(suffix,
-           scales::ordinal(lubridate::day(start_date)),
-           format(start_date, "%d")),
+    paste(
+      # Start date day
+      scales::ordinal(lubridate::day(start_date)),
 
-    # Start date month and year
-    format(start_date,
-           ifelse(start_date_year, "%B %Y", "%B")),
-    "-",
+      # Start date month and year
+      format(start_date,
+             ifelse(start_date_year, "%B %Y", "%B")),
+      "-",
 
-    # End date day
-    ifelse(suffix,
-           scales::ordinal(lubridate::day(end_date)),
-           format(end_date, "%d")),
+      # End date day
+      scales::ordinal(lubridate::day(end_date)),
 
-    # End date month and year
-    format(end_date,
-           ifelse(end_date_year, "%B %Y", "%B"))
-  )
+      # End date month and year
+      format(end_date,
+             ifelse(end_date_year, "%B %Y", "%B"))
+    )
+
+  } else {
+
+    paste(
+
+      # Start date day
+      format(start_date, "%d"),
+
+      # Start date month and year
+      format(start_date,
+             ifelse(start_date_year, "%B %Y", "%B")),
+      "-",
+
+      # End date day
+      format(end_date, "%d"),
+
+      # End date month and year
+      format(end_date,
+             ifelse(end_date_year, "%B %Y", "%B"))
+    )
+
+  }
 
 }

@@ -10,4 +10,8 @@ test_that("Provides correct answer", {
   expect_equal(date_range(46, year = TRUE), "28th April - 4th May 2022")
   expect_equal(date_range(37, "B", year = TRUE),
                "30th December 2021 - 5th January 2022")
+  expect_equal(date_range(44:46),
+               c("31st March - 6th April",
+                 "14th April - 20th April",
+                 "28th April - 4th May"))
 })
