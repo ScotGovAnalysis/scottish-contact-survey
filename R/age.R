@@ -72,7 +72,7 @@ age_group <- function(age){
 #'
 #' @export
 
-age <- function(date_of_birth, wave, panel = NA_character_, grouped = FALSE){
+age <- function(date_of_birth, wave, panel = NULL, grouped = FALSE){
 
   if(!inherits(date_of_birth, "Date")) {
     stop("date_of_birth must be in date format.")
