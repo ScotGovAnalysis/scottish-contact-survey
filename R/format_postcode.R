@@ -103,7 +103,7 @@ format_postcode <- function(x, format = c("pc7", "pc8")) {
 
   if (any(grepl("[a-z]", x))) {
     warning("Lower case letters in any input value(s) adhering to the ",
-            "standard UK postcode format will be converted to upper case")
+            "standard UK postcode format will be converted to upper case.")
   }
 
   x <- toupper(x)
