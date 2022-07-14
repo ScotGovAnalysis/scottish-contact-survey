@@ -125,7 +125,7 @@ write_csv(
 
 opt_outs <-
   here("data", wave, paste0(wave, "_opt-outs.xlsx")) %>%
-  read.xlsx(sheet = 1) %>%
+  read_xlsx(sheet = 1) %>%
   select(email = `E-mail`) %>%
   add_cp_number(
     here("data", "registration-data",
