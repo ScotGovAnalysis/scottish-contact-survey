@@ -5,6 +5,8 @@ output:
     toc: true
     toc_depth: 3
     toc_float: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -21,6 +23,45 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE,
 
 theme_set(scs_theme())
 dodge <- position_dodge(width = 0.9)
+
+```
+
+```{r opt-outs-function, include = FALSE}
+
+opt_out_data <- function(x) {
+
+  get_opt_outs <- function(y) {
+  
+  here("data", y, paste0(y, "_opt-outs-anon.rds")) %>%
+    read_rds() %>%
+    filter(gender %in% c("Male", "Female")) %>%
+    group_by(age_group, gender) %>%
+    summarise(n = n()) %>%
+    ungroup()
+  
+  }
+  
+  if(!(x %in% 30:42) & !(x >= 44)) {
+    stop("Wave must be greater or equal to 30, and not 43.")
+  }
+
+  data <- if(x %in% 30:42) {
+    bind_rows(get_opt_outs(paste0(x, "A")), get_opt_outs(paste0(x, "B")))
+  } else {
+    get_opt_outs(x)
+  }
+
+  data %>%
+    group_by(age_group, gender) %>%
+    summarise_all(sum) %>%
+    ungroup() %>%
+    mutate(
+      survey_wave = x,
+      date = start_date(as.numeric(x), "A")
+    ) %>%
+    select(survey_wave, date, everything())
+
+}
 
 ```
 
@@ -113,6 +154,7 @@ latest %>%
 
 ```
 
+<br>
 
 ### Response Rate {.tabset}
 
@@ -184,6 +226,42 @@ latest %>%
 
 ```
 
+<br>
+
+### Opt Outs
+
+<br>
+
+```{r latest-opt-outs-data, include = FALSE}
+
+opt_outs <- opt_out_data(wave)
+
+```
+
+```{r latest-opt-outs-table}
+
+opt_outs %>%
+  select(-c(survey_wave, date)) %>%
+  rename(`Age Group` = age_group, Gender = gender, `Opt Outs` = n) %>%
+  adorn_totals(fill = "") %>%
+  flextable(cwidth = 0.9) %>%
+  width(j = 1:2, width = 1.8) %>%
+  width(j = 3, width = 1.5) %>%
+  theme_alafoli() %>%
+  align(j = 1:2, align = "left", part = "all") %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  bold(part = "header") %>%
+  hline(i = nrow(opt_outs), 
+        part = "body", 
+        border = fp_border(color = "black")) %>%
+  bg(i = nrow(opt_outs) + 1, bg = "snow2", part = "body") %>%
+  bold(i = nrow(opt_outs) + 1, part = "body")
+
+```
+
+<br>
 
 ## Trend
 
@@ -515,41 +593,6 @@ rate_trend %>%
 ### Opt Outs
 
 ```{r opt-outs-data, include = FALSE}
-
-opt_out_data <- function(x) {
-
-  get_opt_outs <- function(y) {
-  
-  here("data", y, paste0(y, "_opt-outs-anon.rds")) %>%
-    read_rds() %>%
-    filter(gender %in% c("Male", "Female")) %>%
-    group_by(age_group, gender) %>%
-    summarise(n = n()) %>%
-    ungroup()
-  
-  }
-  
-  if(!(x %in% 30:42) & !(x >= 44)) {
-    stop("Wave must be greater or equal to 30, and not 43.")
-  }
-
-  data <- if(x %in% 30:42) {
-    bind_rows(get_opt_outs(paste0(x, "A")), get_opt_outs(paste0(x, "B")))
-  } else {
-    get_opt_outs(x)
-  }
-
-  data %>%
-    group_by(age_group, gender) %>%
-    summarise_all(sum) %>%
-    ungroup() %>%
-    mutate(
-      survey_wave = x,
-      date = start_date(as.numeric(x), "A")
-    ) %>%
-    select(survey_wave, date, everything())
-
-}
 
 opt_outs <- map_dfr(c(31:42, 44:wave), opt_out_data)
 
