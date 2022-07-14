@@ -15,7 +15,7 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-wave  <- 50
+wave  <- 51
 
 # If TRUE, opt-outs will be replaced in active panel by reserve list
 add_reserves <- TRUE
@@ -25,7 +25,7 @@ add_reserves <- TRUE
 
 library(dplyr)
 library(readr)
-library(openxlsx)
+library(readxl)
 library(stringr)
 library(magrittr)
 library(scs)
