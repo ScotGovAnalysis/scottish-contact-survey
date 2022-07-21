@@ -1,0 +1,654 @@
+---
+title: Scottish Contact Survey Demographics Summary
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+
+source(here::here("code", "00_setup.R"))
+
+library(ggplot2)
+library(scsplot)
+library(flextable)
+library(officer)
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE,
+                      fig.width = 15, fig.width = 10)
+
+theme_set(scs_theme())
+dodge <- position_dodge(width = 0.9)
+
+```
+
+```{r opt-outs-function, include = FALSE}
+
+opt_out_data <- function(x) {
+
+  get_opt_outs <- function(y) {
+  
+  here("data", y, paste0(y, "_opt-outs-anon.rds")) %>%
+    read_rds() %>%
+    filter(gender %in% c("Male", "Female")) %>%
+    group_by(age_group, gender) %>%
+    summarise(n = n()) %>%
+    ungroup()
+  
+  }
+  
+  if(!(x %in% 30:42) & !(x >= 44)) {
+    stop("Wave must be greater or equal to 30, and not 43.")
+  }
+
+  data <- if(x %in% 30:42) {
+    bind_rows(get_opt_outs(paste0(x, "A")), get_opt_outs(paste0(x, "B")))
+  } else {
+    get_opt_outs(x)
+  }
+
+  data %>%
+    group_by(age_group, gender) %>%
+    summarise_all(sum) %>%
+    ungroup() %>%
+    mutate(
+      survey_wave = x,
+      date = start_date(as.numeric(x), "A")
+    ) %>%
+    select(survey_wave, date, everything())
+
+}
+
+```
+
+<br>
+
+## Wave `r wave`
+
+Wave `r wave` of the Scottish Contact Survey was open from `r date_range(wave, year = TRUE)`.
+
+```{r data-latest, include = FALSE}
+
+# Age and gender of responses to latest wave
+resp <- 
+  here("data", wave, paste0(wave, "_registration-data-anon.rds")) %>%
+  read_rds() %>%
+  mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
+  filter(gender %in% c("Male", "Female")) %>%
+  group_by(age_group, gender) %>%
+  summarise(n_resp = n()) %>%
+  ungroup()
+
+# Age and gender of those invited to latest wave
+reg <-
+  here("data", "registration-data", paste0(wave, "_registration-data.rds")) %>%
+  read_rds() %>%
+  filter(status == "active") %>%
+  mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
+  filter(gender %in% c("Male", "Female")) %>%
+  group_by(age_group, gender) %>%
+  summarise(n_reg = n()) %>%
+  ungroup()
+
+latest <-
+  resp %>%
+  full_join(reg, by = c("age_group", "gender")) %>%
+  replace_na(list(n_resp = 0, n_reg = 0, n_opt_outs = 0)) %>%
+  mutate(
+    survey_wave = wave,
+    date = start_date(wave)
+  ) %>%
+  select(survey_wave, date, everything())
+
+```
+
+### Responses
+
+<br>
+
+```{r latest-resp-table}
+
+latest %>%
+  select(-survey_wave, -date, -n_reg) %>%
+  pivot_wider(names_from = age_group, values_from = n_resp) %>%
+  adorn_totals("row") %>%
+  adorn_totals("col") %>%
+  rename(Gender = gender) %>%
+  flextable(cwidth = 1.2) %>%
+  theme_alafoli() %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  hline(i = 2, part = "body", border = fp_border(color = "black")) %>%
+  vline(j = 7, part = "all", border = fp_border(color = "black")) %>%
+  bold(j = 1, part = "body") %>%
+  bold(part = "header") %>%
+  bg(i = 3, j = 1:8, bg = "snow2", part = "body") %>%
+  bg(j = 8, bg = "snow2", part = "all")
+
+```
+
+<br>
+
+```{r latest-resp}
+
+latest %>%
+  ggplot(aes(x = age_group, y = n_resp, fill = gender)) +
+  geom_col(position = dodge) +
+  geom_text(aes(y = n_resp + 10, label = n_resp), 
+            position = dodge,
+            size = 5) +
+  scale_fill_discrete_scs() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 300)) +
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5),
+        text = element_text(size = 16)) +
+  labs(
+    x = "Age Group",
+    y = "Number of Responses",
+    fill = "Gender"
+  )
+
+```
+
+<br>
+
+### Response Rate {.tabset}
+
+#### Age Group
+
+Bar labels indicate percentage response rate for each age group.
+
+```{r latest-rate-age}
+
+latest %>%
+  group_by(age_group) %>%
+  summarise_at(vars(n_resp, n_reg), sum) %>%
+  ungroup() %>%
+  mutate(rate = paste0(round_half_up(n_resp / n_reg * 100, 0), "%"),
+         total = n_reg,
+         n_reg = n_reg - n_resp) %>%
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "response", 
+               values_to = "n") %>%
+  mutate(response = ifelse(response == "n_resp", 
+                           "Responded", "No Response")) %>%
+  ggplot(aes(x = age_group, y = n)) +
+  geom_col(aes(fill = as.character(response)), position = "stack") +
+  geom_text(aes(y = total + 20, label = rate),
+            size = 5) +
+  scale_fill_discrete_scs() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 600)) +
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5),
+        text = element_text(size = 16)) +
+  labs(
+    x = "Age Group",
+    y = "Number of Panel Members",
+    fill = "Response Status"
+  )
+
+```
+
+#### Gender
+
+Bar labels indicate percentage response rate for each gender.
+
+```{r latest-rate-gender}
+
+latest %>%
+  group_by(gender) %>%
+  summarise_at(vars(n_resp, n_reg), sum) %>%
+  ungroup() %>%
+  mutate(rate = paste0(round_half_up(n_resp / n_reg * 100, 0), "%"),
+         total = n_reg,
+         n_reg = n_reg - n_resp) %>%
+  pivot_longer(cols = starts_with("n"), 
+               names_to = "response", 
+               values_to = "n") %>%
+  mutate(response = ifelse(response == "n_resp", 
+                           "Responded", "No Response")) %>%
+  ggplot(aes(x = gender, y = n)) +
+  geom_col(aes(fill = as.character(response)), position = "stack") +
+  geom_text(aes(y = total + 40, label = rate),
+            size = 5) +
+  scale_fill_discrete_scs() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1500)) +
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5),
+        text = element_text(size = 16)) +
+  labs(
+    x = "Gender",
+    y = "Number of Panel Members",
+    fill = "Response Status"
+  )
+
+```
+
+<br>
+
+### Opt Outs
+
+<br>
+
+```{r latest-opt-outs-data, include = FALSE}
+
+opt_outs <- opt_out_data(wave)
+
+```
+
+```{r latest-opt-outs-table}
+
+opt_outs %>%
+  select(-c(survey_wave, date)) %>%
+  rename(`Age Group` = age_group, Gender = gender, `Opt Outs` = n) %>%
+  adorn_totals(fill = "") %>%
+  flextable(cwidth = 0.9) %>%
+  width(j = 1:2, width = 1.8) %>%
+  width(j = 3, width = 1.5) %>%
+  theme_alafoli() %>%
+  align(j = 1:2, align = "left", part = "all") %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  bold(part = "header") %>%
+  hline(i = nrow(opt_outs), 
+        part = "body", 
+        border = fp_border(color = "black")) %>%
+  bg(i = nrow(opt_outs) + 1, bg = "snow2", part = "body") %>%
+  bold(i = nrow(opt_outs) + 1, part = "body")
+
+```
+
+<br>
+
+## Trend
+
+```{r data-trend, include = FALSE}
+
+demog_data <- function(x) {
+
+  get_resp <- function(y) {
+  
+  here("data", y, paste0(y, "_registration-data-anon.rds")) %>%
+    read_rds() %>%
+    mutate(age_group = age(date_of_birth,
+                           as.numeric(str_extract(y, "\\d{1,2}")),
+                           str_extract(y, "[AB]"),
+                           grouped = TRUE)) %>%
+    filter(gender %in% c("Male", "Female")) %>%
+    group_by(age_group, gender) %>%
+    summarise(n_resp = n()) %>%
+    ungroup()
+  
+}
+  
+  if(!(x %in% 30:42) & !(x >= 44)) {
+    stop("Wave must be greater or equal to 30, and not 43.")
+  }
+
+  data <- if(x %in% 30:42) {
+    bind_rows(get_resp(paste0(x, "A")), get_resp(paste0(x, "B")))
+  } else {
+    get_resp(x)
+  }
+
+  data %>%
+    group_by(age_group, gender) %>%
+    summarise_all(sum) %>%
+    ungroup() %>%
+    mutate(
+      survey_wave = x,
+      date = start_date(as.numeric(x), "A")
+    ) %>%
+    select(survey_wave, date, everything())
+
+}
+
+trend <- map_dfr(c(31:42, 44:wave), demog_data)
+
+```
+
+### Responses {.tabset}
+
+<br>
+
+```{r trend-resp-table}
+
+trend %>%
+  filter(survey_wave >= 44) %>%
+  group_by(survey_wave, date, age_group) %>%
+  summarise(n_resp = sum(n_resp)) %>%
+  ungroup() %>%
+  mutate(date = date_range(survey_wave, suffix = FALSE)) %>%
+  rename(Wave = survey_wave, Date = date) %>%
+  pivot_wider(names_from = age_group, values_from = n_resp) %>%
+  adorn_totals("col") %>%
+  flextable(cwidth = 0.9) %>%
+  width(j = 2, width = 2.2) %>%
+  theme_alafoli() %>%
+  align(j = 1:2, align = "left", part = "all") %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  vline(j = 8, part = "all", border = fp_border(color = "black")) %>%
+  bold(part = "header") %>%
+  bg(j = 9, bg = "snow2", part = "all")
+
+```
+
+<br>
+
+#### Overall
+
+```{r trend-resp}
+
+trend %>%
+  group_by(date) %>%
+  summarise(n = sum(n_resp)) %>%
+  ungroup() %>%
+  ggplot(aes(x = date, y = n)) +
+  geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
+                   y = 0, yend = 4000),
+               colour = "#8e8e8e",
+               linetype = "dashed") +
+  geom_text(aes(x = ymd("2021-11-26"), y = 3800, label = "Panel\nRefresh"),
+            hjust = 0, size = 5) +
+  geom_rect(aes(xmin = ymd("2021-12-23"), xmax = ymd("2022-01-06"), 
+                ymin = 0, ymax = 4000),
+            fill = "#d4d4d4",
+            alpha = 0.02) +
+  geom_text(aes(x = ymd("2022-01-07"), y = 3900, label = "Festive Period"),
+            hjust = 0, size = 5) +
+  geom_line(colour = scs_colour_values["dark-blue"], size = 1) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 4200)) +
+  scale_x_date(breaks = unique(trend$date), date_labels = "%d %b") +
+  theme(text = element_text(size = 16)) +
+  labs(
+    x = "Date",
+    y = "Number of Responses"
+  )
+
+```
+
+#### Age Group
+
+```{r trend-resp-age}
+
+trend %>%
+  group_by(date, age_group) %>%
+  summarise(n = sum(n_resp)) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
+                   y = 0, yend = 1000),
+               colour = "#8e8e8e",
+               linetype = "dashed") +
+  geom_text(aes(x = ymd("2021-11-26"), y = 960, label = "Panel\nRefresh"),
+            hjust = 0, size = 5) +
+  geom_rect(aes(xmin = ymd("2021-12-23"), xmax = ymd("2022-01-06"), 
+                ymin = 0, ymax = 1000),
+            fill = "#d4d4d4",
+            alpha = 0.02) +
+  geom_text(aes(x = ymd("2022-01-07"), y = 970, label = "Festive Period"),
+            hjust = 0, size = 5) +
+  geom_line(aes(x = date, y = n, colour = age_group), size = 1) +  
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1100)) +
+  scale_x_date(breaks = unique(trend$date), date_labels = "%d %b") +
+  theme(text = element_text(size = 16)) +
+  labs(
+    x = "Date",
+    y = "Number of Responses",
+    colour = "Age Group"
+  )
+
+```
+
+#### 18-29 Age Group
+
+```{r trend-resp-18-29}
+
+trend %>%
+  filter(age_group == "18-29") %>%
+  group_by(date) %>%
+  summarise(n = sum(n_resp)) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
+                   y = 0, yend = 220),
+               colour = "#8e8e8e",
+               linetype = "dashed") +
+  geom_text(aes(x = ymd("2021-11-26"), y = 210, label = "Panel\nRefresh"),
+            hjust = 0, size = 5) +
+  geom_rect(aes(xmin = ymd("2021-12-23"), xmax = ymd("2022-01-06"), 
+                ymin = 0, ymax = 220),
+            fill = "#d4d4d4",
+            alpha = 0.02) +
+  geom_text(aes(x = ymd("2022-01-07"), y = 210, label = "Festive Period"),
+            hjust = 0, size = 5) +
+  geom_line(aes(x = date, y = n), 
+            colour = scs_colour_values["dark-blue"], size = 1) +  
+  geom_hline(aes(yintercept = 30), colour = "red", linetype = "dashed") +
+  geom_text(aes(x = ymd("2022-04-20"), y = 25, label = "30 responses"), 
+            colour = "red", hjust = 0, size = 5) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 230)) +
+  scale_x_date(breaks = unique(trend$date), date_labels = "%d %b") +
+  theme(text = element_text(size = 16)) +
+  labs(
+    x = "Date",
+    y = "Number of Responses"
+  )
+
+```
+
+#### Gender
+
+```{r trend-resp-gender}
+
+trend %>%
+  group_by(date, gender) %>%
+  summarise(n = sum(n_resp)) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
+                   y = 0, yend = 3000),
+               colour = "#8e8e8e",
+               linetype = "dashed") +
+  geom_text(aes(x = ymd("2021-11-26"), y = 2800, label = "Panel\nRefresh"),
+            hjust = 0, size = 5) +
+  geom_rect(aes(xmin = ymd("2021-12-23"), xmax = ymd("2022-01-06"), 
+                ymin = 0, ymax = 3000),
+            fill = "#d4d4d4",
+            alpha = 0.02) +
+  geom_text(aes(x = ymd("2022-01-07"), y = 2900, label = "Festive Period"),
+            hjust = 0, size = 5) +
+  geom_line(aes(x = date, y = n, colour = gender), size = 1) +
+  scale_colour_discrete_scs() +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 3200)) +
+  scale_x_date(breaks = unique(trend$date), date_labels = "%d %b") +
+  theme(text = element_text(size = 16)) +
+  labs(
+    x = "Date",
+    y = "Number of Responses",
+    colour = "Gender"
+  )
+
+```
+
+### Response Rate {.tabset}
+
+```{r trend-rate-data, include = FALSE}
+
+# Full details of invited participants only available for previous 4 waves
+# due to data retention policy.
+
+reg <-
+  list.files(here("data", "registration-data"), full.names = TRUE) %>%
+  map_dfr(
+    ~ read_rds(.x) %>% 
+      filter(status == "active") %>%
+      mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
+      filter(gender %in% c("Male", "Female")) %>%
+      group_by(age_group, gender) %>%
+      summarise(n_reg = n()) %>%
+      ungroup() %>%
+      mutate(wave = as.numeric(str_extract(.x, "\\d{2}")), 
+             date = start_date(wave)) %>%
+      select(wave, date, everything())
+  )
+
+rate_trend <- 
+  trend %>% 
+  rename(wave = survey_wave) %>%
+  filter(wave %in% reg$wave) %>%
+  full_join(reg, by = c("wave", "date", "age_group", "gender"))
+
+```
+
+<br>
+
+```{r trend-rate-table}
+
+rate_trend %>%
+  group_by(wave, date, age_group) %>%
+  summarise_at(vars(starts_with("n")), sum) %>%
+  ungroup() %>%
+  bind_rows(
+    rate_trend %>%
+      group_by(wave, date) %>%
+      summarise_at(vars(starts_with("n")), sum) %>%
+      mutate(age_group = "Total") %>%
+      ungroup()
+  ) %>%
+  arrange(wave) %>%
+  mutate(rate = paste0(sprintf("%.1f", 
+                               round_half_up(n_resp / n_reg * 100, 1)),
+                       "%")) %>%
+  select(-n_resp, -n_reg) %>%
+  mutate(date = date_range(wave, suffix = FALSE)) %>%
+  rename(Wave = wave, Date = date) %>%
+  pivot_wider(names_from = age_group, values_from = rate) %>%
+  flextable(cwidth = 0.9) %>%
+  width(j = 2, width = 2.2) %>%
+  theme_alafoli() %>%
+  align(j = 1:2, align = "left", part = "all") %>%
+  align(j = 3:9, align = "right", part = "all") %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  vline(j = 8, part = "all", border = fp_border(color = "black")) %>%
+  bold(part = "header") %>%
+  bg(j = 9, bg = "snow2", part = "all")
+
+```
+
+<br>
+
+#### Overall
+
+```{r trend-rate}
+
+rate_trend %>%
+  group_by(date) %>%
+  summarise_at(vars(starts_with("n")), sum) %>%
+  ungroup() %>%
+  mutate(rate = n_resp / n_reg * 100) %>%
+  ggplot(aes(x = date, y = rate)) +
+  geom_line(colour = scs_colour_values["dark-blue"], size = 1) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100),
+                     labels = function(x) paste0(x, "%")) +
+  scale_x_date(breaks = unique(rate_trend$date), date_labels = "%d %b") +
+  theme(text = element_text(size = 16)) +
+  labs(
+    x = "Date",
+    y = "Response Rate"
+  )
+
+```
+
+#### Age Group
+
+```{r trend-rate-age}
+
+rate_trend %>%
+  group_by(date, age_group) %>%
+  summarise_at(vars(starts_with("n")), sum) %>%
+  ungroup() %>%
+  mutate(rate = n_resp / n_reg * 100) %>%
+  ggplot(aes(x = date, y = rate, colour = age_group)) +
+  geom_line(size = 1) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100),
+                     labels = function(x) paste0(x, "%")) +
+  scale_x_date(breaks = unique(rate_trend$date), date_labels = "%d %b") +
+  theme(text = element_text(size = 16)) +
+  labs(
+    x = "Date",
+    y = "Response Rate",
+    colour = "Age Group"
+  )
+
+```
+
+### Opt Outs
+
+```{r opt-outs-data, include = FALSE}
+
+opt_outs <- map_dfr(c(31:42, 44:wave), opt_out_data)
+
+```
+
+<br>
+
+```{r opt-outs-table}
+
+opt_outs %>%
+  filter(survey_wave >= 44) %>%
+  group_by(survey_wave, date) %>%
+  summarise(n = sum(n)) %>%
+  ungroup() %>%
+  mutate(date = date_range(survey_wave, suffix = FALSE)) %>%
+  rename(Wave = survey_wave, Date = date, `Opt Outs` = n) %>%
+  flextable(cwidth = 0.9) %>%
+  width(j = 2, width = 2.2) %>%
+  width(j = 3, width = 1.5) %>%
+  theme_alafoli() %>%
+  align(j = 1:2, align = "left", part = "all") %>%
+  fontsize(size = 16, part = "all") %>%
+  color(color = "black", part = "all") %>%
+  padding(padding = 6, part = "all") %>%
+  bold(part = "header")
+
+```
+
+<br>
+
+```{r opt-outs}
+
+opt_outs %>%
+  group_by(date) %>%
+  summarise(n = sum(n)) %>%
+  ungroup() %>%
+  ggplot(aes(x = date, y = n)) +
+  geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"),
+                   y = 0, yend = 35),
+               colour = "#8e8e8e",
+               linetype = "dashed") +
+  geom_text(aes(x = ymd("2021-11-26"), y = 32, label = "Panel\nRefresh"),
+            hjust = 0, size = 5) +
+  geom_rect(aes(xmin = ymd("2021-12-23"), xmax = ymd("2022-01-06"),
+                ymin = 0, ymax = 35),
+            fill = "#d4d4d4",
+            alpha = 0.02) +
+  geom_text(aes(x = ymd("2022-01-07"), y = 32, label = "Festive Period"),
+            hjust = 0, size = 5) +
+  geom_line(colour = scs_colour_values["dark-blue"], size = 1) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 35)) +
+  scale_x_date(breaks = unique(trend$date), date_labels = "%d %b") +
+  theme(text = element_text(size = 16)) +
+  labs(
+    x = "Date",
+    y = "Number of Opt Outs"
+  )
+
+```

@@ -1,0 +1,33 @@
+Package: scs
+Title: Reproducible Analytical Pipeline of Scottish Contact Survey analysis
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Alice",
+           family = "Byers",
+           role = c("aut", "cre"),
+           email = "alice.byers@gov.scot")
+Description: Processes and analyses responses to the Scottish Government Scottish Contact Survey. Results are used to produce the weekly Research Findings publication.
+Maintainer: Alice Byers <alice.byers@gov.scot>
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
+Depends:
+    R (>= 2.10)
+Imports: 
+    magrittr,
+    dplyr,
+    lubridate,
+    tidyselect,
+    rlang,
+    utils,
+    tidyr,
+    readr,
+    stringr,
+    glue,
+    here,
+    purrr,
+    tibble,
+    scales
+Suggests: 
+    testthat (>= 2.1.0)
