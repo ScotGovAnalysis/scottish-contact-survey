@@ -3,7 +3,7 @@
 
 ### Scottish Contact Survey
 
-The London School of Hygiene and Tropical Medicine developed a social
+The London School of Hygiene and Tropical Medicine (LSHTM) developed a social
 contacts survey called
 [CoMix](https://cmmid.github.io/topics/covid19/comix-reports.html) which
 is based on how many contacts people have each week. Participants
@@ -12,9 +12,11 @@ before the survey, which are people with whom they had at least a brief
 face-to-face conversation, or with whom they had any sort of
 skin-to-skin contact.
 
-Scottish Government run the Scottish Contact Survey (SCS) and applied
-the CoMix code on outputs from SCS. The code for CoMix can be located
-here: <https://github.com/amygimma/comix_shared_analyses>.
+Scottish Government run the Scottish Contact Survey (SCS) which is based
+on CoMix. This repository contains the R package and code used to process
+the raw survey data. LSHTM CoMix code is then applied to analyse the data
+and produce outputs. The code for CoMix can be located
+here: <https://github.com/amygimma/comix_shared_analyses>. 
 
 SCS is a behavioural survey, asking questions to panels of people who
 have been recruited to be broadly representative of the Scottish
