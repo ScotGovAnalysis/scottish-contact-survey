@@ -326,7 +326,7 @@ trend %>%
   pivot_wider(names_from = age_group, values_from = n_resp) %>%
   adorn_totals("col") %>%
   flextable(cwidth = 0.9) %>%
-  width(j = 2, width = 2.2) %>%
+  width(j = 2, width = 2.6) %>%
   theme_alafoli() %>%
   align(j = 1:2, align = "left", part = "all") %>%
   fontsize(size = 16, part = "all") %>%
@@ -530,7 +530,7 @@ rate_trend %>%
   rename(Wave = wave, Date = date) %>%
   pivot_wider(names_from = age_group, values_from = rate) %>%
   flextable(cwidth = 0.9) %>%
-  width(j = 2, width = 2.2) %>%
+  width(j = 2, width = 2.6) %>%
   theme_alafoli() %>%
   align(j = 1:2, align = "left", part = "all") %>%
   align(j = 3:9, align = "right", part = "all") %>%
@@ -610,7 +610,7 @@ opt_outs %>%
   mutate(date = date_range(survey_wave, suffix = FALSE)) %>%
   rename(Wave = survey_wave, Date = date, `Opt Outs` = n) %>%
   flextable(cwidth = 0.9) %>%
-  width(j = 2, width = 2.2) %>%
+  width(j = 2, width = 2.6) %>%
   width(j = 3, width = 1.5) %>%
   theme_alafoli() %>%
   align(j = 1:2, align = "left", part = "all") %>%
