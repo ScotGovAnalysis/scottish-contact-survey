@@ -36,8 +36,7 @@ opt_out_data <- function(x) {
     read_rds() %>%
     filter(gender %in% c("Male", "Female")) %>%
     group_by(age_group, gender) %>%
-    summarise(n = n()) %>%
-    ungroup()
+    summarise(n = n(), .groups = "drop")
   
   }
   
@@ -53,8 +52,7 @@ opt_out_data <- function(x) {
 
   data %>%
     group_by(age_group, gender) %>%
-    summarise_all(sum) %>%
-    ungroup() %>%
+    summarise(across(everything(), sum), .groups = "drop") %>%
     mutate(
       survey_wave = x,
       date = start_date(as.numeric(x), "A")
@@ -80,8 +78,7 @@ resp <-
   mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
   filter(gender %in% c("Male", "Female")) %>%
   group_by(age_group, gender) %>%
-  summarise(n_resp = n()) %>%
-  ungroup()
+  summarise(n_resp = n(), .groups = "drop")
 
 # Age and gender of those invited to latest wave
 reg <-
@@ -91,8 +88,7 @@ reg <-
   mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
   filter(gender %in% c("Male", "Female")) %>%
   group_by(age_group, gender) %>%
-  summarise(n_reg = n()) %>%
-  ungroup()
+  summarise(n_reg = n(), .groups = "drop")
 
 latest <-
   resp %>%
@@ -166,8 +162,7 @@ Bar labels indicate percentage response rate for each age group.
 
 latest %>%
   group_by(age_group) %>%
-  summarise_at(vars(n_resp, n_reg), sum) %>%
-  ungroup() %>%
+  summarise(across(c(n_resp, n_reg), sum), .groups = "drop") %>%
   mutate(rate = paste0(round_half_up(n_resp / n_reg * 100, 0), "%"),
          total = n_reg,
          n_reg = n_reg - n_resp) %>%
@@ -200,8 +195,7 @@ Bar labels indicate percentage response rate for each gender.
 
 latest %>%
   group_by(gender) %>%
-  summarise_at(vars(n_resp, n_reg), sum) %>%
-  ungroup() %>%
+  summarise(across(c(n_resp, n_reg), sum), .groups = "drop") %>%
   mutate(rate = paste0(round_half_up(n_resp / n_reg * 100, 0), "%"),
          total = n_reg,
          n_reg = n_reg - n_resp) %>%
@@ -279,8 +273,7 @@ demog_data <- function(x) {
                            grouped = TRUE)) %>%
     filter(gender %in% c("Male", "Female")) %>%
     group_by(age_group, gender) %>%
-    summarise(n_resp = n()) %>%
-    ungroup()
+    summarise(n_resp = n(), .groups = "drop")
   
 }
   
@@ -296,8 +289,7 @@ demog_data <- function(x) {
 
   data %>%
     group_by(age_group, gender) %>%
-    summarise_all(sum) %>%
-    ungroup() %>%
+    summarise(across(everything(), sum), .groups = "drop") %>%
     mutate(
       survey_wave = x,
       date = start_date(as.numeric(x), "A")
@@ -319,8 +311,7 @@ trend <- map_dfr(c(31:42, 44:wave), demog_data)
 trend %>%
   filter(survey_wave >= 44) %>%
   group_by(survey_wave, date, age_group) %>%
-  summarise(n_resp = sum(n_resp)) %>%
-  ungroup() %>%
+  summarise(n_resp = sum(n_resp), .groups = "drop") %>%
   mutate(date = date_range(survey_wave, suffix = FALSE)) %>%
   rename(Wave = survey_wave, Date = date) %>%
   pivot_wider(names_from = age_group, values_from = n_resp) %>%
@@ -346,8 +337,7 @@ trend %>%
 
 trend %>%
   group_by(date) %>%
-  summarise(n = sum(n_resp)) %>%
-  ungroup() %>%
+  summarise(n = sum(n_resp), .groups = "drop") %>%
   ggplot(aes(x = date, y = n)) +
   geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
                    y = 0, yend = 4000),
@@ -378,8 +368,7 @@ trend %>%
 
 trend %>%
   group_by(date, age_group) %>%
-  summarise(n = sum(n_resp)) %>%
-  ungroup() %>%
+  summarise(n = sum(n_resp), .groups = "drop") %>%
   ggplot() +
   geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
                    y = 0, yend = 1000),
@@ -412,8 +401,7 @@ trend %>%
 trend %>%
   filter(age_group == "18-29") %>%
   group_by(date) %>%
-  summarise(n = sum(n_resp)) %>%
-  ungroup() %>%
+  summarise(n = sum(n_resp), .groups = "drop") %>%
   ggplot() +
   geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
                    y = 0, yend = 220),
@@ -448,8 +436,7 @@ trend %>%
 
 trend %>%
   group_by(date, gender) %>%
-  summarise(n = sum(n_resp)) %>%
-  ungroup() %>%
+  summarise(n = sum(n_resp), .groups = "drop") %>%
   ggplot() +
   geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"), 
                    y = 0, yend = 3000),
@@ -491,8 +478,7 @@ reg <-
       mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
       filter(gender %in% c("Male", "Female")) %>%
       group_by(age_group, gender) %>%
-      summarise(n_reg = n()) %>%
-      ungroup() %>%
+      summarise(n_reg = n(), .groups = "drop") %>%
       mutate(wave = as.numeric(str_extract(.x, "\\d{2}")), 
              date = start_date(wave)) %>%
       select(wave, date, everything())
@@ -512,12 +498,11 @@ rate_trend <-
 
 rate_trend %>%
   group_by(wave, date, age_group) %>%
-  summarise_at(vars(starts_with("n")), sum) %>%
-  ungroup() %>%
+  summarise(across(starts_with("n"), sum), .groups = "drop") %>%
   bind_rows(
     rate_trend %>%
       group_by(wave, date) %>%
-      summarise_at(vars(starts_with("n")), sum) %>%
+      summarise(across(starts_with("n"), sum), .groups = "keep") %>%
       mutate(age_group = "Total") %>%
       ungroup()
   ) %>%
@@ -551,8 +536,7 @@ rate_trend %>%
 
 rate_trend %>%
   group_by(date) %>%
-  summarise_at(vars(starts_with("n")), sum) %>%
-  ungroup() %>%
+  summarise(across(starts_with("n"), sum), .groups = "drop") %>%
   mutate(rate = n_resp / n_reg * 100) %>%
   ggplot(aes(x = date, y = rate)) +
   geom_line(colour = scs_colour_values["dark-blue"], size = 1) +
@@ -573,8 +557,7 @@ rate_trend %>%
 
 rate_trend %>%
   group_by(date, age_group) %>%
-  summarise_at(vars(starts_with("n")), sum) %>%
-  ungroup() %>%
+  summarise(across(starts_with("n"), sum), .groups = "drop") %>%
   mutate(rate = n_resp / n_reg * 100) %>%
   ggplot(aes(x = date, y = rate, colour = age_group)) +
   geom_line(size = 1) +
@@ -605,8 +588,7 @@ opt_outs <- map_dfr(c(31:42, 44:wave), opt_out_data)
 opt_outs %>%
   filter(survey_wave >= 44) %>%
   group_by(survey_wave, date) %>%
-  summarise(n = sum(n)) %>%
-  ungroup() %>%
+  summarise(n = sum(n), .groups = "drop") %>%
   mutate(date = date_range(survey_wave, suffix = FALSE)) %>%
   rename(Wave = survey_wave, Date = date, `Opt Outs` = n) %>%
   flextable(cwidth = 0.9) %>%
@@ -627,8 +609,7 @@ opt_outs %>%
 
 opt_outs %>%
   group_by(date) %>%
-  summarise(n = sum(n)) %>%
-  ungroup() %>%
+  summarise(n = sum(n), .groups = "drop") %>%
   ggplot(aes(x = date, y = n)) +
   geom_segment(aes(x = ymd("2021-11-25"), xend = ymd("2021-11-25"),
                    y = 0, yend = 35),
