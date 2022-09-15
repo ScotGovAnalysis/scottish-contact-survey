@@ -13,7 +13,7 @@ face-to-face conversation, or with whom they had any sort of
 skin-to-skin contact.
 
 Scottish Government run the Scottish Contact Survey (SCS) which is based
-on CoMix. This repository contains the R package and code used to process
+on CoMix. This repository contains the [R package and code](scs-package.md) used to process
 the raw survey data. LSHTM CoMix code is then applied to analyse the data
 and produce outputs. The code for CoMix can be located
 here: <https://github.com/amygimma/comix_shared_analyses>. 
