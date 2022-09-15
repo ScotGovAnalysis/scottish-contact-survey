@@ -33,31 +33,29 @@
 
 format_postcode <- function(x) {
 
+  # Set standard postcode format
   pattern <- "^[A-Za-z]{1,2}[0-9][A-Za-z0-9]?[0-9][A-Za-z]{2}$"
 
   # Strip out all spaces from the input, so they can be added in again later at
   # the appropriate juncture
-  x <- gsub("\\s", "", x)
+  x <- stringr::str_remove_all(x, "\\s")
 
   # Replace postcodes which do not adhere to the standard format with NA (this
   # will also 'replace' NA with NA)
-  x <- replace(x,
-               !stringr::str_detect(
-                 x,
-                 pattern),
-               NA_character_)
+  x <- replace(x, !stringr::str_detect(x, pattern), NA_character_)
 
+  # Capitalise all letters
   x <- toupper(x)
 
-  # pc7 format requires all valid postcodes to be of length 7, meaning:
+  # Format all valid postcodes to be of length 7, meaning:
   # 5 character postcodes have 2 spaces after the 2nd character;
   # 6 character postcodes have 1 space after the 3rd character;
   # 7 character postcodes have no spaces
-  return(dplyr::case_when(
+  dplyr::case_when(
     is.na(x) ~ NA_character_,
     nchar(x) == 5 ~ sub("(.{2})", "\\1  ", x),
     nchar(x) == 6 ~ sub("(.{3})", "\\1 ", x),
     nchar(x) == 7 ~ x
-  ))
+  )
 
 }
