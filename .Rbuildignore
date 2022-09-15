@@ -1,9 +1,12 @@
 ^scs\.Rproj$
 ^\.Rproj\.user$
-^LICENSE\.md
+^LICENSE\.md$
 ^code$
 ^data$
 ^data-raw$
 ^lookups$
 ^guidance$
 ^markdown$
+^\.github$
+^scs-package.Rmd$
+^scs-package.md$
