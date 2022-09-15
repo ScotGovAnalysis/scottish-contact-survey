@@ -2,15 +2,20 @@
 #'
 #' @param data Data frame containing data to anonymise
 #' @param dataset_to_anon Determines which variables should be anonymised.
-#'   * "reg": existing household member names/nicknames
-#'   * "resp": existing household member names/nicknames, new household member
-#'     names/nicknames, contacts names/nicknames
+#'
+#' \itemize{
+#' \item "reg": existing household member names/nicknames
+#' \item "resp": existing household member names/nicknames, new household member
+#' names/nicknames, contacts names/nicknames
+#' }
 #'
 #' @return Data frame with names/nicknames anonymised.
 #'
 #' @export
 
 anonymise_data <- function(data, dataset_to_anon = c("resp", "reg")) {
+
+  dataset_to_anon <- match.arg(dataset_to_anon)
 
   exp_names <- paste0("hm", 1:10, "_name")
 

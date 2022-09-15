@@ -10,9 +10,12 @@ anonymise_data(data, dataset_to_anon = c("resp", "reg"))
 \item{data}{Data frame containing data to anonymise}
 
 \item{dataset_to_anon}{Determines which variables should be anonymised.
-* "reg": existing household member names/nicknames
-* "resp": existing household member names/nicknames, new household member
-  names/nicknames, contacts names/nicknames}
+
+\itemize{
+\item "reg": existing household member names/nicknames
+\item "resp": existing household member names/nicknames, new household member
+names/nicknames, contacts names/nicknames
+}}
 }
 \value{
 Data frame with names/nicknames anonymised.

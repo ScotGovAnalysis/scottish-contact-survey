@@ -34,6 +34,10 @@ test_that("Error if expected variables don't exist in data", {
   expect_error(anonymise_data(reg, "resp"))
 })
 
+test_that("Error if invalid dataset_to_anon value provided", {
+  expect_error(anonymise_data(reg, "wrong dataset"))
+})
+
 test_that("Dimensions of returned tibble are the same as input tibble", {
   expect_equal(dim(reg), dim(reg_anon))
   expect_equal(dim(resp), dim(resp_anon))
