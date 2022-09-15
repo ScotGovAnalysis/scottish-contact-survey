@@ -79,7 +79,7 @@ anon_reg <-
   reg %>%
   filter(cp_number %in% resp$cp_number) %>%
   select(-email) %>%
-  anon_reg_data()
+  anonymise_data("reg")
 
 write_rds(
   anon_reg,

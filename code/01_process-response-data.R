@@ -89,7 +89,7 @@ write_rds(
 anon_resp <-
   resp %>%
   select(-email) %>%
-  anon_response_data()
+  anonymise_data("resp")
 
 write_rds(
   anon_resp,
