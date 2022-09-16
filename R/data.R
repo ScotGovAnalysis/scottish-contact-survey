@@ -19,3 +19,14 @@
 #' }
 
 "dummy_reg"
+
+
+#' @title Response data variable names and types
+#'
+#' @description A dataset containing variable names and types for Scottish
+#' Contact Survey (SCS) response data.
+#'
+#' @format A data frame with 960 rows and 2 variables: \code{names} and
+#' \code{type}.
+
+"resp_names"

@@ -21,8 +21,6 @@ source(here::here("code", "00_setup.R"))
 
 ### 1 - Clean response data file ----
 
-resp_names <- read_rds(here("lookups", "response-data-names.rds"))
-
 resp <-
 
   # Read in raw response data
@@ -30,7 +28,7 @@ resp <-
   read_csv(col_types = paste(resp_names$type, collapse = "")) %>%
 
   # Clean names
-  set_names(resp_names$new_names) %>%
+  set_names(resp_names$names) %>%
 
   # Format date
   mutate(date_completed = dmy_hms(date_completed)) %>%
