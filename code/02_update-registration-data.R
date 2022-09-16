@@ -22,19 +22,19 @@ source(here::here("code", "00_setup.R"))
 ### 1 - Get data ----
 
 reg <-
-  here("data", "registration-data",
+  here("survey-data", "registration-data",
        paste0(pre_wave, "_registration-data.rds")) %>%
   read_rds()
 
 resp <-
-  here("data", wave, paste0(wave, "_response-data-anon.rds")) %>%
+  here("survey-data", wave, paste0(wave, "_response-data-anon.rds")) %>%
   read_rds()
 
 
 ### 2 - Recode and replace opt outs ----
 
 opt_outs <-
-  here("data", wave, paste0(wave, "_opt-outs-anon.rds")) %>%
+  here("survey-data", wave, paste0(wave, "_opt-outs-anon.rds")) %>%
   read_rds()
 
 # Remove personal data for opt-outs
@@ -54,10 +54,10 @@ if(add_reserves == TRUE) {
 
 # Changes to household members
 
-remove <- here("data", wave, paste0(wave, "_hm-removed.rds")) %>%
+remove <- here("survey-data", wave, paste0(wave, "_hm-removed.rds")) %>%
   read_rds()
 
-add <- here("data", wave, paste0(wave, "_hm-added.rds")) %>%
+add <- here("survey-data", wave, paste0(wave, "_hm-added.rds")) %>%
   read_rds()
 
 reg %<>% update_household_members(remove, add)
@@ -83,7 +83,7 @@ anon_reg <-
 
 write_rds(
   anon_reg,
-  here("data", wave, paste0(wave, "_registration-data-anon.rds")),
+  here("survey-data", wave, paste0(wave, "_registration-data-anon.rds")),
   compress = "gz"
 )
 
@@ -106,7 +106,7 @@ temp_anon_reg <-
 
 write_csv(
   temp_anon_reg,
-  here("data", wave, paste0(wave, "_registration-data-anon.csv"))
+  here("survey-data", wave, paste0(wave, "_registration-data-anon.csv"))
 )
 
 
@@ -114,7 +114,7 @@ write_csv(
 
 write_rds(
   reg,
-  here("data", "registration-data",
+  here("survey-data", "registration-data",
        paste0(wave, "_registration-data.rds")),
   compress = "gz"
 )
@@ -126,7 +126,7 @@ invites <- survey_invites(reg)
 
 write_csv(
   invites,
-  here("data", wave + 1, paste0(wave + 1, "_qb-invites.csv")),
+  here("survey-data", wave + 1, paste0(wave + 1, "_qb-invites.csv")),
   na = ""
 )
 
@@ -143,7 +143,8 @@ delete_files(wave - 4)
 
 render(
   input = here("markdown", "demographics-summary.Rmd"),
-  output_file = here("data", wave, paste0(wave, "_demographics-summary.html"))
+  output_file =
+    here("survey-data", wave, paste0(wave, "_demographics-summary.html"))
 )
 
 

@@ -26,7 +26,7 @@ resp_names <- read_rds(here("lookups", "response-data-names.rds"))
 resp <-
 
   # Read in raw response data
-  here("data", wave, paste0(wave, "_response-data.csv")) %>%
+  here("survey-data", wave, paste0(wave, "_response-data.csv")) %>%
   read_csv(col_types = paste(resp_names$type, collapse = "")) %>%
 
   # Clean names
@@ -43,7 +43,7 @@ resp <-
 
 resp %<>%
   add_cp_number(
-    here("data", "registration-data",
+    here("survey-data", "registration-data",
          paste0(pre_wave, "_registration-data.rds")) %>%
       read_rds()
   ) %>%
@@ -59,7 +59,7 @@ winner <-
 
 write_csv(
   winner,
-  here("data", wave, paste0(wave, "_prize-draw.csv"))
+  here("survey-data", wave, paste0(wave, "_prize-draw.csv"))
 )
 
 
@@ -70,7 +70,7 @@ hm_removed <-
 
 write_rds(
   hm_removed,
-  here("data", wave, paste0(wave, "_hm-removed.rds")),
+  here("survey-data", wave, paste0(wave, "_hm-removed.rds")),
   compress = "gz"
 )
 
@@ -79,7 +79,7 @@ hm_added <-
 
 write_rds(
   hm_added,
-  here("data", wave, paste0(wave, "_hm-added.rds")),
+  here("survey-data", wave, paste0(wave, "_hm-added.rds")),
   compress = "gz"
 )
 
@@ -93,7 +93,7 @@ anon_resp <-
 
 write_rds(
   anon_resp,
-  here("data", wave, paste0(wave, "_response-data-anon.rds")),
+  here("survey-data", wave, paste0(wave, "_response-data-anon.rds")),
   compress = "gz"
 )
 
@@ -117,18 +117,18 @@ temp_anon_resp <-
 
 write_csv(
   temp_anon_resp,
-  here("data", wave, paste0(wave, "_response-data-anon.csv"))
+  here("survey-data", wave, paste0(wave, "_response-data-anon.csv"))
 )
 
 
 ### 5 - Get opt outs ----
 
 opt_outs <-
-  here("data", wave, paste0(wave, "_opt-outs.xlsx")) %>%
+  here("survey-data", wave, paste0(wave, "_opt-outs.xlsx")) %>%
   read_xlsx(sheet = 1) %>%
   select(email = `E-mail`) %>%
   add_cp_number(
-    here("data", "registration-data",
+    here("survey-data", "registration-data",
          paste0(pre_wave, "_registration-data.rds")) %>%
       read_rds(),
     age_gender = TRUE,
@@ -139,7 +139,7 @@ opt_outs <-
 # Save list of cp number, age and gender only
 write_rds(
   opt_outs,
-  here("data", wave, paste0(wave, "_opt-outs-anon.rds")),
+  here("survey-data", wave, paste0(wave, "_opt-outs-anon.rds")),
   compress = "gz"
 )
 
