@@ -4,7 +4,7 @@
 #' non-anonymised response data for Scottish Contact Survey (SCS).
 #'
 #' @param resp_data Data frame of non-anonymised response data.
-#' @param change_type Type of changes to be extracted; either "add" or "remove.
+#' @param change_type Type of changes to be extracted; either "add" or "remove".
 #'
 #' @return Data frame of household changes.
 #'
@@ -30,16 +30,17 @@ household_changes <- function(resp_data, change_type = c("add", "remove")){
   if(any(!col_names %in% c("cp_number", names(resp_data)))) {
     stop("One or more expected variables missing from `resp_data`.\n",
          "Missing variables: ",
-         setdiff(col_names, c("cp_number", names(resp_data))))
+         paste(setdiff(col_names, c("cp_number", names(resp_data))),
+               collapse = ", "))
   }
 
   changes <- resp_data %>%
 
     # Select rows with changes
-    dplyr::filter_at(
-      dplyr::vars(tidyselect::matches(paste0("hm_", change_type))),
+    dplyr::filter(dplyr::if_any(
+      tidyselect::matches(paste0("^hm_", change_type, "$")),
       ~ . == 1
-    ) %>%
+    )) %>%
 
     # Keep required variables only
     dplyr::select(.data$cp_number, tidyselect::all_of(col_names))
@@ -49,16 +50,20 @@ household_changes <- function(resp_data, change_type = c("add", "remove")){
   if(change_type == "add") {
 
     changes %>%
-      dplyr::filter_at(dplyr::vars(tidyselect::matches("^new_hm\\d{1}_name$")),
-                       dplyr::any_vars(!is.na(.))) %>%
+      dplyr::filter(dplyr::if_any(
+        tidyselect::matches("^new_hm\\d{1}_name$"),
+        ~ !is.na(.)
+      )) %>%
 
       dplyr::mutate(new_hm = purrr::reduce(
         dplyr::select(., tidyselect::matches("^new_hm[1-4]_name")) %>%
-          dplyr::mutate_all(~ !is.na(.)), `+`))
+          dplyr::mutate(dplyr::across(tidyselect::everything(), ~ !is.na(.))),
+        `+`
+      ))
 
     changes %>%
-      dplyr::rename_at(dplyr::vars(!.data$cp_number),
-                       ~ stringr::str_remove(., "new_")) %>%
+      dplyr::rename_with(.cols = !.data$cp_number,
+                         ~ stringr::str_remove(., "new_")) %>%
       tidyr::pivot_longer(cols = !.data$cp_number,
                           names_to = c("hm_add", ".value"),
                           names_sep = "_") %>%
