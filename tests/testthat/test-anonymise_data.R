@@ -1,24 +1,8 @@
 
-# Create test data
-
-resp_names <- c(paste0("hm", 1:10, "_name"),
-                paste0("new_hm", 1:4, "_name"),
-                paste0("c", 1:30))
-
-resp <-
-  matrix(nrow = 100, ncol = length(resp_names)) %>%
-  tibble::as_tibble(.name_repair = ~ resp_names) %>%
-  dplyr::mutate(dplyr::across(
-    tidyselect::everything(),
-    ~ sample(c(paste("non-anon", dplyr::cur_column()), NA), 100, replace = TRUE)
-  )) %>%
-  dplyr::mutate(id = dplyr::row_number(), .before = tidyselect::everything())
 
 reg_anon <- anonymise_data(dummy_reg, "reg")
-resp_anon <- anonymise_data(resp, "resp")
+resp_anon <- anonymise_data(dummy_resp, "resp")
 
-
-# Run tests
 
 test_that("Error if expected variables don't exist in data", {
   expect_error(anonymise_data(dummy_reg, "resp"))
@@ -30,17 +14,17 @@ test_that("Error if invalid dataset_to_anon value provided", {
 
 test_that("Dimensions of returned tibble are the same as input tibble", {
   expect_equal(dim(dummy_reg), dim(reg_anon))
-  expect_equal(dim(resp), dim(resp_anon))
+  expect_equal(dim(dummy_resp), dim(resp_anon))
 })
 
 test_that("Names of returned tibble are the same as input tibble", {
   expect_equal(names(dummy_reg), names(reg_anon))
-  expect_equal(names(resp), names(resp_anon))
+  expect_equal(names(dummy_resp), names(resp_anon))
 })
 
 test_that("Variables not to be anonymised remain unchanged", {
   expect_equal(dummy_reg$cp_number, reg_anon$cp_number)
-  expect_equal(resp$id, resp_anon$id)
+  expect_equal(dummy_resp$email, resp_anon$email)
 })
 
 test_that("Name/nickname variables are anonymised correctly", {
@@ -51,3 +35,4 @@ test_that("Name/nickname variables are anonymised correctly", {
   expect_equal(sort(unique(resp_anon$c10), na.last = TRUE),
                c("C10", NA_character_))
 })
+
