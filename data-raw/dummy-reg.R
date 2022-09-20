@@ -24,13 +24,13 @@ hm <-
   ) %>%
   dplyr::group_by(id) %>%
   dplyr::mutate(hm = paste0("hm", dplyr::row_number()),
-         n_household = dplyr::n() + 1) %>%
+                n_household = dplyr::n() + 1) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(name = "dummy_name",
-         age = "dummy_age",
-         gender = "dummy_gender",
-         occupation = "dummy_occupation",
-         student = "dummy_student") %>%
+                age = "dummy_age",
+                gender = "dummy_gender",
+                occupation = "dummy_occupation",
+                student = "dummy_student") %>%
   tidyr::pivot_wider(names_from = hm, values_from = name:student,
                      names_glue = "{hm}_{.value}") %>%
   tidyr::complete(id = 1:75, fill = list(n_household = 1)) %>%
@@ -64,8 +64,16 @@ dummy_reg <-
 
   # Add registration data
   dplyr::mutate(
-    email = "email@email.com",
-    date_of_birth = lubridate::dmy(01011980),
+    email = dplyr::if_else(
+      status == "active",
+      paste0(cp_number, "@email.com"),
+      paste0("reserve", dplyr::row_number(), "@email.com")
+    ),
+    date_of_birth =
+      sample(
+        seq(lubridate::dmy(01011950), lubridate::dmy(31122000), by = "day"),
+        dplyr::n()
+      ),
     dplyr::across(gender:vaccine_n_doses, ~ "dummy_value"),
     last_updated = lubridate::dmy(01092022)
   ) %>%
