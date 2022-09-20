@@ -1,3 +1,14 @@
+#' @title Response data variable names and types
+#'
+#' @description A dataset containing variable names and types for Scottish
+#' Contact Survey (SCS) response data.
+#'
+#' @format A data frame with 960 rows and 2 variables: \code{names} and
+#' \code{type}.
+
+"resp_names"
+
+
 #' @title Dummy registration data
 #'
 #' @description A dataset containing dummy registration data for 100
@@ -21,12 +32,21 @@
 "dummy_reg"
 
 
-#' @title Response data variable names and types
+#' @title Dummy response data
 #'
-#' @description A dataset containing variable names and types for Scottish
-#' Contact Survey (SCS) response data.
+#' @description A dataset containing dummy response data for 50
+#' participants of the Scottish Contact Survey (SCS). \cr
 #'
-#' @format A data frame with 960 rows and 2 variables: \code{names} and
-#' \code{type}.
+#' \strong{Note:} \code{dummy_resp} does not contain all variables expected in
+#' the actual response data, but just those required for unit tests. For full
+#' list of variables in actual data, see \code{scs::resp_names}.
+#'
+#' @format A data frame with 50 rows and 45 variables:
+#' \itemize{
+#'   \item \strong{Email} address.
+#'   \item \strong{Household member} name/nickname for up to 10 people.
+#'   \item \strong{New household member} name/nickname for up to 4 people.
+#'   \item \strong{Contact} name/nickname for up to 30 people.
+#' }
 
-"resp_names"
+"dummy_resp"
