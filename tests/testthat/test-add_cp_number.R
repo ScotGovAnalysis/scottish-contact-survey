@@ -35,6 +35,24 @@ test_that("Error if email doesn't exist in registration data", {
                              dummy_reg %>% dplyr::filter(email != test_email)))
 })
 
+test_that("Error if wave/panel not supplied", {
+  expect_error(add_cp_number(dummy_resp_no_cp,
+                             dummy_reg,
+                             age_gender = TRUE))
+  expect_error(add_cp_number(dummy_resp_no_cp,
+                             dummy_reg,
+                             age_gender = TRUE,
+                             age_wave = 40))
+})
+
+test_that("Warning if panel supplied when not needed", {
+  expect_warning(add_cp_number(dummy_resp_no_cp,
+                               dummy_reg,
+                               age_gender = TRUE,
+                               age_wave = 55,
+                               age_panel = "A"))
+})
+
 test_that("Tibble returned", {
   expect_true(tibble::is_tibble(cp))
 })

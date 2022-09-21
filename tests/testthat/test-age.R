@@ -21,6 +21,16 @@ test_that("Warning if panel supplied for wave 44 or later", {
   expect_warning(age(as.Date("1980-03-30"), 50, "C"))
 })
 
+test_that("Error if date_of_birth isn't date format", {
+  expect_error(age("1980-03-30", 50))
+  expect_error(age(30031980, 50))
+})
+
+test_that("Error if grouped isn't logical", {
+  expect_error(age(as.Date("1980-03-30"), 50, grouped = "TRUE"))
+  expect_error(age(as.Date("1980-03-30"), 50, grouped = 1))
+})
+
 test_that("Provides correct answer", {
   expect_equal(age(as.Date("1980-03-30"), 1, "A"), 40)
   expect_equal(age(as.Date("1980-03-30"), 42, "B"), 41)
