@@ -4,14 +4,16 @@
 \alias{delete_files}
 \title{Delete non-anonymised data files}
 \usage{
-delete_files(survey)
+delete_files(survey, data_folder = here::here("survey-data"))
 }
 \arguments{
 \item{survey}{Character vector of surveys; e.g. 34A, 45. For waves 43 and
 earlier, a panel letter (A or B) must be included.}
+
+\item{data_folder}{Filepath of folder to search for data files.}
 }
 \description{
 To comply with data retention rules, non-anonymised data must
 be regularly deleted. \code{delete_files} will delete any non-anonymised
-data files in data folder for given \code{survey}.
+data files in \code{data_folder} for given \code{survey}.
 }
