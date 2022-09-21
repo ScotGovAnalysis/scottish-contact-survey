@@ -2,65 +2,59 @@
 #'
 #' @description To comply with data retention rules, non-anonymised data must
 #' be regularly deleted. \code{delete_files} will delete any non-anonymised
-#' data files in data folder for given \code{survey}.
+#' data files in \code{data_folder} for given \code{survey}.
 #'
 #' @param survey Character vector of surveys; e.g. 34A, 45. For waves 43 and
 #' earlier, a panel letter (A or B) must be included.
+#' @param data_folder Filepath of folder to search for data files.
 #'
 #' @export
 
-delete_files <- function(survey){
+delete_files <- function(survey, data_folder = here::here("survey-data")){
 
-  exists <- file.exists(here::here("data", survey))
-
-  if(any(exists == FALSE)){
-    stop("Following survey folders do not exist in data/: ",
-         paste0(survey[!exists], collapse = ", "))
+  if(!file.exists(data_folder)){
+    stop("`data_folder` does not exist.")
   }
 
   # Get list of non-anonymised files
   to_delete <-
     list.files(
-      here::here("data", survey),
-      full.names = TRUE
+      data_folder,
+      pattern = as.character(survey),
+      full.names = TRUE,
+      recursive = TRUE
     ) %>%
+
+    # Exclude any files including the word 'anon' or 'demographics-summary'
     magrittr::extract(!stringr::str_detect(., "-anon") &
                         !stringr::str_detect(., "demographics-summary"))
-
-  # Include registration file if exists
-  to_delete <- c(
-    to_delete,
-    list.files(
-      here::here("data", "registration-data"),
-      pattern = paste(survey, collapse = "|"),
-      full.names = TRUE
-    )
-  )
 
   # Error if no files found
   if(length(to_delete) == 0){
     stop("No files found.")
   }
 
-  # Print message listing all files to be deleted
-  writeLines(
-    paste0("Files to be deleted:\n",
-           paste(to_delete, collapse = "\n"))
+  confirm <- rstudioapi::showQuestion(
+    title = "Delete files",
+    message = paste0(
+      "Are you sure you want to delete files?",
+      "\n \n",
+      paste(to_delete, collapse = "\n")
+    ),
+    ok = "Yes",
+    cancel = "No"
   )
 
-  # Get user confirmation to proceed with deletion
-  confirm <- readline(
-    prompt = "Proceed to delete all files? (Y/N): "
-  )
-
-  # Error if user has entered anything other than 'Y'
-  if(confirm != "Y"){
+  # Error if user has responded 'No'
+  if(!confirm){
     stop("Files have not been deleted. ",
-         "To delete, rerun and respond Y to confirm.")
+         "To delete, rerun and click Yes to confirm.")
   }
 
   # Delete files
-  unlink(to_delete)
-  message("Success: Files have been deleted.")
+  if(confirm) {
+    unlink(to_delete)
+    message("Success: Files have been deleted.")
+  }
 
 }
