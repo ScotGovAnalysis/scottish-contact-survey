@@ -5,8 +5,9 @@
 \alias{dummy_resp}
 \title{Dummy response data}
 \format{
-A data frame with 50 rows and 45 variables:
+A data frame with 50 rows and 46 variables:
 \itemize{
+  \item \strong{CP Number}; unique participant identifier.
   \item \strong{Email} address.
   \item \strong{Household member} name/nickname for up to 10 people.
   \item \strong{New household member} name/nickname for up to 4 people.

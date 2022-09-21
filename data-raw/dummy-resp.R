@@ -10,7 +10,7 @@
 #########################################################################
 
 
-names <- c("email",
+names <- c("cp_number", "email",
            paste0("hm", 1:10, "_name"),
            paste0("new_hm", 1:4, "_name"),
            paste0("c", 1:30))
@@ -19,13 +19,13 @@ dummy_resp <-
   matrix(nrow = 50, ncol = length(names)) %>%
   tibble::as_tibble(.name_repair = ~ names) %>%
   dplyr::mutate(
-    email = paste0(
+    cp_number = paste0(
       "CP", c("A", "B", "Z"),
-      stringr::str_pad(dplyr::row_number(), width = 4, pad = "0", side = "left"),
-      "@email.com"
+      stringr::str_pad(dplyr::row_number(), width = 4, pad = "0", side = "left")
     ),
+    email = paste0(cp_number, "@email.com"),
     dplyr::across(
-      !email,
+      tidyselect::matches("\\d+"),
       ~ sample(c(paste("non-anon", dplyr::cur_column()), NA),
                dplyr::n(),
                replace = TRUE)

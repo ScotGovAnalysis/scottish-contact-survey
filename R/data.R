@@ -41,8 +41,9 @@
 #' the actual response data, but just those required for unit tests. For full
 #' list of variables in actual data, see \code{scs::resp_names}.
 #'
-#' @format A data frame with 50 rows and 45 variables:
+#' @format A data frame with 50 rows and 46 variables:
 #' \itemize{
+#'   \item \strong{CP Number}; unique participant identifier.
 #'   \item \strong{Email} address.
 #'   \item \strong{Household member} name/nickname for up to 10 people.
 #'   \item \strong{New household member} name/nickname for up to 4 people.
