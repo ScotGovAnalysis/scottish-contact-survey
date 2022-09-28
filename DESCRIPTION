@@ -29,6 +29,7 @@ Imports:
     purrr,
     tibble,
     scales,
-    rstudioapi
+    rstudioapi,
+    zip
 Suggests: 
     testthat (>= 2.1.0)
