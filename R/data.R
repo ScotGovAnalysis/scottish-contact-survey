@@ -52,3 +52,18 @@
 #' }
 
 "dummy_resp"
+
+
+#' @title Dummy opt-out data
+#'
+#' @description A dataset containing dummy opt out data for
+#' participants of the Scottish Contact Survey (SCS).
+#'
+#' @format A data frame with 10 rows and 3 variables including:
+#' \itemize{
+#'   \item Age group
+#'   \item Gender
+#'   \item Number of opt outs
+#' }
+
+"dummy_opt_outs"
