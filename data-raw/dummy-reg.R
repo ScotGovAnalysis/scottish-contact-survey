@@ -74,7 +74,11 @@ dummy_reg <-
         seq(lubridate::dmy(01011950), lubridate::dmy(31122000), by = "day"),
         dplyr::n()
       ),
-    dplyr::across(gender:vaccine_n_doses, ~ "dummy_value"),
+    gender =
+      sample(c("Female", "Male", "Non-Binary", "In another way"),
+             dplyr::n(),
+             replace = TRUE),
+    dplyr::across(postcode:vaccine_n_doses, ~ "dummy_value"),
     last_updated = lubridate::dmy(01092022)
   ) %>%
 
