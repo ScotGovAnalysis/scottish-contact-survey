@@ -13,6 +13,27 @@
 
 remove_opt_outs <- function(reg_data, cp){
 
+  # Check reg_data is a data frame / tibble
+  if(!"data.frame" %in% class(reg_data)) {
+    stop("`reg_data` must be a data frame.")
+  }
+
+  # Check cp_number and status are in reg_data
+  if(!all(c("cp_number", "status") %in% names(reg_data))) {
+    stop("cp_number and/or status missing from `reg_data`.")
+  }
+
+  # Error/Warning if all/any CP numbers don't exist in reg_data
+  no_match <- cp[!cp %in% reg_data$cp_number]
+
+  if(length(no_match) >= 1) {
+    warning(length(no_match), " of ", length(cp), " CP numbers to opt out ",
+            "do not have a match in reg_data.",
+            ifelse(length(no_match) == length(cp),
+                   "\n reg_data will be returned unchanged.",
+                   ""))
+  }
+
   reg_data %>%
 
     # Add flag for opt outs
@@ -29,17 +50,18 @@ remove_opt_outs <- function(reg_data, cp){
     # Remove all registraion data; keep cp_number, status, panel ONLY
     dplyr::mutate(
       dplyr::across(
-        !c(.data$cp_number, .data$status, .data$panel, .data$date_of_birth,
-           .data$n_household, .data$opt_out, .data$last_updated),
+        !tidyselect::any_of(c("cp_number", "status", "panel", "date_of_birth",
+                              "n_household", "opt_out", "last_updated")),
         ~ dplyr::if_else(.data$opt_out == 1, NA_character_, .)
       ),
       dplyr::across(
-        c(.data$date_of_birth, .data$last_updated),
+        tidyselect::any_of(c("date_of_birth", "last_updated")),
         ~ dplyr::if_else(.data$opt_out == 1, as.Date(NA), .)
       ),
-      n_household = dplyr::if_else(.data$opt_out == 1,
-                                   NA_real_,
-                                   .data$n_household)
+      dplyr::across(
+        tidyselect::any_of("n_household"),
+        ~ dplyr::if_else(.data$opt_out == 1, NA_real_, .)
+      )
     ) %>%
 
     # Remove opt out flag
@@ -69,11 +91,30 @@ replace_opt_outs <- function(reg_data,
                              cur_wave,
                              cur_panel = NULL){
 
+  # Check reg_data is a data frame / tibble
+  if(!"data.frame" %in% class(reg_data)) {
+    stop("`reg_data` must be a data frame.")
+  }
+
+  # Check required variables exist in reg_data
+  if(!all(c("cp_number", "email", "status", "date_of_birth", "gender") %in%
+          names(reg_data))){
+    stop(paste("At least one of the following variables is missing from",
+               "reg_data: cp_number, email, status, date_of_birth, gender."))
+  }
+
+  # Check reg_data is a data frame / tibble
+  if(!"data.frame" %in% class(opt_out_data)) {
+    stop("`opt_out_data` must be a data frame.")
+  }
+
+  # Check required variables exist in opt_out_data
   if(!all(c("age_group", "gender", "n_opt_outs") %in% names(opt_out_data))){
     stop(paste("At least one of the following variables is missing from",
                "opt_out_data: age_group, gender, n_opt_outs."))
   }
 
+  # Validate panel
   if(cur_wave < 44 & is.null(cur_panel)){
     stop("For waves 43 and earlier, `cur_panel` must be provided.")
   }
