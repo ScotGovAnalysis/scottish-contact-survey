@@ -35,17 +35,16 @@
 #' @title Dummy response data
 #'
 #' @description A dataset containing dummy response data for 50
-#' participants of the Scottish Contact Survey (SCS). \cr
+#' participants of the Scottish Contact Survey (SCS).
 #'
-#' \strong{Note:} \code{dummy_resp} does not contain all variables expected in
-#' the actual response data, but just those required for unit tests. For full
-#' list of variables in actual data, see \code{scs::resp_names}.
-#'
-#' @format A data frame with 50 rows and 48 variables including:
+#' @format A data frame with 50 rows and 48 variables including (but not
+#'         limited to):
 #' \itemize{
 #'   \item \strong{CP Number}; unique participant identifier.
 #'   \item \strong{Email} address.
 #'   \item \strong{Household member} name/nickname for up to 10 people.
+#'   \item \strong{Household member changes}; flag to indicate where household
+#'         member has left the household.
 #'   \item \strong{New household member} name/nickname for up to 4 people.
 #'   \item \strong{Contact} name/nickname for up to 30 people.
 #'   \item \strong{Vaccine} dose information.
