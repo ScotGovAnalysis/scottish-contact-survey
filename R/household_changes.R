@@ -26,11 +26,13 @@ household_changes <- function(resp_data, change_type = c("add", "remove")){
     c(paste0("hm", 1:10, "_change"), paste0("hm", 1:10, "_name"))
   }
 
+  col_names <- c("cp_number", col_names)
+
   # Check relevant columns exist in resp_data
-  if(any(!col_names %in% c("cp_number", names(resp_data)))) {
+  if(any(!col_names %in% names(resp_data))) {
     stop("One or more expected variables missing from `resp_data`.\n",
          "Missing variables: ",
-         paste(setdiff(col_names, c("cp_number", names(resp_data))),
+         paste(setdiff(col_names, names(resp_data)),
                collapse = ", "))
   }
 
