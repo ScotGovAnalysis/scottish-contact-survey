@@ -20,6 +20,27 @@ update_household_members <- function(reg_data,
          "`to_remove` and/or `to_add` must be defined.")
   }
 
+  exp_names_add <- c("cp_number", "hm_add", "name", "age",
+                     "gender", "occupation", "student")
+
+  exp_names_remove <- c("cp_number", "hm_remove")
+
+  if(!is.null(to_add) &
+     any(!exp_names_add %in% names(to_add))) {
+    stop("One or more expected variables missing from `to_add`.\n",
+         "Missing variables: ",
+         paste(setdiff(exp_names_add, names(to_add)),
+               collapse = ", "))
+  }
+
+  if(!is.null(to_remove) &
+     any(!exp_names_remove %in% names(to_remove))) {
+    stop("One or more expected variables missing from `to_remove`.\n",
+         "Missing variables: ",
+         paste(setdiff(exp_names_remove, names(to_remove)),
+               collapse = ", "))
+  }
+
   # Select active panel members only
   reg_active <- reg_data %>% dplyr::filter(.data$status == "active")
 
@@ -57,15 +78,46 @@ update_household_members <- function(reg_data,
     # Complete for 10 household members per participant
     dplyr::group_by(.data$cp_number) %>%
     tidyr::complete(hm = paste0("hm", 1:10)) %>%
-    dplyr::ungroup() %>%
+    dplyr::ungroup()
 
-    # Restructure data to wide format; one row per participant
+
+  # Check if any panel members have more than 10 household members
+
+  hm_over10 <-
+    reg_updated %>%
+    dplyr::filter(!is.na(.data$name)) %>%
+    dplyr::mutate(hm = as.numeric(stringr::str_extract(.data$hm, "\\d+"))) %>%
+    dplyr::group_by(.data$cp_number) %>%
+    dplyr::summarise(hm_over10 = (max(.data$hm) > 10) * 1, .groups = "drop")
+
+  n_over10 <- sum(hm_over10$hm_over10)
+
+  if(n_over10 > 0) {
+    rlang::warn(c(
+      paste(n_over10, "panel members have more than 10 household members."),
+      i = paste("The maximum number of household members that can be recorded",
+                "in registration data is 10."),
+      i = paste("New household members that have been added and cause the",
+                "household member count to exceed 10 will not be recorded.")
+    ))
+  }
+
+  reg_updated %<>%
+    dplyr::filter(stringr::str_detect(.data$hm, "^hm([1-9]|10)$"))
+
+
+  # Restructure data to wide format; one row per participant
+
+  reg_updated %<>%
+
     tidyr::pivot_wider(names_from = .data$hm,
                        values_from = .data$name:.data$student) %>%
 
     # Fix value names
-    dplyr::rename_at(dplyr::vars(tidyselect::matches("^.*_hm\\d{1,2}$")),
-                     ~ stringr::str_replace(., "(.*)_(.*)", "\\2_\\1")) %>%
+    dplyr::rename_with(
+      .cols = tidyselect::matches("^.*_hm\\d{1,2}$"),
+      .fn = ~ stringr::str_replace(., "(.*)_(.*)", "\\2_\\1")
+    ) %>%
 
     # Reorder columns from HM1 to HM10
     dplyr::select(.data$cp_number,
