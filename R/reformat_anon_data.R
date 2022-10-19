@@ -23,11 +23,45 @@ add_cols <- function(data, n_to_add, after) {
   data %<>% magrittr::inset(new_names, value = NA)
 
   if(n_cols == n_after) data else {
-    data %<>%
+    data %>%
       dplyr::select(1:n_after,
                     (n_cols + 1):(n_cols + n_to_add),
                     (n_after + 1):n_cols)
   }
+
+}
+
+
+#' @title Assign names
+#'
+#' @param data Data frame to assign names to
+#' @param names Vector of names to assign
+
+assign_names <- function(data, names) {
+
+  if(!(is.vector(names) & is.character(names))) {
+    stop("`names` must be a character vector.")
+  }
+
+  if(!is.data.frame(data)) {
+    stop("`data` must be a data frame.")
+  }
+
+  # Check
+  diff <- ncol(data) - length(names)
+
+  issue <- dplyr::case_when(
+    diff == 1  ~ " more column",
+    diff > 1   ~ " more columns",
+    diff == -1 ~ " fewer column",
+    diff < -1  ~ " fewer columns"
+  )
+
+  if(diff != 0) {
+    stop("Dataset has ", abs(diff), issue, " than names to assign.")
+  }
+
+  data %>% magrittr::set_names(names)
 
 }
 
@@ -96,8 +130,8 @@ reformat_anon_resp <- function(anon_resp_data, names) {
     add_cols(2, after = "employment") %>%
     add_cols(56, after = "studying")
 
-  # Rename variables for controller script
-  anon_resp_data %>% magrittr::set_names(names)
+  # Rename variables
+  assign_names(anon_resp_data, names)
 
 }
 
@@ -137,7 +171,7 @@ reformat_anon_reg <- function(anon_reg_data, names, wave, panel = NULL) {
     stop("Panel must be A or B.")
   }
 
-  anon_reg_data %>%
+  anon_reg_data %<>%
 
     # Add missing columns and reorder
     dplyr::select(-.data$status, -.data$panel, -.data$local_authority_code,
@@ -163,9 +197,9 @@ reformat_anon_reg <- function(anon_reg_data, names, wave, panel = NULL) {
     dplyr::select(.data$cp_number:.data$`12.12`,
            .data$employment:.data$total_household_income,
            tidyselect::everything()) %>%
-    dplyr::mutate(date_of_birth = age(.data$date_of_birth, wave, panel)) %>%
+    dplyr::mutate(date_of_birth = age(.data$date_of_birth, wave, panel))
 
-    # Rename variables
-    magrittr::set_names(names)
+  # Rename variables
+  assign_names(anon_reg_data, names)
 
 }
