@@ -52,7 +52,7 @@ next_wave <- wave + 1
 ### 3 - Create data folders ----
 
 c(wave, next_wave) %>%
-  walk(~ use_directory(paste0("data/", .)))
+  walk(~ use_directory(paste0("survey-data/", .)))
 
 
 ### END OF SCRIPT ###
