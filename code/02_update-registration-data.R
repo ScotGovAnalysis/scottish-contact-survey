@@ -88,11 +88,10 @@ write_rds(
 )
 
 # Save backup
-write_rds(
-  anon_reg,
-  paste0("//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data/",
-         wave, "_registration-data-anon.rds"),
-  compress = "gz"
+backup_data(
+  zip_file = "//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data.zip",
+  file_to_backup =
+    here("survey-data", wave, paste0(wave, "_registration-data-anon.rds"))
 )
 
 # Temp - reformat as required for controller script
