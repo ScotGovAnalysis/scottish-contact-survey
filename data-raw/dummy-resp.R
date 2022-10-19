@@ -126,6 +126,17 @@ dummy_resp <-
                rep(NA_character_, times = 25))
   ) %>%
 
+  # Add updated registration data
+  dplyr::mutate(
+    to_update = sample(0:1, 50, replace = TRUE),
+    dplyr::across(
+      tidyselect::matches("^updated_"),
+      ~ ifelse(to_update == 1,
+               paste0(dplyr::cur_column(), "_value"),
+               NA_character_)
+    )
+  ) %>%
+
   # Order columns as in resp_names
   dplyr::select(cp_number, tidyselect::all_of(resp_names$names))
 
