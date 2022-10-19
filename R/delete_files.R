@@ -10,7 +10,9 @@
 #'
 #' @export
 
-delete_files <- function(survey, data_folder = here::here("survey-data")){
+delete_files <- function(survey,
+                         data_folder = here::here("survey-data"),
+                         user_confirm = TRUE){
 
   if(!file.exists(data_folder)){
     stop("`data_folder` does not exist.")
@@ -34,16 +36,21 @@ delete_files <- function(survey, data_folder = here::here("survey-data")){
     stop("No files found.")
   }
 
-  confirm <- rstudioapi::showQuestion(
-    title = "Delete files",
-    message = paste0(
-      "Are you sure you want to delete files?",
-      "\n \n",
-      paste(to_delete, collapse = "\n")
-    ),
-    ok = "Yes",
-    cancel = "No"
-  )
+  confirm <-
+    if(user_confirm) {
+      rstudioapi::showQuestion(
+        title = "Delete files",
+        message = paste0(
+          "Are you sure you want to delete files?",
+          "\n \n",
+          paste(to_delete, collapse = "\n")
+        ),
+        ok = "Yes",
+        cancel = "No"
+      )
+    } else {
+      TRUE
+    }
 
   # Error if user has responded 'No'
   if(!confirm){
