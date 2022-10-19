@@ -34,12 +34,9 @@ resp <-
   mutate(date_completed = dmy_hms(date_completed)) %>%
 
   # Remove responses where consent not given or not in scotland
-  filter(!is.na(consent) & in_scotland == "Yes")
+  filter(!is.na(consent) & in_scotland == "Yes") %>%
 
-
-# Add CP Number
-
-resp %<>%
+  # Add CP Number
   add_cp_number(
     here("survey-data", "registration-data",
          paste0(pre_wave, "_registration-data.rds")) %>%
@@ -102,9 +99,9 @@ backup_data(
     here("survey-data", wave, paste0(wave, "_response-data-anon.rds"))
 )
 
-# Temp - reformat as required for controller script
-# Future work will incorporate controllor script into comix package
-# This section can be dropped once this is done.
+# Temp - reformat data as required for controller script
+# Future work will incorporate controllor script into this RAP
+# This section (and associated functions) can be dropped once this is done.
 
 temp_anon_resp <-
   reformat_anon_resp(

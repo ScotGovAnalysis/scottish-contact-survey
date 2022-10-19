@@ -94,8 +94,8 @@ backup_data(
     here("survey-data", wave, paste0(wave, "_registration-data-anon.rds"))
 )
 
-# Temp - reformat as required for controller script
-# Future work will incorporate controllor script into SCS package
+# Temp - reformat data as required for controller script
+# Future work will incorporate controllor script into this RAP
 # This section (and associated functions) can be dropped once this is done.
 
 temp_anon_reg <-
