@@ -4,13 +4,22 @@
 \alias{delete_files}
 \title{Delete non-anonymised data files}
 \usage{
-delete_files(survey, data_folder = here::here("survey-data"))
+delete_files(
+  survey,
+  data_folder = here::here("survey-data"),
+  user_confirm = TRUE
+)
 }
 \arguments{
 \item{survey}{Character vector of surveys; e.g. 34A, 45. For waves 43 and
 earlier, a panel letter (A or B) must be included.}
 
 \item{data_folder}{Filepath of folder to search for data files.}
+
+\item{user_confirm}{Logical; determines whether the user is asked for
+confirmation via a pop-up window before files are deleted. It is highly
+recommended that this is set to the default value of \code{TRUE} to provide
+extra protection.}
 }
 \description{
 To comply with data retention rules, non-anonymised data must

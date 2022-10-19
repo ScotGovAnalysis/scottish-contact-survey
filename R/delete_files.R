@@ -7,6 +7,10 @@
 #' @param survey Character vector of surveys; e.g. 34A, 45. For waves 43 and
 #' earlier, a panel letter (A or B) must be included.
 #' @param data_folder Filepath of folder to search for data files.
+#' @param user_confirm Logical; determines whether the user is asked for
+#' confirmation via a pop-up window before files are deleted. It is highly
+#' recommended that this is set to the default value of \code{TRUE} to provide
+#' extra protection.
 #'
 #' @export
 
