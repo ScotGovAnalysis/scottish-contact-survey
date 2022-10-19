@@ -1,9 +1,10 @@
 
 # Create filepaths for test files
-zip1 <- tempfile(fileext = ".zip")
-zip2 <- tempfile(fileext = ".zip")
-file1 <- tempfile()
-file2 <- tempfile()
+folder <- tempdir(check = TRUE)
+zip1 <- tempfile(tmpdir = folder, fileext = ".zip")
+zip2 <- tempfile(tmpdir = folder, fileext = ".zip")
+file1 <- tempfile(tmpdir = folder)
+file2 <- tempfile(tmpdir = folder)
 
 test_that("Error if file_to_backup doesn't exist", {
   expect_error(backup_data(zip1, file1))
@@ -28,4 +29,4 @@ test_that("Able to add file to existing zip file", {
   expect_true(all(basename(c(file1, file2)) == zip::zip_list(zip2)$filename))
 })
 
-unlink(c(zip1, zip2, file1, file2), recursive = TRUE)
+unlink(folder, recursive = TRUE)
