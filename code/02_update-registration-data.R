@@ -22,19 +22,18 @@ source(here::here("code", "00_setup.R"))
 ### 1 - Get data ----
 
 reg <-
-  here("survey-data", "registration-data",
-       paste0(pre_wave, "_registration-data.rds")) %>%
+  scs_filepath("registration-data", pre_wave, registration = TRUE) %>%
   read_rds()
 
 resp <-
-  here("survey-data", wave, paste0(wave, "_response-data-anon.rds")) %>%
+  scs_filepath("response-data-anon", wave) %>%
   read_rds()
 
 
 ### 2 - Recode and replace opt outs ----
 
 opt_outs <-
-  here("survey-data", wave, paste0(wave, "_opt-outs-anon.rds")) %>%
+  scs_filepath("opt-outs-anon", wave) %>%
   read_rds()
 
 # Remove personal data for opt-outs
@@ -54,11 +53,9 @@ if(add_reserves == TRUE) {
 
 # Changes to household members
 
-remove <- here("survey-data", wave, paste0(wave, "_hm-removed.rds")) %>%
-  read_rds()
+remove <- scs_filepath("hm-removed", wave) %>% read_rds()
 
-add <- here("survey-data", wave, paste0(wave, "_hm-added.rds")) %>%
-  read_rds()
+add <- scs_filepath("hm-added", wave) %>% read_rds()
 
 reg %<>% update_household_members(remove, add)
 
@@ -83,15 +80,14 @@ anon_reg <-
 
 write_rds(
   anon_reg,
-  here("survey-data", wave, paste0(wave, "_registration-data-anon.rds")),
+  scs_filepath("registration-data-anon", wave),
   compress = "gz"
 )
 
 # Save backup
 backup_data(
   zip_file = "//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data.zip",
-  file_to_backup =
-    here("survey-data", wave, paste0(wave, "_registration-data-anon.rds"))
+  file_to_backup = scs_filepath("registration-data-anon", wave)
 )
 
 # Temp - reformat data as required for controller script
@@ -105,7 +101,7 @@ temp_anon_reg <-
 
 write_csv(
   temp_anon_reg,
-  here("survey-data", wave, paste0(wave, "_registration-data-anon.csv"))
+  scs_filepath("registration-data-anon", wave, fileext = ".csv")
 )
 
 
@@ -113,8 +109,7 @@ write_csv(
 
 write_rds(
   reg,
-  here("survey-data", "registration-data",
-       paste0(wave, "_registration-data.rds")),
+  scs_filepath("registration-data", wave, registration = TRUE),
   compress = "gz"
 )
 
@@ -125,7 +120,7 @@ invites <- survey_invites(reg)
 
 write_csv(
   invites,
-  here("survey-data", wave + 1, paste0(wave + 1, "_qb-invites.csv")),
+  scs_filepath("qb-invites", next_wave, fileext = ".csv"),
   na = ""
 )
 
@@ -142,8 +137,7 @@ delete_files(wave - 4)
 
 render(
   input = here("markdown", "demographics-summary.Rmd"),
-  output_file =
-    here("survey-data", wave, paste0(wave, "_demographics-summary.html"))
+  output_file = scs_filepath("demographics-summary", wave, fileext = ".html")
 )
 
 

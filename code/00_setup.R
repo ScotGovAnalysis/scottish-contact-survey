@@ -49,10 +49,4 @@ pre_wave <- wave - 1
 next_wave <- wave + 1
 
 
-### 3 - Create data folders ----
-
-c(wave, next_wave) %>%
-  walk(~ use_directory(paste0("survey-data/", .)))
-
-
 ### END OF SCRIPT ###

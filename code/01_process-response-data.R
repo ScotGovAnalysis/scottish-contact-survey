@@ -24,7 +24,7 @@ source(here::here("code", "00_setup.R"))
 resp <-
 
   # Read in raw response data
-  here("survey-data", wave, paste0(wave, "_response-data.csv")) %>%
+  scs_filepath("response-data", wave, fileext = ".csv") %>%
   read_csv(col_types = paste(resp_names$type, collapse = "")) %>%
 
   # Clean names
@@ -38,8 +38,7 @@ resp <-
 
   # Add CP Number
   add_cp_number(
-    here("survey-data", "registration-data",
-         paste0(pre_wave, "_registration-data.rds")) %>%
+    scs_filepath("registration-data", pre_wave, registration = TRUE) %>%
       read_rds()
   ) %>%
   select(cp_number, everything())
@@ -54,7 +53,7 @@ winner <-
 
 write_csv(
   winner,
-  here("survey-data", wave, paste0(wave, "_prize-draw.csv"))
+  scs_filepath("prize-draw", wave, fileext = ".csv")
 )
 
 
@@ -65,7 +64,7 @@ hm_removed <-
 
 write_rds(
   hm_removed,
-  here("survey-data", wave, paste0(wave, "_hm-removed.rds")),
+  scs_filepath("hm-removed", wave),
   compress = "gz"
 )
 
@@ -74,7 +73,7 @@ hm_added <-
 
 write_rds(
   hm_added,
-  here("survey-data", wave, paste0(wave, "_hm-added.rds")),
+  scs_filepath("hm-added", wave),
   compress = "gz"
 )
 
@@ -88,15 +87,14 @@ anon_resp <-
 
 write_rds(
   anon_resp,
-  here("survey-data", wave, paste0(wave, "_response-data-anon.rds")),
+  scs_filepath("response-data-anon", wave),
   compress = "gz"
 )
 
 # Save backup
 backup_data(
   zip_file = "//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data.zip",
-  file_to_backup =
-    here("survey-data", wave, paste0(wave, "_response-data-anon.rds"))
+  file_to_backup = scs_filepath("response-data-anon", wave)
 )
 
 # Temp - reformat data as required for controller script
@@ -111,19 +109,18 @@ temp_anon_resp <-
 
 write_csv(
   temp_anon_resp,
-  here("survey-data", wave, paste0(wave, "_response-data-anon.csv"))
+  scs_filepath("response-data-anon", wave, fileext = ".csv")
 )
 
 
 ### 5 - Get opt outs ----
 
 opt_outs <-
-  here("survey-data", wave, paste0(wave, "_opt-outs.xlsx")) %>%
+  scs_filepath("opt-outs", wave, fileext = ".xlsx") %>%
   read_xlsx(sheet = 1) %>%
   select(email = `E-mail`) %>%
   add_cp_number(
-    here("survey-data", "registration-data",
-         paste0(pre_wave, "_registration-data.rds")) %>%
+    scs_filepath("registration-data", pre_wave, registration = TRUE) %>%
       read_rds(),
     age_gender = TRUE,
     age_wave = wave,
@@ -133,7 +130,7 @@ opt_outs <-
 # Save list of cp number, age and gender only
 write_rds(
   opt_outs,
-  here("survey-data", wave, paste0(wave, "_opt-outs-anon.rds")),
+  scs_filepath("opt-outs-anon", wave),
   compress = "gz"
 )
 
