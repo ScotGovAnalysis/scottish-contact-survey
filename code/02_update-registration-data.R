@@ -36,8 +36,8 @@ opt_outs <-
   scs_filepath("opt-outs-anon", wave) %>%
   read_rds()
 
-# Remove personal data for opt-outs
-reg %<>% remove_opt_outs(opt_outs$cp_number)
+# Remove opt outs from registration data
+reg %<>% filter(!cp_number %in% opt_outs$cp_number)
 
 # Replace opt-outs from reserve list
 if(add_reserves == TRUE) {
