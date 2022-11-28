@@ -33,6 +33,9 @@ of settings (home, work, school, and other). Exact ages of contacts is
 not recorded, so a sample weighted by the population between the minimum
 and maximum age reported for the contact is used.
 
+Scottish Contact Survey contact matrices are now published as [open data](http://statistics.gov.scot/data/scottish-contact-survey-contact-matrices). The dataset contains mean contacts between age groups for all waves of the survey since its inception in August 2020 and is updated fortnightly to add data for the latest survey wave.
+
+
 ### Other Covid-19 Modelling
 
 This model is one of a
