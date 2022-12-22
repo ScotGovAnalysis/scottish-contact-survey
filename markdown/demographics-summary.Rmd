@@ -491,12 +491,12 @@ reg <-
   map_dfr(
     ~ read_rds(.x) %>% 
       filter(status == "active") %>%
+      mutate(wave = parse_number(basename(.x))) %>%
       mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
       filter(gender %in% c("Male", "Female")) %>%
-      group_by(age_group, gender) %>%
+      group_by(wave, age_group, gender) %>%
       summarise(n_reg = n(), .groups = "drop") %>%
-      mutate(wave = as.numeric(str_extract(.x, "\\d{2}")), 
-             date = start_date(wave)) %>%
+      mutate(date = start_date(wave)) %>%
       select(wave, date, everything())
   )
 

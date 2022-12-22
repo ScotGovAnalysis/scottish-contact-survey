@@ -15,10 +15,10 @@
 
 ### 0 - Manual Variables - TO UPDATE ----
 
-wave  <- 55
+wave  <- 62
 
 # If TRUE, opt-outs will be replaced in active panel by reserve list
-add_reserves <- TRUE
+add_reserves <- FALSE
 
 
 ### 1 - Load packages ----
