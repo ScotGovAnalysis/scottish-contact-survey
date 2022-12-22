@@ -11,6 +11,31 @@
 
 survey_invites <- function(reg_data, survey_panel = NULL) {
 
+  # Check reg_data is a data frame / tibble
+  if(!"data.frame" %in% class(reg_data)) {
+    stop("`reg_data` must be a data frame.")
+  }
+
+  exp_names <- c("panel", "status", "last_updated", "n_household",
+                 "email", "employment", "studying", "vaccine_n_doses",
+                 paste0("hm", 1:10, "_name"))
+
+  # Check reg_data contains required variables
+  if(!all(exp_names %in% names(reg_data))) {
+    stop("At least one required variable not in `reg_data`. \n",
+         "Expected variables: ", paste(exp_names, collapse = ", "))
+  }
+
+  # Check panel (if supplied) exists in reg_data
+  if(!is.null(survey_panel)) {
+    if(!survey_panel %in% unique(reg_data$panel)) {
+      stop("There are no registered participants for survey panel ",
+           survey_panel, " in `reg_data`. \n",
+           "Either supply a valid survey panel or if no panel is supplied, ",
+           "all active participants will be selected.")
+    }
+  }
+
   # Select participants in required panel
   if(!is.null(survey_panel)) {
     reg_data %<>% dplyr::filter(.data$panel == survey_panel)

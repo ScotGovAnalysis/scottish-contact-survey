@@ -1,6 +1,6 @@
 Package: scs
 Title: Reproducible Analytical Pipeline of Scottish Contact Survey analysis
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: 
     person(given = "Alice",
            family = "Byers",
@@ -20,14 +20,13 @@ Imports:
     lubridate,
     tidyselect,
     rlang,
-    utils,
     tidyr,
     readr,
     stringr,
-    glue,
-    here,
     purrr,
     tibble,
-    scales
+    scales,
+    rstudioapi,
+    zip
 Suggests: 
     testthat (>= 2.1.0)

@@ -22,23 +22,22 @@ source(here::here("code", "00_setup.R"))
 ### 1 - Get data ----
 
 reg <-
-  here("data", "registration-data",
-       paste0(pre_wave, "_registration-data.rds")) %>%
+  scs_filepath("registration-data", pre_wave, registration = TRUE) %>%
   read_rds()
 
 resp <-
-  here("data", wave, paste0(wave, "_response-data-anon.rds")) %>%
+  scs_filepath("response-data-anon", wave) %>%
   read_rds()
 
 
 ### 2 - Recode and replace opt outs ----
 
 opt_outs <-
-  here("data", wave, paste0(wave, "_opt-outs-anon.rds")) %>%
+  scs_filepath("opt-outs-anon", wave) %>%
   read_rds()
 
-# Remove personal data for opt-outs
-reg %<>% remove_opt_outs(opt_outs$cp_number)
+# Remove opt outs from registration data
+reg %<>% filter(!cp_number %in% opt_outs$cp_number)
 
 # Replace opt-outs from reserve list
 if(add_reserves == TRUE) {
@@ -54,11 +53,9 @@ if(add_reserves == TRUE) {
 
 # Changes to household members
 
-remove <- here("data", wave, paste0(wave, "_hm-removed.rds")) %>%
-  read_rds()
+remove <- scs_filepath("hm-removed", wave) %>% read_rds()
 
-add <- here("data", wave, paste0(wave, "_hm-added.rds")) %>%
-  read_rds()
+add <- scs_filepath("hm-added", wave) %>% read_rds()
 
 reg %<>% update_household_members(remove, add)
 
@@ -79,24 +76,22 @@ anon_reg <-
   reg %>%
   filter(cp_number %in% resp$cp_number) %>%
   select(-email) %>%
-  anon_reg_data()
+  anonymise_data("reg")
 
 write_rds(
   anon_reg,
-  here("data", wave, paste0(wave, "_registration-data-anon.rds")),
+  scs_filepath("registration-data-anon", wave),
   compress = "gz"
 )
 
 # Save backup
-write_rds(
-  anon_reg,
-  paste0("//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data/",
-         wave, "_registration-data-anon.rds"),
-  compress = "gz"
+backup_data(
+  zip_file = "//s0177a/datashare/CoMix/Private/CoMix Model/Backup Data.zip",
+  file_to_backup = scs_filepath("registration-data-anon", wave)
 )
 
-# Temp - reformat as required for controller script
-# Future work will incorporate controllor script into SCS package
+# Temp - reformat data as required for controller script
+# Future work will incorporate controllor script into this RAP
 # This section (and associated functions) can be dropped once this is done.
 
 temp_anon_reg <-
@@ -106,7 +101,7 @@ temp_anon_reg <-
 
 write_csv(
   temp_anon_reg,
-  here("data", wave, paste0(wave, "_registration-data-anon.csv"))
+  scs_filepath("registration-data-anon", wave, fileext = ".csv")
 )
 
 
@@ -114,8 +109,7 @@ write_csv(
 
 write_rds(
   reg,
-  here("data", "registration-data",
-       paste0(wave, "_registration-data.rds")),
+  scs_filepath("registration-data", wave, registration = TRUE),
   compress = "gz"
 )
 
@@ -126,7 +120,7 @@ invites <- survey_invites(reg)
 
 write_csv(
   invites,
-  here("data", wave + 1, paste0(wave + 1, "_qb-invites.csv")),
+  scs_filepath("qb-invites", next_wave, fileext = ".csv"),
   na = ""
 )
 
@@ -143,7 +137,7 @@ delete_files(wave - 4)
 
 render(
   input = here("markdown", "demographics-summary.Rmd"),
-  output_file = here("data", wave, paste0(wave, "_demographics-summary.html"))
+  output_file = scs_filepath("demographics-summary", wave, fileext = ".html")
 )
 
 

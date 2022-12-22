@@ -9,7 +9,7 @@ household_changes(resp_data, change_type = c("add", "remove"))
 \arguments{
 \item{resp_data}{Data frame of non-anonymised response data.}
 
-\item{change_type}{Type of changes to be extracted; either "add" or "remove.}
+\item{change_type}{Type of changes to be extracted; either "add" or "remove".}
 }
 \value{
 Data frame of household changes.

@@ -26,12 +26,13 @@ vaccine_changes <- function(reg_data, raw_vaccine_data){
     ) %>%
 
     # Recode responses
-    dplyr::mutate_at(
-      dplyr::vars(c(.data$vacc_1, .data$vacc_2)),
+    dplyr::mutate(dplyr::across(
+      c(.data$vacc_1, .data$vacc_2),
       ~ dplyr::case_when(
         . == "No" ~ "no doses",
         TRUE ~ stringr::str_extract(., "\\w+ dose(s)?")
-      )) %>%
+      )
+    )) %>%
 
     # Combine vaccine status changes into one column
     dplyr::mutate(

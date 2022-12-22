@@ -1,3 +1,5 @@
+# start_date
+
 test_that("Error if panel missing or invalid for wave 43 or earlier", {
   expect_error(start_date(4))
   expect_error(start_date(43))
@@ -41,4 +43,25 @@ test_that("Provides correct answer", {
                    lubridate::dmy(03022022),
                    lubridate::dmy(10032022)))
 
+})
+
+
+# date_range
+
+test_that("Error if incorrect argument type", {
+  expect_error(date_range(46, suffix = "true"))
+  expect_error(date_range(46, year = 2022))
+})
+
+test_that("Provides correct answer", {
+  expect_equal(date_range(46, suffix = FALSE), "28 April - 04 May")
+  expect_equal(date_range(46, suffix = TRUE), "28th April - 4th May")
+  expect_equal(date_range(30, "A"), "16th September - 22nd September")
+  expect_equal(date_range(46, year = TRUE), "28th April - 4th May 2022")
+  expect_equal(date_range(37, "B", year = TRUE),
+               "30th December 2021 - 5th January 2022")
+  expect_equal(date_range(44:46),
+               c("31st March - 6th April",
+                 "14th April - 20th April",
+                 "28th April - 4th May"))
 })

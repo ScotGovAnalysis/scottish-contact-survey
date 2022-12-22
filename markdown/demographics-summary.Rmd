@@ -31,13 +31,20 @@ dodge <- position_dodge(width = 0.9)
 opt_out_data <- function(x) {
 
   get_opt_outs <- function(y) {
-  
-  here("data", y, paste0(y, "_opt-outs-anon.rds")) %>%
-    read_rds() %>%
-    filter(gender %in% c("Male", "Female")) %>%
-    group_by(age_group, gender) %>%
-    summarise(n = n(), .groups = "drop")
-  
+    
+    file <- suppressWarnings(
+      scs_filepath("opt-outs-anon", y, create_folder = FALSE)
+    )
+    
+    if(!file.exists(file)) {
+      stop("File does not exist: ", file)
+    }
+    
+    read_rds(file) %>%
+      filter(gender %in% c("Male", "Female")) %>%
+      group_by(age_group, gender) %>%
+      summarise(n = n(), .groups = "drop")
+    
   }
   
   if(!(x %in% 30:42) & !(x >= 44)) {
@@ -73,7 +80,7 @@ Wave `r wave` of the Scottish Contact Survey was open from `r date_range(wave, y
 
 # Age and gender of responses to latest wave
 resp <- 
-  here("data", wave, paste0(wave, "_registration-data-anon.rds")) %>%
+  scs_filepath("registration-data-anon", wave) %>%
   read_rds() %>%
   mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
   filter(gender %in% c("Male", "Female")) %>%
@@ -82,7 +89,7 @@ resp <-
 
 # Age and gender of those invited to latest wave
 reg <-
-  here("data", "registration-data", paste0(wave, "_registration-data.rds")) %>%
+  scs_filepath("registration-data", wave, registration = TRUE) %>%
   read_rds() %>%
   filter(status == "active") %>%
   mutate(age_group = age(date_of_birth, wave, grouped = TRUE)) %>%
@@ -264,17 +271,24 @@ opt_outs %>%
 demog_data <- function(x) {
 
   get_resp <- function(y) {
+    
+    file <- suppressWarnings(
+      scs_filepath("registration-data-anon", y, create_folder = FALSE)
+    )
+    
+    if(!file.exists(file)) {
+      stop("File doesn't exist: ", file)
+    }
   
-  here("data", y, paste0(y, "_registration-data-anon.rds")) %>%
-    read_rds() %>%
-    mutate(age_group = age(date_of_birth,
-                           as.numeric(str_extract(y, "\\d{1,2}")),
-                           str_extract(y, "[AB]"),
-                           grouped = TRUE)) %>%
-    filter(gender %in% c("Male", "Female")) %>%
-    group_by(age_group, gender) %>%
-    summarise(n_resp = n(), .groups = "drop")
-  
+    read_rds(file) %>%
+      mutate(age_group = age(date_of_birth,
+                             as.numeric(str_extract(y, "\\d{1,2}")),
+                             str_extract(y, "[AB]"),
+                             grouped = TRUE)) %>%
+      filter(gender %in% c("Male", "Female")) %>%
+      group_by(age_group, gender) %>%
+      summarise(n_resp = n(), .groups = "drop")
+    
 }
   
   if(!(x %in% 30:42) & !(x >= 44)) {
@@ -298,7 +312,9 @@ demog_data <- function(x) {
 
 }
 
-trend <- map_dfr(c(31:42, 44:wave), demog_data)
+safe_demog_data <- possibly(demog_data, NULL)
+
+trend <- map_dfr(c(31:42, 44:wave), safe_demog_data)
 
 ```
 
@@ -471,7 +487,7 @@ trend %>%
 # due to data retention policy.
 
 reg <-
-  list.files(here("data", "registration-data"), full.names = TRUE) %>%
+  list.files(here("survey-data", "registration-data"), full.names = TRUE) %>%
   map_dfr(
     ~ read_rds(.x) %>% 
       filter(status == "active") %>%
@@ -577,7 +593,9 @@ rate_trend %>%
 
 ```{r opt-outs-data, include = FALSE}
 
-opt_outs <- map_dfr(c(31:42, 44:wave), opt_out_data)
+safe_opt_out_data <- possibly(opt_out_data, otherwise = NULL)
+
+opt_outs <- map_dfr(c(31:42, 44:wave), safe_opt_out_data)
 
 ```
 

@@ -4,7 +4,7 @@
 .Ruserdata
 
 # data folder #
-data/
+survey-data/
 
 # dev folder #
 code/dev/
