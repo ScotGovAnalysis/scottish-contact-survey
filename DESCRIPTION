@@ -1,6 +1,6 @@
 Package: scs
 Title: Reproducible Analytical Pipeline of Scottish Contact Survey analysis
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: 
     person(given = "Alice",
            family = "Byers",
