@@ -10,10 +10,10 @@
    * `update_email` updates a participant's email address in registration data.
    
 * Built-in datasets added: 
-   * `resp_names`,
-   * `dummy_reg`,
-   * `dummy_resp`,
-   * `dummy_opt_outs`.
+   * `resp_names`
+   * `dummy_reg`
+   * `dummy_resp`
+   * `dummy_opt_outs`
 
 * `anon_reg_data` and `anon_response_data` superceded by `anonymise_data`.
 

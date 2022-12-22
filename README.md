@@ -25,7 +25,7 @@ using two different groups (Panels A and B) in alternating weeks. Adults
 record their direct, face-to-face contacts made on the previous day,
 specifying certain characteristics for each contact including the age
 and sex of the contact, whether a meeting involved physical contact with
-another person, and where contact occurred (e.g. home, at work, while
+another person, and where contact occurred (e.g. home, at work, while
 undertaking other activities, etc.).
 
 The average number of contacts each person has is calculated for a range
@@ -33,7 +33,9 @@ of settings (home, work, school, and other). Exact ages of contacts is
 not recorded, so a sample weighted by the population between the minimum
 and maximum age reported for the contact is used.
 
-Scottish Contact Survey contact matrices are now published as [open data](http://statistics.gov.scot/data/scottish-contact-survey-contact-matrices). The dataset contains mean contacts between age groups for all waves of the survey since its inception in August 2020 and is updated fortnightly to add data for the latest survey wave.
+Scottish Contact Survey contact matrices are published as [open data](http://statistics.gov.scot/data/scottish-contact-survey-contact-matrices). The dataset contains mean contacts between age groups for all waves of the survey since its inception in August 2020.
+
+The Scottish Contact Survey closed in December 2022.
 
 
 ### Other Covid-19 Modelling
